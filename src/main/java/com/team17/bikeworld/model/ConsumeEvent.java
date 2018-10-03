@@ -1,13 +1,15 @@
 package com.team17.bikeworld.model;
 
-public class Event {
+import javax.persistence.Entity;
+
+public class ConsumeEvent {
     private String name;
     private int status;
 
-    public Event() {
+    public ConsumeEvent() {
     }
 
-    public Event(String name, int status) {
+    public ConsumeEvent(String name, int status) {
         this.name = name;
         this.status = status;
     }
@@ -30,7 +32,7 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event{" +
+        return "ConsumeEvent{" +
                 "name='" + name + '\'' +
                 ", status=" + status +
                 '}';
