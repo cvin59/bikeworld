@@ -8,22 +8,20 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "event")
-@XmlRootElement
-@NamedQueries({
-        @NamedQuery(name = "Event.findAll", query = "SELECT e FROM Event e")})
 public class Event implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Integer id;
-    @Size(max = 50)
-    @Column(name = "name")
+    @Column(name = "name", length = 50)
     private String name;
     @Column(name = "status")
     private Integer status;
+    @Column(name = "image_url", length = 100)
+    private String imageUrl;
 
     public Event() {
     }
@@ -56,6 +54,14 @@ public class Event implements Serializable {
         this.status = status;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -78,7 +84,7 @@ public class Event implements Serializable {
 
     @Override
     public String toString() {
-        return "com.vinhvc.bestwatch.model.Event[ id=" + id + " ]";
+        return "entity.Event[ id=" + id + " ]";
     }
 
 }
