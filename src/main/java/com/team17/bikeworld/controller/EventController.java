@@ -2,6 +2,7 @@ package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.Event;
+import com.team17.bikeworld.entity.ProposalEvent;
 import com.team17.bikeworld.model.ConsumeEvent;
 import com.team17.bikeworld.service.EventService;
 import org.slf4j.Logger;
@@ -16,14 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +27,6 @@ public class EventController extends AbstractController{
     private static final Logger LOGGER = LoggerFactory.getLogger(EventController.class);
 
     private final EventService eventService;
-    private final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
 
     public EventController(EventService eventService) {
         this.eventService = eventService;
@@ -53,37 +46,27 @@ public class EventController extends AbstractController{
     }
 
     @PostMapping
-    public ResponseEntity<Event> proposeEvent(@RequestParam String consumeEventString, @RequestParam MultipartFile imageUrl){
+    public ResponseEntity<ProposalEvent> proposeEvent(@RequestParam String consumeEventString, @RequestParam MultipartFile image){
         LOGGER.info(consumeEventString.toString());
         ConsumeEvent consumeEvent = gson.fromJson(consumeEventString, ConsumeEvent.class);
-        String fileName = "hinhanh_" + consumeEvent.getName() + ".jpg";
-        try {
-
-            Files.createDirectories(rootLocation);
-            Files.copy(imageUrl.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        consumeEvent.setImageUrl("/downloadFile/" + fileName);
-        ResponseEntity<Event> response = eventService.proposeEvent(consumeEvent);
+        ResponseEntity<ProposalEvent> response = eventService.proposeEvent(consumeEvent, image);
         return response;
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<ConsumeEvent> updateEvent(@RequestBody ConsumeEvent consumeEvent){
+    @PutMapping("/{id}")
+    public ResponseEntity<ConsumeEvent> createEvent(@RequestBody ConsumeEvent consumeEvent){
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<ConsumeEvent> updateEvent(){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ConsumeEvent> deleteEvent(){
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
-    //client view
     @GetMapping("/downloadFile/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) throws Exception {
         // Load file as Resource
-        Resource resource = this.loadFileAsResource(fileName);
+        Resource resource = eventService.loadFileAsResource(fileName);
 
         // Try to determine file's content type
         String contentType = null;
@@ -104,17 +87,5 @@ public class EventController extends AbstractController{
                 .body(resource);
     }
 
-    public Resource loadFileAsResource(String fileName) throws Exception {
-        try {
-            Path filePath = this.rootLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-            if(resource.exists()) {
-                return resource;
-            } else {
-                throw new Exception("File not found " + fileName);
-            }
-        } catch (MalformedURLException ex) {
-            throw new Exception("File not found " + fileName, ex);
-        }
-    }
+
 }
