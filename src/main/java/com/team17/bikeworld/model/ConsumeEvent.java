@@ -1,17 +1,33 @@
 package com.team17.bikeworld.model;
 
-import javax.persistence.Entity;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.util.Arrays;
 
 public class ConsumeEvent {
+    private int id;
     private String name;
     private int status;
+    private String imageUrl;
 
     public ConsumeEvent() {
     }
 
-    public ConsumeEvent(String name, int status) {
-        this.name = name;
-        this.status = status;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getName() {
@@ -33,10 +49,10 @@ public class ConsumeEvent {
     @Override
     public String toString() {
         return "ConsumeEvent{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", status=" + status +
+                ", imageUrl=" + imageUrl +
                 '}';
     }
-
-
 }
