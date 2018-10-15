@@ -2,7 +2,7 @@ package com.team17.bikeworld.common;
 
 public class CoreConstant {
 
-    public static final String API_EVENT = "/event";
+    public static final String API_EVENT = "/api/event";
 
     //API Response code
     public static final int STATUS_CODE_SERVER_ERROR = -1;
