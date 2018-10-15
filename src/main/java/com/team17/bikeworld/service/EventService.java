@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,36 +36,14 @@ public class EventService {
         this.proposalEventRepository = proposalEventRepository;
     }
 
-    public ResponseEntity<List<Event>> findEvents() {
-        ResponseEntity<List<Event>> response;
-        try {
-            List<Event> events = eventRepository.findAll();
-
-            if (events != null) {
-                response = ResponseEntity.status(HttpStatus.OK).body(events);
-            } else {
-                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return response;
+    public List<Event> findEvents() {
+        List<Event> events = eventRepository.findAll();
+        return events;
     }
 
-    public ResponseEntity<Optional<Event>> findEvent(int id) {
-        ResponseEntity<Optional<Event>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        try {
-            Optional<Event> event = eventRepository.findById(id);
-
-            if (event != null) {
-                response = ResponseEntity.status(HttpStatus.OK).body(event);
-            } else {
-                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return response;
+    public Optional<Event> findEvent(int id) {
+        Optional<Event> event = eventRepository.findById(id);
+        return event;
     }
 
     public ResponseEntity<ProposalEvent> proposeEvent(ConsumeEvent consumeEvent, MultipartFile image) {
@@ -77,7 +55,7 @@ public class EventService {
                 Files.createDirectories(rootLocation);
                 Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 
-                consumeEvent.setImageUrl("/downloadFile/" + fileName);
+                consumeEvent.setImageUrl("/images/" + fileName);
 
                 ProposalEvent event = proposalEventRepository.save(initProposalEvent(consumeEvent));
                 response = ResponseEntity.status(HttpStatus.OK).body(event);
