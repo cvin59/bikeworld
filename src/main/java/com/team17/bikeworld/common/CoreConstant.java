@@ -3,6 +3,7 @@ package com.team17.bikeworld.common;
 public class CoreConstant {
 
     public static final String API_EVENT = "/api/event";
+    public static final String API_PROPOSAL_EVENT = "/api/proposal-event";
 
     //API Response code
     public static final int STATUS_CODE_SERVER_ERROR = -1;
@@ -15,10 +16,11 @@ public class CoreConstant {
     public static final String MESSAGE_SERVER_ERROR = "Server error!";
     public static final String MESSAGE_NO_RESULT = "No result!";
 
-    //Event Status
-    public static final int STATUS_EVENT_PENDING = 0;
-    public static final int STATUS_EVENT_NOT_APPROVED =1;
-    public static final int STATUS_EVENT_APPRROVED = 2;
+    //Proposal Event Status
+    public static final int STATUS_PROPOSALEVENT_NOT_APPROVED =0;
+    public static final int STATUS_PROPOSALEVENT_APPRROVED = 1;
+
+
     public static final int STATUS_EVENT_PROCESSING = 3;
     public static final int STATUS_EVENT_ONGOING = 4;
     public static final int STATUS_EVENT_CANCELED= 5;

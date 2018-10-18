@@ -5,14 +5,15 @@
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta title="viewport" content="width=device-width, initial-scale=1">
+    <meta title="description" content="">
+    <meta title="author" content="">
 
     <title>Bike World Portal</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/dist/css/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="/dist/css/bootstrap-datetimepicker.min.css"/>
 
     <!-- MetisMenu CSS -->
     <link href="/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
@@ -55,7 +56,8 @@
     <script src="/dist/js/sb-admin-2.js"></script>
 
     <!--My JavaScript-->
-    <script src="/js/event.js"></script>
+    <script src="/dist/js/moment.js"></script>
+    <script src="/dist/js/bootstrap-datetimepicker.js"></script>
 
 </head>
 
@@ -88,7 +90,7 @@
                     <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                     </li>
                     <li class="divider"></li>
-                    <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                    <li><a href="/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                     </li>
                 </ul>
                 <!-- /.dropdown-user -->
@@ -103,8 +105,18 @@
                             <a href="../portal"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         <li>
-                            <a href="../portal/event"><i class="fa fa-star fa-fw"></i> Manage Events</a>
+                            <a href="#"><i class="fa fa-star fa-fw"></i>Manage Events<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="../portal/event">Events</a>
+                                </li>
+                                <li>
+                                    <a href="../portal/proposal-event">Proposal Events</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
                         </li>
+
                         <li>
                             <a href="#"><i class="fa fa-table fa-fw"></i> Manage Information</a>
                         </li>

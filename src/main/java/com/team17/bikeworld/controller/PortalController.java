@@ -9,13 +9,13 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/portal")
 public class PortalController {
 
-    @GetMapping
-    public ModelAndView index(){
-        return new ModelAndView("portal-index");
-    }
-
     @GetMapping("/event")
     public ModelAndView openEvent(){
         return new ModelAndView("portal-event");
+    }
+
+    @GetMapping("/proposal-event")
+    public ModelAndView openProposalEvent(){
+        return new ModelAndView("portal-proposal-event");
     }
 }
