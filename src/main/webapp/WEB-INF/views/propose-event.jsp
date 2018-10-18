@@ -77,6 +77,6 @@
         </div>
     </div>
 </div>
-<script src="/js/propose-event.js"></script>
+<script src="/js/event.js"></script>
 </body>
 </html>

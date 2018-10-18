@@ -2,7 +2,7 @@ package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.ProposalEvent;
-import com.team17.bikeworld.model.ConsumeEvent;
+import com.team17.bikeworld.model.ConsumeProposalEvent;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.service.EventService;
 import com.team17.bikeworld.service.ProposalEventService;
@@ -15,13 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.jws.WebParam;
 import java.util.List;
 import java.util.Optional;
 
 import static com.team17.bikeworld.common.CoreConstant.*;
 
-@Controller
+@RestController
 public class ProposalEventController extends AbstractController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProposalEventController.class);
 
@@ -55,15 +54,14 @@ public class ProposalEventController extends AbstractController {
     @PostMapping(API_PROPOSAL_EVENT)
     public String proposeEvent(@RequestParam String consumeEventString, @RequestParam MultipartFile image) {
         LOGGER.info(consumeEventString);
-        ConsumeEvent consumeEvent = gson.fromJson(consumeEventString, ConsumeEvent.class);
-        Response<ProposalEvent> response = eventService.proposeEvent(consumeEvent, image);
+        ConsumeProposalEvent consumeProposalEvent = gson.fromJson(consumeEventString, ConsumeProposalEvent.class);
+        Response<ProposalEvent> response = eventService.proposeEvent(consumeProposalEvent, image);
         return gson.toJson(response);
     }
 
     @GetMapping(API_PROPOSAL_EVENT)
     public String getEvents() {
         Response<List<ProposalEvent>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
-
         try {
             List<ProposalEvent> proposalEvents = proposalEventService.findProposalEvents();
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, proposalEvents);
@@ -121,13 +119,13 @@ public class ProposalEventController extends AbstractController {
 
     //TODO: chưa làm
     @PutMapping(API_PROPOSAL_EVENT + "/{id}")
-    public ResponseEntity<ConsumeEvent> createEvent(@RequestBody ConsumeEvent consumeEvent) {
+    public ResponseEntity<ConsumeProposalEvent> createEvent(@RequestBody ConsumeProposalEvent consumeProposalEvent) {
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     ///TODO: chưa làm
     @DeleteMapping(API_PROPOSAL_EVENT + "/{id}")
-    public ResponseEntity<ConsumeEvent> deleteEvent() {
+    public ResponseEntity<ConsumeProposalEvent> deleteEvent() {
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

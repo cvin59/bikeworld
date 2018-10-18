@@ -2,14 +2,13 @@ package com.team17.bikeworld.service;
 
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.Event;
+import com.team17.bikeworld.entity.EventImage;
 import com.team17.bikeworld.entity.ProposalEvent;
 import com.team17.bikeworld.entity.ProposalEventImage;
 import com.team17.bikeworld.model.ConsumeEvent;
+import com.team17.bikeworld.model.ConsumeProposalEvent;
 import com.team17.bikeworld.model.Response;
-import com.team17.bikeworld.repositories.EventRepository;
-import com.team17.bikeworld.repositories.ProposalEventImageRepository;
-import com.team17.bikeworld.repositories.ProposalEventRepository;
-import com.team17.bikeworld.repositories.UserRepository;
+import com.team17.bikeworld.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -24,30 +23,37 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.team17.bikeworld.common.CoreConstant.STATUS_EVENT_PROCESSING;
+
 @Service
 public class EventService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventService.class);
+
     private final EventRepository eventRepository;
+    private final EventImageRepository eventImageRepository;
     private final ProposalEventRepository proposalEventRepository;
     private final ProposalEventImageRepository proposalEventImageRepository;
+    private final EventStatusRepository eventStatusRepository;
     private final UserRepository userRepository;
+
     private final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
 
-    public EventService(EventRepository eventRepository, ProposalEventRepository proposalEventRepository, ProposalEventImageRepository proposalEventImageRepository, UserRepository userRepository) {
+    public EventService(EventRepository eventRepository, EventImageRepository eventImageRepository, ProposalEventRepository proposalEventRepository, ProposalEventImageRepository proposalEventImageRepository, EventStatusRepository eventStatusRepository, UserRepository userRepository) {
         this.eventRepository = eventRepository;
+        this.eventImageRepository = eventImageRepository;
         this.proposalEventRepository = proposalEventRepository;
         this.proposalEventImageRepository = proposalEventImageRepository;
+        this.eventStatusRepository = eventStatusRepository;
         this.userRepository = userRepository;
     }
 
+    //event section
     public List<Event> findEvents() {
         List<Event> events = eventRepository.findAll();
         return events;
@@ -58,8 +64,8 @@ public class EventService {
         return event;
     }
 
-    public Response<ProposalEvent> proposeEvent(ConsumeEvent consumeEvent, MultipartFile image) {
-        Response<ProposalEvent> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+    public Response<Event> createEvent(ConsumeEvent consumeEvent, MultipartFile image) {
+        Response<Event> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         if (consumeEvent != null) {
             try {
                 //xu ly luu hinh anh
@@ -69,9 +75,81 @@ public class EventService {
 
                 consumeEvent.setImageUrl("/images/" + fileName);
 
-                ProposalEvent event = proposalEventRepository.save(initProposalEvent(consumeEvent));
+                Event event = eventRepository.save(initEvent(consumeEvent));
 
-                List<ProposalEventImage> proposalEventImages = initProposalEventImages(event, consumeEvent);
+                List<EventImage> eventImages = initEventImages(event, consumeEvent);
+                eventImageRepository.saveAll(eventImages);
+
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, event);
+            } catch (Exception e) {
+                response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+            }
+        }
+        return response;
+    }
+
+    private List<EventImage> initEventImages(Event event, ConsumeEvent consumeEvent) {
+        List<EventImage> eventImages = new LinkedList<>();
+        EventImage eventImage = new EventImage();
+        eventImage.setImageLink(consumeEvent.getImageUrl());
+        eventImage.setEventId(event);
+        eventImages.add(eventImage);
+        return eventImages;
+    }
+
+    private Event initEvent(ConsumeEvent consumeEvent) {
+        if (consumeEvent != null) {
+            try {
+                Event event = new Event();
+
+                event.setTitle(consumeEvent.getTitle());
+                event.setAddress(consumeEvent.getAddress());
+                event.setDescription(consumeEvent.getDescription());
+                event.setLocation(consumeEvent.getLocation());
+                event.setLatitude(consumeEvent.getLatitude());
+                event.setLongitude(consumeEvent.getLongitude());
+                event.setFee(consumeEvent.getFee());
+
+                //start date - end date
+                SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                Date startDate = format1.parse(consumeEvent.getStartDate());
+                event.setStartDate(startDate);
+                Date endDate = format1.parse(consumeEvent.getEndDate());
+                event.setEndDate(endDate);
+
+                //start register date - end register date
+                Date startRegiDate = format1.parse(consumeEvent.getStartRegiDate());
+                event.setStartRegisterDate(startRegiDate);
+                Date endRegiDate = format1.parse(consumeEvent.getEndRegiDate());
+                event.setEndRegisterDate(endRegiDate);
+
+                event.setEventStautsid(eventStatusRepository.findById(STATUS_EVENT_PROCESSING).get());
+
+                return event;
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage());
+            }
+
+        }
+        return null;
+    }
+
+
+    //proposal event section
+    public Response<ProposalEvent> proposeEvent(ConsumeProposalEvent consumeProposalEvent, MultipartFile image) {
+        Response<ProposalEvent> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        if (consumeProposalEvent != null) {
+            try {
+                //xu ly luu hinh anh
+                String fileName = image.getOriginalFilename() + "_" + consumeProposalEvent.getTitle() + ".jpg";
+                Files.createDirectories(rootLocation);
+                Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+
+                consumeProposalEvent.setImageUrl("/images/" + fileName);
+
+                ProposalEvent event = proposalEventRepository.save(initProposalEvent(consumeProposalEvent));
+
+                List<ProposalEventImage> proposalEventImages = initProposalEventImages(event, consumeProposalEvent);
                 proposalEventImageRepository.saveAll(proposalEventImages);
 
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, event);
@@ -82,18 +160,18 @@ public class EventService {
         return response;
     }
 
-    private ProposalEvent initProposalEvent(ConsumeEvent consumeEvent) {
-        if (consumeEvent != null) {
+    private ProposalEvent initProposalEvent(ConsumeProposalEvent consumeProposalEvent) {
+        if (consumeProposalEvent != null) {
             try {
                 ProposalEvent event = new ProposalEvent();
-                event.setTitle(consumeEvent.getTitle());
-                event.setAddress(consumeEvent.getAddress());
-                event.setDescription(consumeEvent.getDescription());
-                event.setLocation(consumeEvent.getLocation());
+                event.setTitle(consumeProposalEvent.getTitle());
+                event.setAddress(consumeProposalEvent.getAddress());
+                event.setDescription(consumeProposalEvent.getDescription());
+                event.setLocation(consumeProposalEvent.getLocation());
                 SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                Date startDate = format1.parse(consumeEvent.getStartDate());
+                Date startDate = format1.parse(consumeProposalEvent.getStartDate());
                 event.setStartDate(startDate);
-                Date endDate = format1.parse(consumeEvent.getEndDate());
+                Date endDate = format1.parse(consumeProposalEvent.getEndDate());
                 event.setEndDate(endDate);
                 event.setAccountUsename(userRepository.findAccountByUsername("a"));
                 event.setStatus(CoreConstant.STATUS_PROPOSALEVENT_NOT_APPROVED);
@@ -107,15 +185,16 @@ public class EventService {
         return null;
     }
 
-    public List<ProposalEventImage> initProposalEventImages(ProposalEvent proposalEvent, ConsumeEvent consumeEvent) {
+    public List<ProposalEventImage> initProposalEventImages(ProposalEvent proposalEvent, ConsumeProposalEvent consumeProposalEvent) {
         List<ProposalEventImage> proposalEventImages = new LinkedList<>();
         ProposalEventImage proposalEventImage = new ProposalEventImage();
-        proposalEventImage.setImageLink(consumeEvent.getImageUrl());
+        proposalEventImage.setImageLink(consumeProposalEvent.getImageUrl());
         proposalEventImage.setProposalEventid(proposalEvent);
         proposalEventImages.add(proposalEventImage);
         return proposalEventImages;
     }
 
+    //load hinh
     public Resource loadFileAsResource(String fileName) throws Exception {
         try {
             Path filePath = this.rootLocation.resolve(fileName).normalize();
