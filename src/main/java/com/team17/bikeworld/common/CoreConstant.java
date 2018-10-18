@@ -20,9 +20,9 @@ public class CoreConstant {
     public static final int STATUS_PROPOSALEVENT_NOT_APPROVED =0;
     public static final int STATUS_PROPOSALEVENT_APPRROVED = 1;
 
-
-    public static final int STATUS_EVENT_PROCESSING = 3;
-    public static final int STATUS_EVENT_ONGOING = 4;
-    public static final int STATUS_EVENT_CANCELED= 5;
-    public static final int STATUS_EVENT_END = 6;
+    //Event Status
+    public static final int STATUS_EVENT_PROCESSING = 1;
+    public static final int STATUS_EVENT_ONGOING = 2;
+    public static final int STATUS_EVENT_CANCELED= 3;
+    public static final int STATUS_EVENT_END = 4;
 }

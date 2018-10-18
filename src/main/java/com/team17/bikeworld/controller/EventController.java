@@ -2,8 +2,8 @@ package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.Event;
-import com.team17.bikeworld.entity.ProposalEvent;
 import com.team17.bikeworld.model.ConsumeEvent;
+import com.team17.bikeworld.model.ConsumeProposalEvent;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.service.EventService;
 import org.slf4j.Logger;
@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,7 +72,7 @@ public class EventController extends AbstractController{
                 .body(resource);
     }
 
-    @GetMapping(value = {"/event/create-event","/abc"})
+    @GetMapping(value = {"/event/create-event"})
     public ModelAndView viewCreateEvent(){
         return new ModelAndView("portal-create-event");
     }
@@ -107,17 +108,23 @@ public class EventController extends AbstractController{
         return response;
     }
 
-
+    @PostMapping(API_EVENT)
+    public String createEvent(@RequestParam String consumeEventString, @RequestParam MultipartFile image) {
+        LOGGER.info(consumeEventString);
+        ConsumeEvent consumeEvent = gson.fromJson(consumeEventString, ConsumeEvent.class);
+        Response<Event> response = eventService.createEvent(consumeEvent, image);
+        return gson.toJson(response);
+    }
 
     //TODO: chưa làm
     @PutMapping(API_EVENT + "/{id}")
-    public ResponseEntity<ConsumeEvent> createEvent(@RequestBody ConsumeEvent consumeEvent){
+    public ResponseEntity<ConsumeProposalEvent> createEvent(@RequestBody ConsumeProposalEvent consumeProposalEvent){
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     ///TODO: chưa làm
     @DeleteMapping(API_EVENT + "/{id}")
-    public ResponseEntity<ConsumeEvent> deleteEvent(){
+    public ResponseEntity<ConsumeProposalEvent> deleteEvent(){
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

@@ -94,6 +94,7 @@ public class Event implements Serializable {
     private Collection<Participant> participantCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "eventId")
     private Collection<EventImage> eventImageCollection;
+    @Expose
     @JoinColumn(name = "eventStauts_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private EventStatus eventStautsid;

@@ -44,7 +44,6 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
-                                <th>Address</th>
                                 <th>Location</th>
                                 <th>StartDate</th>
                                 <th>EndDate</th>
@@ -64,69 +63,68 @@
 
     </div>
     <script>
-        var eventDataTable = reloadTable();
-
-        console.log(eventDataTable);
-
-        var table = $('#dataTables-example').DataTable({
-            data: eventDataTable,
-            columns: [
-                {data: "id"},
-                {data: "title"},
-                {data: "address"},
-                {data: "location"},
-                {data: "startDate"},
-                {data: "endDate"},
-                {
-                    data: null,
-                    render: function (data, type, row) {
-                        let ret;
-                        switch (row.status) {
-                            case 0 :
-                                ret = '<button id="btnApprove'+row.id+'" onclick="approveEvent('+row.id+')" class="btn btn-warning"><i class="fa fa-times"></i></button>';
-                                break;
-                            case 1 :
-                                ret = '<button id="btnNotApprove'+row.id+'" onclick="notApproveEvent('+row.id+')" class="btn btn-info"><i class="fa fa-check"></i></button>';
-                                break;
+        const loadDataTable = (events) => {
+            var table = $('#dataTables-example').DataTable({
+                data: events,
+                columns: [
+                    {data: "id"},
+                    {data: "title"},
+                    {data: "location"},
+                    {data: "startDate"},
+                    {data: "endDate"},
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            let ret;
+                            switch (row.status) {
+                                case 0 :
+                                    ret = '<button id="btnApprove'+row.id+'" onclick="approveEvent('+row.id+')" class="btn btn-warning"><i class="fa fa-times"></i></button>';
+                                    break;
+                                case 1 :
+                                    ret = '<button id="btnNotApprove'+row.id+'" onclick="notApproveEvent('+row.id+')" class="btn btn-info"><i class="fa fa-check"></i></button>';
+                                    break;
+                            }
+                            return ret;
                         }
-                        return ret;
                     }
-                }
-                // , {
-                //     data: null,
-                //     render: function (data, type, row) {
-                //         ret = '<a id="btnCreate'+row.id+'" href="proposal-event/create-event/'+row.id+'" class="btn btn-primary">Create Event</a>';
-                //         return ret;
-                //     }
-                // },
+                    // , {
+                    //     data: null,
+                    //     render: function (data, type, row) {
+                    //         ret = '<a id="btnCreate'+row.id+'" href="proposal-event/create-event/'+row.id+'" class="btn btn-primary">Create Event</a>';
+                    //         return ret;
+                    //     }
+                    // },
 
-            ],
-            columnDefs: [
-                {
-                    render: function (data, type, full, meta) {
-                        return "<div style='width: 200px;word-wrap: break-word'>" + data + "</div>";
-                    },
-                    targets: [2,3]
-                }
-            ],
-            responsive: true
-        });
+                ],
+                columnDefs: [
+                    {
+                        render: function (data, type, full, meta) {
+                            return "<div style='width: 200px;word-wrap: break-word'>" + data + "</div>";
+                        },
+                        targets: [2,3]
+                    }
+                ],
+                responsive: true
+            });
+        }
 
 
-        function reloadTable() {
+        function loadData() {
             let data = "";
             $.ajax({
                 type: "GET",
                 url: "/api/proposal-event",
-                dataType: 'json',
-                async: false
+                dataType: 'json'
             }).done((res) => {
                 data = res.data;
+                loadDataTable(res.data);
             }).fail(() => {
                 alert(status);
             });
             return data;
         }
+
+        loadData();
 
         function approveEvent(id) {
             console.log(id);
@@ -162,10 +160,6 @@
             }).fail(() => {
                 console.log('propose-fail');
             });
-        }
-        
-        function createEvent(id) {
-            
         }
     </script>
 </div>
