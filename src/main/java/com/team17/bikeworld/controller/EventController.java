@@ -1,8 +1,10 @@
 package com.team17.bikeworld.controller;
 
+import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.Event;
 import com.team17.bikeworld.entity.ProposalEvent;
 import com.team17.bikeworld.model.ConsumeEvent;
+import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.service.EventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,22 +71,23 @@ public class EventController extends AbstractController{
                 .body(resource);
     }
 
+    @GetMapping(value = {"/event/create-event","/abc"})
+    public ModelAndView viewCreateEvent(){
+        return new ModelAndView("portal-create-event");
+    }
+
     //Web Service
     @GetMapping(API_EVENT)
-    public ResponseEntity<List<Event>> getEvents() {
-        ResponseEntity<List<Event>> response;
+    public String getEvents() {
+        Response<List<Event>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+
         try {
             List<Event> events = eventService.findEvents();
-
-            if (events != null) {
-                response = ResponseEntity.status(HttpStatus.OK).body(events);
-            } else {
-                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, events);
         } catch (Exception e) {
-            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
         }
-        return response;
+        return gson.toJson(response);
     }
 
     @GetMapping(API_EVENT + "/{id}")

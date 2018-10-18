@@ -9,7 +9,7 @@
 <!doctype html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
+    <meta title="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Bike World</title>
@@ -18,6 +18,7 @@
 
     <!-- Bootstrap -->
     <link type="text/css" rel="stylesheet" href="/dist/css/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="/dist/css/bootstrap-datetimepicker.min.css"/>
 
     <!-- Slick -->
     <link type="text/css" rel="stylesheet" href="/dist/css/slick.css"/>
@@ -38,6 +39,8 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+
 </head>
 <body>
 
