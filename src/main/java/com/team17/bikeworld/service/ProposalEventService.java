@@ -24,13 +24,11 @@ public class ProposalEventService {
     }
 
     public List<ProposalEvent> findProposalEvents() {
-        List<ProposalEvent> events = proposalEventRepository.findAll();
-        return events;
+        return proposalEventRepository.findAll();
     }
 
     public Optional<ProposalEvent> findProposalEvent(int id) {
-        Optional<ProposalEvent> event = proposalEventRepository.findById(id);
-        return event;
+        return proposalEventRepository.findById(id);
     }
 
     public ProposalEvent saveProposalEvent(ProposalEvent proposalEvent) {

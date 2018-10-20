@@ -5,6 +5,8 @@ import com.team17.bikeworld.entity.Account;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +17,8 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Optional;
 
-@Controller
+@RestController
+@CrossOrigin
 public class LoginController extends AbstractController{
 
     @Autowired
@@ -28,24 +31,6 @@ public class LoginController extends AbstractController{
         return modelAndView;
     }
 
-//    @PostMapping(value = "/login")
-//    public String login(@RequestBody  Account user, HttpServletRequest request) {
-//        System.out.println(user.toString());
-//        Optional<Account> optional = userService.getUser(user.getUsername(), user.getPassword());
-//        if (optional.isPresent()) {
-//            Account currUser = optional.get();
-//
-//            HttpSession session = request.getSession();
-//
-//            session.setAttribute("USER_NAME", currUser.getUsername());
-//            session.setAttribute("USER_ROLE", currUser.getRoleId().getName());
-//            return gson.toJson( new Response<>(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS));
-//        }
-//
-//        return gson.toJson(new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL));
-//    }
-
-
     @RequestMapping(value="/registration", method = RequestMethod.GET)
     public ModelAndView registration(){
         ModelAndView modelAndView = new ModelAndView();
@@ -53,25 +38,13 @@ public class LoginController extends AbstractController{
         return modelAndView;
     }
 
-    @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public ModelAndView createNewUser(@Valid Account user, BindingResult bindingResult) {
-        ModelAndView modelAndView = new ModelAndView();
-        Account userExists = userService.findUserByUsername(user.getUsername());
-        if (userExists != null) {
-            bindingResult
-                    .rejectValue("username", "error.user",
-                            "There is already a user registered with the email provided");
+    @PostMapping("/signup")
+    public ResponseEntity signupNewUser(@RequestBody Account account) {
+        if (userService.findUserByUsername(account.getUsername()) == null) {
+            userService.saveUser(account);
+            return ResponseEntity.status(HttpStatus.OK).body("Signed in");
         }
-        if (bindingResult.hasErrors()) {
-            modelAndView.setViewName("registration");
-        } else {
-            userService.saveUser(user);
-            modelAndView.addObject("successMessage", "User has been registered successfully");
-            modelAndView.addObject("user", new Account());
-            modelAndView.setViewName("registration");
-
-        }
-        return modelAndView;
+        return ResponseEntity.status(HttpStatus.OK).body("This username has been used");
     }
 
     @RequestMapping(value="/portal", method = RequestMethod.GET)
@@ -81,11 +54,4 @@ public class LoginController extends AbstractController{
         modelAndView.setViewName("portal-index");
         return modelAndView;
     }
-
-//    @RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
-//    public ModelAndView accessDeniedPage(){
-//        ModelAndView model = new ModelAndView("accessDeniedPage");
-//        model.addObject("user", getPrincipal());
-//        return model;
-//    }
 }
