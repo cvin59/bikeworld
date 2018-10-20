@@ -25,4 +25,6 @@ public class CoreConstant {
     public static final int STATUS_EVENT_ONGOING = 2;
     public static final int STATUS_EVENT_CANCELED= 3;
     public static final int STATUS_EVENT_END = 4;
+
+    //thidu sua file gi do
 }
