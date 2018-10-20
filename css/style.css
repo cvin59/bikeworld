@@ -109,7 +109,7 @@
 
 /*End Star Rating*/
 
-/*Custom carousel*/
+/*Custom vertical carousel, used in product detail page*/
 
 .vert .carousel-item-next.carousel-item-left,
 .vert .carousel-item-prev.carousel-item-right {
@@ -129,5 +129,86 @@
     transform: translate3d(0, -100%, 0);
 }
 
-/*End Custom carousel*/
+/*End Custom vertical carousel*/
+
+/*Custom hover Card*/
+  .custom-hover-card {
+    height: 500px;
+    border-radius: 15px;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    padding-bottom: 2rem;
+    background: white;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    transition: 0.4s ease-out;
+    box-shadow: 0px 7px 10px rgba(0, 0, 0, 0.5);
+  }
+  .custom-hover-card:hover:before {
+    opacity: 1;
+  }
+  .custom-hover-card:hover .info {
+    opacity: 1;
+    -webkit-transform: translateY(0px);
+            transform: translateY(0px);
+  }
+  .custom-hover-card:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2;
+    transition: 0.5s;
+    opacity: 0;
+  }
+  .custom-hover-card img {
+    width: 100%;
+    height: 100%;
+    -o-object-fit: cover;
+       object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 15px;
+  }
+  .custom-hover-card .info {
+    position: relative;
+    z-index: 3;
+    color: white;
+    opacity: 0;
+    -webkit-transform: translateY(30px);
+            transform: translateY(30px);
+    transition: 0.5s;
+  }
+  .custom-hover-card .info h1 {
+    margin: 0px;
+  }
+  .custom-hover-card .info p {
+    letter-spacing: 1px;
+    font-size: 15px;
+    margin-top: 8px;
+  }
+  .custom-hover-card .info button {
+    padding: 0.6rem;
+    outline: none;
+    border: none;
+    border-radius: 3px;
+    background: white;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.4s ease;
+  }
+  .custom-hover-card .info button:hover {
+    background: dodgerblue;
+    color: white;
+  }
+  
+/*End Custom hover Card*/
 
