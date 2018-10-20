@@ -277,9 +277,42 @@
 
     </header>
     <!--Main Layout-->
-    <div class="container mt-5 mb-5 pt-3">
+    <!--Search-->
+    <div class="container mt-5">
+        <!--Search Section-->
+        <section class="p-3 pl-5 pr-5">
+            <!-- Search form -->
+            <form class="form-inline d-flex justify-content-center md-form form-sm">
+                <!-- Search form -->
+                <input class="form-control form-control-sm mr-3 w-50" type="text" placeholder="Search" aria-label="Search">
+                <select class="mdb-select md-form">
+                    <option value="1">Component</option>
+                    <option value="2">Trading</option>
+                    <option value="3">Event</option>
+                </select>
+                <div>
+                    <button class="btn btn-rounded btn-danger font-weight-bold"><i class="fa fa-search mr-2"
+                            aria-hidden="true"></i>Search</button>
+                </div>
+
+            </form>
+        </section>
+        <!--End Search Section-->
+    </div>
+    <!--End Search-->
+
+    <!--Bread Crum Menu-->
+    <div class="container">
+        <nav class="breadcrumb white">
+            <a class="breadcrumb-item text-danger" href="#">Home</a>
+            <a class="breadcrumb-item text-danger" href="#">Event</a>
+        </nav>
+    </div>
+    <!--End Bread Crum Menu-->
+
+    <div class="container mb-5">
         <!-- Section heading -->
-        <h2 class="h2-responsive mt-5 my-5">Recommended Events</h2>
+        <h2 class="h2-responsive mb-5">Recommended Events</h2>
         <div id="carouselRecommendedEvents" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner ">
                 <div class="carousel-item active">
