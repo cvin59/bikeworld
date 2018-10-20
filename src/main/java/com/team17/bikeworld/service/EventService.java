@@ -40,17 +40,17 @@ public class EventService {
     private final ProposalEventRepository proposalEventRepository;
     private final ProposalEventImageRepository proposalEventImageRepository;
     private final EventStatusRepository eventStatusRepository;
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
 
     private final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
 
-    public EventService(EventRepository eventRepository, EventImageRepository eventImageRepository, ProposalEventRepository proposalEventRepository, ProposalEventImageRepository proposalEventImageRepository, EventStatusRepository eventStatusRepository, UserRepository userRepository) {
+    public EventService(EventRepository eventRepository, EventImageRepository eventImageRepository, ProposalEventRepository proposalEventRepository, ProposalEventImageRepository proposalEventImageRepository, EventStatusRepository eventStatusRepository, AccountRepository accountRepository) {
         this.eventRepository = eventRepository;
         this.eventImageRepository = eventImageRepository;
         this.proposalEventRepository = proposalEventRepository;
         this.proposalEventImageRepository = proposalEventImageRepository;
         this.eventStatusRepository = eventStatusRepository;
-        this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
     }
 
     //event section
@@ -173,7 +173,7 @@ public class EventService {
                 event.setStartDate(startDate);
                 Date endDate = format1.parse(consumeProposalEvent.getEndDate());
                 event.setEndDate(endDate);
-                event.setAccountUsename(userRepository.findAccountByUsername("a"));
+                event.setAccountUsename(accountRepository.findAccountByUsername ("user"));
                 event.setStatus(CoreConstant.STATUS_PROPOSALEVENT_NOT_APPROVED);
 
                 return event;
