@@ -1793,31 +1793,31 @@ a.text-light:hover, a.text-light:focus {
   transform: scale(1.1); }
 
 .pattern-1 {
-  background: url("../img/overlays/01.png"); }
+  background: url("../../img/overlays/01.png"); }
 
 .pattern-2 {
-  background: url("../img/overlays/02.png"); }
+  background: url("../../img/overlays/02.png"); }
 
 .pattern-3 {
-  background: url("../img/overlays/03.png"); }
+  background: url("../../img/overlays/03.png"); }
 
 .pattern-4 {
-  background: url("../img/overlays/04.png"); }
+  background: url("../../img/overlays/04.png"); }
 
 .pattern-5 {
-  background: url("../img/overlays/05.png"); }
+  background: url("../../img/overlays/05.png"); }
 
 .pattern-6 {
-  background: url("../img/overlays/06.png"); }
+  background: url("../../img/overlays/06.png"); }
 
 .pattern-7 {
-  background: url("../img/overlays/07.png"); }
+  background: url("../../img/overlays/07.png"); }
 
 .pattern-8 {
-  background: url("../img/overlays/08.png"); }
+  background: url("../../img/overlays/08.png"); }
 
 .pattern-9 {
-  background: url("../img/overlays/09.png"); }
+  background: url("../../img/overlays/09.png"); }
 
 /*!
  * Waves v0.7.6
@@ -6847,10 +6847,10 @@ body.scrollable {
   height: 20px; }
 
 .carousel .carousel-control-prev-icon {
-  background-image: url(../img/svg/arrow_left.svg); }
+  background-image: url(../../img/svg/arrow_left.svg); }
 
 .carousel .carousel-control-next-icon {
-  background-image: url(../img/svg/arrow_right.svg); }
+  background-image: url(../../img/svg/arrow_right.svg); }
 
 .carousel .carousel-indicators li {
   width: 0.625rem;
@@ -9748,7 +9748,7 @@ button, html [type="button"], [type="reset"], [type="submit"] {
 .pswp__button,
 .pswp__button--arrow--left:before,
 .pswp__button--arrow--right:before {
-  background: url(../img/lightbox/default-skin.png) 0 0 no-repeat;
+  background: url(../../img/lightbox/default-skin.png) 0 0 no-repeat;
   -webkit-background-size: 264px 88px;
   background-size: 264px 88px;
   width: 44px;
@@ -9759,7 +9759,7 @@ button, html [type="button"], [type="reset"], [type="submit"] {
   .pswp--svg .pswp__button,
   .pswp--svg .pswp__button--arrow--left:before,
   .pswp--svg .pswp__button--arrow--right:before {
-    background-image: url(../img/lightbox/default-skin.svg); }
+    background-image: url(../../img/lightbox/default-skin.svg); }
   .pswp--svg .pswp__button--arrow--left,
   .pswp--svg .pswp__button--arrow--right {
     background: none; } }
@@ -10019,7 +10019,7 @@ a.pswp__share--download:hover {
   opacity: 1; }
   .pswp__preloader--active .pswp__preloader__icn {
     /* We use .gif in browsers that don't support CSS animation */
-    background: url(../img/lightbox/preloader.gif) 0 0 no-repeat; }
+    background: url(../../img/lightbox/preloader.gif) 0 0 no-repeat; }
 
 .pswp--css_animation .pswp__preloader--active {
   opacity: 1; }
