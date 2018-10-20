@@ -49,8 +49,6 @@ public class Account implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accountUsename")
     private Collection<ProductRating> productRatingCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accountUsename")
-    private Collection<Profile> profileCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "accountUsename")
     private Collection<EventRating> eventRatingCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accountUsename")
     private Collection<Participant> participantCollection;
@@ -59,6 +57,9 @@ public class Account implements Serializable {
     @JoinColumn(name = "roleId", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Role roleId;
+    @JoinColumn(name = "profileId", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Profile profileId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accountUsename")
     private Collection<Order> order1Collection;
 
@@ -117,15 +118,6 @@ public class Account implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Profile> getProfileCollection() {
-        return profileCollection;
-    }
-
-    public void setProfileCollection(Collection<Profile> profileCollection) {
-        this.profileCollection = profileCollection;
-    }
-
-    @XmlTransient
     public Collection<EventRating> getEventRatingCollection() {
         return eventRatingCollection;
     }
@@ -158,6 +150,14 @@ public class Account implements Serializable {
 
     public void setRoleId(Role roleId) {
         this.roleId = roleId;
+    }
+
+    public Profile getProfileId() {
+        return profileId;
+    }
+
+    public void setProfileId(Profile profileId) {
+        this.profileId = profileId;
     }
 
     @XmlTransient

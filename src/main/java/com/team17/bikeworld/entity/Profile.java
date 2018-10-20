@@ -9,17 +9,8 @@ import com.google.gson.annotations.Expose;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import java.util.Collection;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -56,10 +47,8 @@ public class Profile implements Serializable {
     @Expose
     @Column(name = "avatarLink", length = 255)
     private String avatarLink;
-    @Expose
-    @JoinColumn(name = "account_usename", referencedColumnName = "username", nullable = false)
-    @ManyToOne(optional = false)
-    private Account accountUsename;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "profileId")
+    private Collection<Account> accountCollection;
 
     public Profile() {
     }
@@ -122,14 +111,6 @@ public class Profile implements Serializable {
 
     public void setAvatarLink(String avatarLink) {
         this.avatarLink = avatarLink;
-    }
-
-    public Account getAccountUsename() {
-        return accountUsename;
-    }
-
-    public void setAccountUsename(Account accountUsename) {
-        this.accountUsename = accountUsename;
     }
 
     @Override
