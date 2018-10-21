@@ -24,6 +24,10 @@ public class LoginController extends AbstractController{
     @Autowired
     private UserService userService;
 
+    @GetMapping("/auth")
+    public ResponseEntity authCheck() {return ResponseEntity.status(HttpStatus.OK).body("Logged in!");
+    }
+
     @RequestMapping(value={"/", "/login"}, method = RequestMethod.GET)
     public ModelAndView login(){
         ModelAndView modelAndView = new ModelAndView();
