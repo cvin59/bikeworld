@@ -32,25 +32,6 @@ public class ProposalEventController extends AbstractController {
         this.eventService = eventService;
         this.proposalEventService = proposalEventService;
     }
-
-    @GetMapping("/event/propose-event")
-    public ModelAndView viewProposeEvent() {
-        return new ModelAndView("propose-event");
-    }
-
-    @GetMapping("/portal/proposal-event/create-event/{id}")
-    public ModelAndView viewProposalCreateEvent(@PathVariable("id") Integer id){
-        ModelAndView mav = new ModelAndView("not-found");
-        Optional<ProposalEvent> optional = proposalEventService.findProposalEvent(id);
-        if (optional.isPresent()) {
-            ProposalEvent proposalEvent = optional.get();
-            mav.addObject("event", proposalEvent);
-            mav.setViewName("propose-event");
-            return mav;
-        }
-        return mav;
-    }
-
     //Web Service
     @PostMapping(API_PROPOSAL_EVENT)
     public String proposeEvent(@RequestParam String consumeEventString, @RequestParam MultipartFile image) {
@@ -94,14 +75,14 @@ public class ProposalEventController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @PutMapping(API_PROPOSAL_EVENT + "/approve-event/{id}")
+    @GetMapping(API_PROPOSAL_EVENT + "/approve-event/{id}")
     public String changeStatus(@PathVariable("id") Integer id) {
         Response<ProposalEvent> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
         changeStatus(id, response, STATUS_PROPOSALEVENT_APPRROVED);
         return gson.toJson(response);
     }
 
-    @PutMapping(API_PROPOSAL_EVENT + "/not-approve-event/{id}")
+    @GetMapping(API_PROPOSAL_EVENT + "/not-approve-event/{id}")
     public String notApproveEvent(@PathVariable("id") Integer id) {
         Response<ProposalEvent> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
         changeStatus(id, response, STATUS_PROPOSALEVENT_NOT_APPROVED);
