@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author asus
  */
 @Entity
-@Table(name = "proposalevent", catalog = "bikeworld", schema = "")
+@Table(name = "proposalevent")
 @XmlRootElement
 public class ProposalEvent implements Serializable {
 
@@ -59,8 +59,8 @@ public class ProposalEvent implements Serializable {
     private Collection<ProposalEventImage> proposaleventimageCollection;
 
     @Expose
-    @JoinColumn(name = "account_usename", referencedColumnName = "username", nullable = false)
-    @ManyToOne(optional = false)
+    @ManyToOne(targetEntity = Account.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_usename")
     private Account accountUsename;
 
     public ProposalEvent() {
@@ -134,7 +134,6 @@ public class ProposalEvent implements Serializable {
         this.description = description;
     }
 
-    @XmlTransient
     public Collection<ProposalEventImage> getProposaleventimageCollection() {
         return proposaleventimageCollection;
     }
