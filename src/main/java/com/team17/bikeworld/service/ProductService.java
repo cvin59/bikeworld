@@ -17,8 +17,13 @@ public class ProductService {
     }
 
     //thi du
-    public List<Product> findProducts(){
+    public List<Product> findAll(){
         List<Product> products = productRepository.findAll();
+        return products;
+    }
+
+    public List<Product> findProducts(int cateId){
+        List<Product> products = productRepository.findProductByCategoryId(cateId);
         return products;
     }
 }

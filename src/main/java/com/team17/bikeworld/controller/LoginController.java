@@ -46,6 +46,9 @@ public class LoginController extends AbstractController{
 //    }
 
 
+
+
+
     @RequestMapping(value="/registration", method = RequestMethod.GET)
     public ModelAndView registration(){
         ModelAndView modelAndView = new ModelAndView();
