@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.team17.bikeworld.common.CoreConstant.STATUS_EVENT_PROCESSING;
+import static com.team17.bikeworld.common.CoreConstant.*;
 
 @Service
 public class EventService {
@@ -82,6 +82,7 @@ public class EventService {
 
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, event);
             } catch (Exception e) {
+                e.printStackTrace();
                 response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
             }
         }
@@ -123,7 +124,7 @@ public class EventService {
                 Date endRegiDate = format1.parse(consumeEvent.getEndRegiDate());
                 event.setEndRegisterDate(endRegiDate);
 
-                event.setEventStautsid(eventStatusRepository.findById(STATUS_EVENT_PROCESSING).get());
+                event.setEventStautsid(eventStatusRepository.findById(STATUS_EVENT_PENDING).get());
 
                 return event;
             } catch (Exception e) {
