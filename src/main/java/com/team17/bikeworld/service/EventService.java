@@ -23,10 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.team17.bikeworld.common.CoreConstant.*;
 
@@ -59,9 +56,14 @@ public class EventService {
         return events;
     }
 
-    public Optional<Event> findEvent(int id) {
-        Optional<Event> event = eventRepository.findById(id);
-        return event;
+    public Event findEvent(Integer id) {
+        Optional<Event> optionalEvent = eventRepository.findById(id);
+        if (optionalEvent.isPresent()){
+            Event event = optionalEvent.get();
+            Collection<EventImage> events = eventImageRepository.findAllByEventId(event);
+            return event;
+        }
+        return null;
     }
 
     public Response<Event> createEvent(ConsumeEvent consumeEvent, MultipartFile image) {
@@ -69,20 +71,24 @@ public class EventService {
         if (consumeEvent != null) {
             try {
                 //xu ly luu hinh anh
-                String fileName = image.getOriginalFilename() + "_" + consumeEvent.getTitle() + ".jpg";
-                Files.createDirectories(rootLocation);
-                Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+                if (image != null) {
+                    String fileName = image.getOriginalFilename() + "_" + consumeEvent.getTitle() + ".jpg";
+                    Files.createDirectories(rootLocation);
+                    Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 
-                consumeEvent.setImageUrl("/images/" + fileName);
-
+                    consumeEvent.setImageUrl("/images/" + fileName);
+                }
+                //save event
                 Event event = eventRepository.save(initEvent(consumeEvent));
 
-                List<EventImage> eventImages = initEventImages(event, consumeEvent);
-                eventImageRepository.saveAll(eventImages);
-
+                //save event iamge
+                if (image != null) {
+                    List<EventImage> eventImages = initEventImages(event, consumeEvent);
+                    eventImageRepository.saveAll(eventImages);
+                }
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, event);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e.getCause());
                 response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
             }
         }
@@ -104,12 +110,19 @@ public class EventService {
                 Event event = new Event();
 
                 event.setTitle(consumeEvent.getTitle());
-                event.setAddress(consumeEvent.getAddress());
                 event.setDescription(consumeEvent.getDescription());
+
+                //location
+                event.setAddress(consumeEvent.getAddress());
                 event.setLocation(consumeEvent.getLocation());
                 event.setLatitude(consumeEvent.getLatitude());
                 event.setLongitude(consumeEvent.getLongitude());
+
+                //price-fee
                 event.setFee(consumeEvent.getFee());
+                event.setTotalSlots(consumeEvent.getTotalSlots());
+                event.setMaxSlot(consumeEvent.getMaxSlot());
+                event.setMinSlot(consumeEvent.getMinSlot());
 
                 //start date - end date
                 SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -119,12 +132,12 @@ public class EventService {
                 event.setEndDate(endDate);
 
                 //start register date - end register date
-                Date startRegiDate = format1.parse(consumeEvent.getStartRegiDate());
+                Date startRegiDate = format1.parse(consumeEvent.getStartRegisterDate());
                 event.setStartRegisterDate(startRegiDate);
-                Date endRegiDate = format1.parse(consumeEvent.getEndRegiDate());
+                Date endRegiDate = format1.parse(consumeEvent.getEndRegisterDate());
                 event.setEndRegisterDate(endRegiDate);
 
-                event.setEventStautsid(eventStatusRepository.findById(STATUS_EVENT_PENDING).get());
+                event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_PENDING).get());
 
                 return event;
             } catch (Exception e) {
