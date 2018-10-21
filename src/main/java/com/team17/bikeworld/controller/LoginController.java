@@ -35,6 +35,23 @@ public class LoginController extends AbstractController{
         return modelAndView;
     }
 
+//    @PostMapping(value = "/login")
+//    public String login(@RequestBody  Account user, HttpServletRequest request) {
+//        System.out.println(user.toString());
+//        Optional<Account> optional = userService.getUser(user.getUsername(), user.getPassword());
+//        if (optional.isPresent()) {
+//            Account currUser = optional.get();
+//
+//            HttpSession session = request.getSession();
+//
+//            session.setAttribute("USER_NAME", currUser.getUsername());
+//            session.setAttribute("USER_ROLE", currUser.getRoleId().getName());
+//            return gson.toJson( new Response<>(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS));
+//        }
+//
+//        return gson.toJson(new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL));
+//    }
+
     @RequestMapping(value="/registration", method = RequestMethod.GET)
     public ModelAndView registration(){
         ModelAndView modelAndView = new ModelAndView();
