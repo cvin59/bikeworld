@@ -22,10 +22,12 @@ public class CoreConstant {
     public static final int STATUS_PROPOSALEVENT_APPRROVED = 1;
 
     //Event Status
-    public static final int STATUS_EVENT_PROCESSING = 1;
-    public static final int STATUS_EVENT_ONGOING = 2;
-    public static final int STATUS_EVENT_CANCELED= 3;
+    public static final int STATUS_EVENT_PENDING =  1;
+    public static final int STATUS_EVENT_REGISTERING = 2;
+    public static final int STATUS_EVENT_ONGOING = 3;
     public static final int STATUS_EVENT_END = 4;
+    public static final int STATUS_EVENT_CANCELED= 5;
+
 
     //thidu sua file gi do
 }
