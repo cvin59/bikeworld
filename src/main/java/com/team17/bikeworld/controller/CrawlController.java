@@ -1,9 +1,6 @@
 package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
-import com.team17.bikeworld.crawl.crawler.RevzillaCrawler;
-import com.team17.bikeworld.crawl.crawler.YnebikersCrawler;
-import com.team17.bikeworld.entity.Event;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.service.CrawlService;
@@ -27,27 +24,10 @@ public class CrawlController extends AbstractController {
     @PostMapping(API_CRAWL + "/images/{site:.+}")
     public String getAll(@PathVariable String site) {
 
-        int count = 0;
-        try {
-
-            if (site.equals("revzilla")) {
-                if (!RevzillaCrawler.isLock()) {
-                    RevzillaCrawler.instance = new Thread();
-                    RevzillaCrawler.instance.start();
-                    RevzillaCrawler.instance.join();
-                }
-            } else if (site.equals("ynebikers")) {
-                if (!YnebikersCrawler.isLock()) {
-                    YnebikersCrawler.instance = new Thread(new YnebikersCrawler());
-                    YnebikersCrawler.instance.start();
-                    YnebikersCrawler.instance.join();
-                }
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-
-        }
+        Response<Integer> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        Integer count = crawlService.RunCrawl(site);
+        response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, count);
+        return gson.toJson(response);
     }
 
 

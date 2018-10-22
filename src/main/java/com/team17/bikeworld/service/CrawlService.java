@@ -13,7 +13,7 @@ public class CrawlService {
 
     private final CrawlRepository crawlRepository;
     private final CrawlProductImageRepository crawlProductImageRepository;
-    private  final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
 
     public CrawlService(CrawlRepository crawlRepository, CrawlProductImageRepository crawlProductImageRepository, CategoryRepository categoryRepository) {
@@ -22,32 +22,47 @@ public class CrawlService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<CrawlProduct> getAll(){
+    public List<CrawlProduct> getAll() {
         List<CrawlProduct> products = crawlRepository.findAll();
         return products;
     }
 
-    public int RunCrawl(String site){
+    public int runCrawl(String site) {
         int count = 0;
         try {
-
             if (site.equals("revzilla")) {
                 if (!RevzillaCrawler.isLock()) {
                     RevzillaCrawler.instance = new Thread(new RevzillaCrawler(crawlRepository, categoryRepository, crawlProductImageRepository));
                     RevzillaCrawler.instance.start();
                     RevzillaCrawler.instance.join();
+                    count = RevzillaCrawler.getCount();
                 }
             } else if (site.equals("ynebikers")) {
                 if (!YnebikersCrawler.isLock()) {
                     YnebikersCrawler.instance = new Thread(new YnebikersCrawler(crawlRepository, categoryRepository, crawlProductImageRepository));
                     YnebikersCrawler.instance.start();
                     YnebikersCrawler.instance.join();
+                    count = YnebikersCrawler.getCount();
                 }
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally {
-
         }
+        return count;
     }
+
+    public int stopCrawl(String site) {
+        int count = 0;
+        if (site.equals("revzilla")) {
+            if (RevzillaCrawler.instance.isAlive()) {
+                RevzillaCrawler.instance.stop();
+            }
+        } else if (site.equals("ynebikers")) {
+            if (YnebikersCrawler.instance.isAlive()) {
+                YnebikersCrawler.instance.stop();
+            }
+        }
+        return count;
+    }
+
 }
