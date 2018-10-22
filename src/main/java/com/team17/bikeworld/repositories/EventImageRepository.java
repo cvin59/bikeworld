@@ -8,5 +8,5 @@ import java.util.Collection;
 import java.util.List;
 
 public interface EventImageRepository extends JpaRepository<EventImage, Integer> {
-    Collection<EventImage> findAllByEventId(Event eventId);
+    List<EventImage> findAllByEventId(Event eventId);
 }
