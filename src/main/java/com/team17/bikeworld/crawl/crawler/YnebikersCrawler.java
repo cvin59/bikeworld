@@ -34,7 +34,7 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
             boolean isStart = false;
             boolean isEnd = false;
-           
+
             String body = "";
             while (!isEnd && (line = reader.readLine()) != null) {
                 if (line.contains("<div class=\"accordian\">")) {
@@ -79,10 +79,6 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
                 }
             }
 
-//
-//            XPath xPath = XMLUtilities.createXPath();
-//            String exp = "/*";
-//            NodeList cates = (NodeList) xPath.evaluate(exp, document, XPathConstants.NODESET);
             return null;
         } finally {
             if (reader != null) {
@@ -189,6 +185,10 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
     @Override
     public void run() {
-
+        try {
+            getCates();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

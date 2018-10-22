@@ -305,6 +305,12 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
      */
     @Override
     public void run() {
-
+        try {
+            getCates();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
     }
 }
