@@ -21,12 +21,22 @@ public class CrawlController extends AbstractController {
     }
 
 
-    @PostMapping(API_CRAWL + "/images/{site:.+}")
-    public String getAll(@PathVariable String site) {
+    @PostMapping(API_CRAWL + "/run/{site:.+}")
+    public String runCrawl(@PathVariable String site) {
 
         Response<Integer> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
-        Integer count = crawlService.RunCrawl(site);
+        Integer count = crawlService.runCrawl(site);
         response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, count);
+        return gson.toJson(response);
+    }
+
+
+    @PostMapping(API_CRAWL + "/stop/{site:.+}")
+    public String stopCrawl(@PathVariable String site) {
+
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        crawlService.stopCrawl(site);
+        response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
         return gson.toJson(response);
     }
 

@@ -11,6 +11,9 @@ import java.util.List;
 
 public class CrawlService {
 
+
+
+
     private final CrawlRepository crawlRepository;
     private final CrawlProductImageRepository crawlProductImageRepository;
     private final CategoryRepository categoryRepository;
@@ -51,8 +54,7 @@ public class CrawlService {
         return count;
     }
 
-    public int stopCrawl(String site) {
-        int count = 0;
+    public void stopCrawl(String site) {
         if (site.equals("revzilla")) {
             if (RevzillaCrawler.instance.isAlive()) {
                 RevzillaCrawler.instance.stop();
@@ -62,7 +64,6 @@ public class CrawlService {
                 YnebikersCrawler.instance.stop();
             }
         }
-        return count;
     }
 
 }

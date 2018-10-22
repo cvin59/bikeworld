@@ -11,4 +11,7 @@ public interface CrawlProductImageRepository extends JpaRepository<CrawlProductI
 
     @Modifying
     CrawlProductImage addCrawlProductImg(int crawlProId, String imgLink);
+
+    @Modifying
+    int deleteAllBySite(String site);
 }
