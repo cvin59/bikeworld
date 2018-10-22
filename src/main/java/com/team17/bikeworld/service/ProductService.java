@@ -13,7 +13,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -43,17 +45,13 @@ public class ProductService {
         try {
             if (mpro != null) {
 
-                Product product = productRepository.addNew(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongitude(), mpro.getLatitude(), mpro.getAddress(), mpro.getPostDate(), mpro.getBrandId(), mpro.getCategoryId());
+                Product product = productRepository.addNew(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongitude(), mpro.getLatitude(), mpro.getAddress(), new Date(), mpro.getBrandId(), mpro.getCategoryId());
 
 
                 if (image != null) {
-
                     String fileName = image.getOriginalFilename() + "_" + product.getId() + ".jpg";
-
                     Files.createDirectories(rootLocation);
-
                     Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-
                     ProductImage productImage = productImageRepository.addNew(fileName, product);
                 }
             }
@@ -65,5 +63,24 @@ public class ProductService {
     }
 
 
+    public boolean disableProduct(int id) {
+        Integer count = productRepository.disableProduct(id);
+        if (count > 0) {
+            return true;
+        }
+        return false;
+    }
 
+    public List<Product> getByCate(int cateId){
+        List<Product> products = productRepository.findAllByCate(cateId);
+        return products;
+    }
+
+    public List<Product> searchByName(String searchValue){
+        List<Product> products = productRepository.searchByName(searchValue);
+        return products;
+    }
+
+
+    
 }
