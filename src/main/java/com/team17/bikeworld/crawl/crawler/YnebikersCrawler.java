@@ -34,9 +34,7 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
             boolean isStart = false;
             boolean isEnd = false;
-            boolean isMenu = false;
-            boolean isPhuTung = false;
-            int divClose = 1;
+           
             String body = "";
             while (!isEnd && (line = reader.readLine()) != null) {
                 if (line.contains("<div class=\"accordian\">")) {
