@@ -20,4 +20,12 @@ public class ProductController extends AbstractController implements ProductCont
                               String seller) {
 
     }
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@CrossOrigin
+public class ProductController {
+>>>>>>> 42bc2ae27e48f54a1727b3683f59a650b4795bf3
 }
