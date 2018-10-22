@@ -275,7 +275,6 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
             return true;
         } catch (Exception ex) {
 
-            System.out.println("e list");
             Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (reader != null) {
