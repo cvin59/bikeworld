@@ -21,6 +21,7 @@ import java.util.Optional;
 import static com.team17.bikeworld.common.CoreConstant.*;
 
 @RestController
+@CrossOrigin
 public class ProposalEventController extends AbstractController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProposalEventController.class);
 
@@ -64,8 +65,13 @@ public class ProposalEventController extends AbstractController {
         Response<List<ProposalEvent>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<ProposalEvent> proposalEvents = proposalEventService.findProposalEvents();
+            for (ProposalEvent proposalEvent :
+                    proposalEvents) {
+                LOGGER.info(proposalEvent.getAccountUsename().getUsername());
+            }
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, proposalEvents);
         } catch (Exception e) {
+            e.printStackTrace();
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
         }
         return gson.toJson(response);

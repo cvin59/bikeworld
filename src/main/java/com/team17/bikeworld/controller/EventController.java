@@ -25,7 +25,8 @@ import java.util.Optional;
 
 import static com.team17.bikeworld.common.CoreConstant.API_EVENT;
 
-@Controller
+@RestController
+@CrossOrigin
 public class EventController extends AbstractController{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventController.class);
