@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,7 +61,6 @@ public class EventService {
         Optional<Event> optionalEvent = eventRepository.findById(id);
         if (optionalEvent.isPresent()){
             Event event = optionalEvent.get();
-            Collection<EventImage> events = eventImageRepository.findAllByEventId(event);
             return event;
         }
         return null;
@@ -71,13 +71,7 @@ public class EventService {
         if (consumeEvent != null) {
             try {
                 //xu ly luu hinh anh
-                if (image != null) {
-                    String fileName = image.getOriginalFilename() + "_" + consumeEvent.getTitle() + ".jpg";
-                    Files.createDirectories(rootLocation);
-                    Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-
-                    consumeEvent.setImageUrl("/images/" + fileName);
-                }
+                handleImage(consumeEvent, image);
                 //save event
                 Event event = eventRepository.save(initEvent(consumeEvent));
 
@@ -95,6 +89,43 @@ public class EventService {
         return response;
     }
 
+    public Response<Event>  updateEvent(ConsumeEvent consumeEvent, MultipartFile image) {
+        Response<Event> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        if (consumeEvent != null) {
+            try {
+                //xu ly luu hinh anh
+                handleImage(consumeEvent, image);
+                //save event
+                Optional<Event> optional = eventRepository.findById(consumeEvent.getId());
+                if (optional.isPresent()) {
+                    Event event = optional.get();
+                    eventRepository.save(updateEvent(event, consumeEvent));
+                    //save event iamge
+                    if (image != null) {
+                        List<EventImage> eventImages = initEventImages(event, consumeEvent);
+                        eventImageRepository.deleteByEventId(event);
+                        eventImageRepository.saveAll(eventImages);
+                    }
+                    response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, event);
+                }
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e.getCause());
+                response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+            }
+        }
+        return response;
+    }
+
+    private void handleImage(ConsumeEvent consumeEvent, MultipartFile image) throws IOException {
+        if (image != null) {
+            String fileName = image.getOriginalFilename() + "_" + consumeEvent.getTitle() + ".jpg";
+            Files.createDirectories(rootLocation);
+            Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+
+            consumeEvent.setImageUrl("/images/" + fileName);
+        }
+    }
+
     private List<EventImage> initEventImages(Event event, ConsumeEvent consumeEvent) {
         List<EventImage> eventImages = new LinkedList<>();
         EventImage eventImage = new EventImage();
@@ -108,7 +139,7 @@ public class EventService {
         if (consumeEvent != null) {
             try {
                 Event event = new Event();
-
+                event.setId(consumeEvent.getId());
                 event.setTitle(consumeEvent.getTitle());
                 event.setDescription(consumeEvent.getDescription());
 
@@ -138,6 +169,48 @@ public class EventService {
                 event.setEndRegisterDate(endRegiDate);
 
                 event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_PENDING).get());
+
+                return event;
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage());
+            }
+
+        }
+        return null;
+    }
+
+    private Event updateEvent(Event event, ConsumeEvent consumeEvent) {
+        if (consumeEvent != null) {
+            try {
+                event.setTitle(consumeEvent.getTitle());
+                event.setDescription(consumeEvent.getDescription());
+
+                //location
+                event.setAddress(consumeEvent.getAddress());
+                event.setLocation(consumeEvent.getLocation());
+                event.setLatitude(consumeEvent.getLatitude());
+                event.setLongitude(consumeEvent.getLongitude());
+
+                //price-fee
+                event.setFee(consumeEvent.getFee());
+                event.setTotalSlots(consumeEvent.getTotalSlots());
+                event.setMaxSlot(consumeEvent.getMaxSlot());
+                event.setMinSlot(consumeEvent.getMinSlot());
+
+                //start date - end date
+                SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                Date startDate = format1.parse(consumeEvent.getStartDate());
+                event.setStartDate(startDate);
+                Date endDate = format1.parse(consumeEvent.getEndDate());
+                event.setEndDate(endDate);
+
+                //start register date - end register date
+                Date startRegiDate = format1.parse(consumeEvent.getStartRegisterDate());
+                event.setStartRegisterDate(startRegiDate);
+                Date endRegiDate = format1.parse(consumeEvent.getEndRegisterDate());
+                event.setEndRegisterDate(endRegiDate);
+
+//                event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_PENDING).get());
 
                 return event;
             } catch (Exception e) {

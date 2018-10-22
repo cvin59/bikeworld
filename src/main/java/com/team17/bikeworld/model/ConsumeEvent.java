@@ -3,6 +3,7 @@ package com.team17.bikeworld.model;
 import com.google.gson.annotations.Expose;
 
 public class ConsumeEvent {
+    @Expose
     private int id;
     @Expose
     private String title;
