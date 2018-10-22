@@ -1,5 +1,9 @@
 package com.team17.bikeworld.crawl.crawler;
 
+import com.team17.bikeworld.repositories.CategoryRepository;
+import com.team17.bikeworld.repositories.CrawlProductImageRepository;
+import com.team17.bikeworld.repositories.CrawlRepository;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,6 +24,15 @@ import javax.xml.transform.TransformerConfigurationException;
 
 public class BaseCrawler {
 
+    protected final CrawlRepository crawlRepository;
+    protected final CategoryRepository categoryRepository;
+    protected final CrawlProductImageRepository crawlProductImageRepository;
+
+    public BaseCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository) {
+        this.crawlRepository = crawlRepository;
+        this.categoryRepository = categoryRepository;
+        this.crawlProductImageRepository = crawlProductImageRepository;
+    }
 
     protected BufferedReader getBufferedReaderForURL(String urlString) throws MalformedURLException, IOException {
         URL url = new URL(urlString);
@@ -113,7 +126,8 @@ public class BaseCrawler {
                                 bareStringBuilder.append(charRight);
                                 j++;
                                 charRight = document.charAt(i + j);
-                            } while (('a' <= charRight && charRight <= 'z') || ('A' <= charRight && charRight <= 'Z') || ('0' <= charRight && charRight <= '9'));
+                            }
+                            while (('a' <= charRight && charRight <= 'z') || ('A' <= charRight && charRight <= 'Z') || ('0' <= charRight && charRight <= '9'));
                             builder.append(document.substring(lastplace, i)).append("=\"").append(bareStringBuilder.toString()).append("\" ");
                             lastplace = i + j;
                             i = i + j;
@@ -146,4 +160,7 @@ public class BaseCrawler {
         XMLEventReader reader = inputFactory.createXMLEventReader(inputStream);
         return reader;
     }
+
+
+
 }
