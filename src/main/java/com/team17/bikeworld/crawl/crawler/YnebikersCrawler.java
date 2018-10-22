@@ -2,6 +2,10 @@ package com.team17.bikeworld.crawl.crawler;
 
 import com.team17.bikeworld.crawl.dict.CateDictObj;
 import com.team17.bikeworld.crawl.dict.CateObj;
+import com.team17.bikeworld.entity.Category;
+import com.team17.bikeworld.repositories.CategoryRepository;
+import com.team17.bikeworld.repositories.CrawlProductImageRepository;
+import com.team17.bikeworld.repositories.CrawlRepository;
 import org.w3c.dom.NodeList;
 
 import java.io.BufferedReader;
@@ -11,14 +15,24 @@ import java.util.logging.Logger;
 
 public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
+    public YnebikersCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository) {
+        super(crawlRepository, categoryRepository, crawlProductImageRepository);
+    }
 
     public static final String baseLink = "https://ynebikers.com.my";
     private static boolean lock = false;
     public static Thread instance;
+    private static int count;
 
+    public static boolean isLock() {
+        return lock;
+    }
 
+    public static int getCount() {
+        return count;
+    }
 
-    public NodeList getCates() throws IOException{
+    public NodeList getCates() throws IOException {
 
         BufferedReader reader = null;
         try {
@@ -27,9 +41,7 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
             boolean isStart = false;
             boolean isEnd = false;
-            boolean isMenu = false;
-            boolean isPhuTung = false;
-            int divClose = 1;
+
             String body = "";
             while (!isEnd && (line = reader.readLine()) != null) {
                 if (line.contains("<div class=\"accordian\">")) {
@@ -74,10 +86,6 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
                 }
             }
 
-//
-//            XPath xPath = XMLUtilities.createXPath();
-//            String exp = "/*";
-//            NodeList cates = (NodeList) xPath.evaluate(exp, document, XPathConstants.NODESET);
             return null;
         } finally {
             if (reader != null) {
@@ -87,6 +95,8 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
     }
 
     public boolean getItemList(String url, CateObj cate) {
+
+        Category cateEntity = categoryRepository.getByName(cate.getMeaning());
         BufferedReader reader = null;
         try {
             reader = getBufferedReaderForURL(url);
@@ -152,12 +162,13 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
                     if (CateDictObj.checkName(cate, name.toLowerCase())) {
 //                        System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                        System.out.println("");
-                        System.out.println("name  - " + name);
-                        System.out.println("link  - " + link);
-                        System.out.println("img   - " + img);
-                        System.out.println("price - " + price);
-                        System.out.println("");
+//                        System.out.println("");
+//                        System.out.println("name  - " + name);
+//                        System.out.println("link  - " + link);
+//                        System.out.println("img   - " + img);
+//                        System.out.println("price - " + price);
+//                        System.out.println("");
+                        crawlRepository.addCrawlProduct(baseLink, cateEntity, name, link, price);
                     }
                 } else {
                     next = false;
@@ -181,6 +192,10 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
     @Override
     public void run() {
-
+        try {
+            getCates();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

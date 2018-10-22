@@ -11,6 +11,8 @@ import javax.xml.xpath.XPathExpressionException;
 
 import com.team17.bikeworld.crawl.dict.CateDictObj;
 import com.team17.bikeworld.crawl.dict.CateObj;
+import com.team17.bikeworld.entity.Category;
+import com.team17.bikeworld.repositories.*;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -18,10 +20,25 @@ import org.w3c.dom.NodeList;
 import java.io.BufferedReader;
 
 public class RevzillaCrawler extends BaseCrawler implements Runnable {
+
+    public RevzillaCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository) {
+        super(crawlRepository, categoryRepository, crawlProductImageRepository);
+    }
+
     public static final String baseLink = "https://www.revzilla.com";
 
     private static boolean lock = false;
+    private  static  int count;
     public static Thread instance;
+
+
+    public static boolean isLock() {
+        return lock;
+    }
+
+    public static int getCount() {
+        return count;
+    }
 
     public NodeList getCates() throws IOException, XPathExpressionException {
         BufferedReader reader = null;
@@ -74,11 +91,6 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
                     next = false;
                 }
             }
-
-//
-//            XPath xPath = XMLUtilities.createXPath();
-//            String exp = "/*";
-//            NodeList cates = (NodeList) xPath.evaluate(exp, document, XPathConstants.NODESET);
             return null;
         } finally {
             if (reader != null) {
@@ -166,9 +178,13 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
     }
 
     public boolean getItemList(String url, CateObj cate) {
+
+
+        Category cateEntity = categoryRepository.getByName(cate.getMeaning());
+
         BufferedReader reader = null;
         try {
-            Connection connection = DBUtil.getConnection();
+
             reader = getBufferedReaderForURL(url);
             String line = "";
             String body = "";
@@ -253,13 +269,15 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
                     itemPoint = endApos;
 
 //                    String desc = getItemDetail(baseLink + link);
-                    System.out.println("");
-                    System.out.println("name  - " + name);
-                    System.out.println("link  - " + link);
-                    System.out.println("img   - " + img);
-                    System.out.println("price - " + priceUnit + price);
-                    System.out.println("");
-                    productDao.replaceProduct(connection, baseLink, cate.getMeaning(), name, link, img, price);
+//                    System.out.println("");
+//                    System.out.println("name  - " + name);
+//                    System.out.println("link  - " + link);
+//                    System.out.println("img   - " + img);
+//                    System.out.println("price - " + priceUnit + price);
+//                    System.out.println("");
+//                    productDao.replaceProduct(connection, baseLink, cate.getMeaning(), name, link, img, price);
+
+                    crawlRepository.addCrawlProduct(baseLink, cateEntity, name, link, price);
                 } else {
                     next = false;
                 }
@@ -267,7 +285,6 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
             return true;
         } catch (Exception ex) {
 
-            System.out.println("e list");
             Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (reader != null) {
@@ -282,21 +299,7 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
     }
 
 
-    public static boolean replaceProduct(Connection connection, String site, String cate, String name, String link, String img, String price) {
-        try {
-            Statement stmt = connection.createStatement();
 
-
-            String sql = "INSERT INTO `" + DBNAME + "`.`product` ( `name`, `site`, `link`, `img`, `price`, `cate`) "
-                    + "VALUES ('" + name + "', '" + site + "', '" + link + "', '" + img + "', '" + price + "', '" + cate + "')";
-
-            stmt.executeUpdate(sql);
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(productDao.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
 
     /**
      * When an object implementing interface <code>Runnable</code> is used
@@ -311,6 +314,12 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
      */
     @Override
     public void run() {
-
+        try {
+            getCates();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
     }
 }
