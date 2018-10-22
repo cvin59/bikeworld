@@ -1,5 +1,6 @@
 package com.team17.bikeworld.controller;
 
+<<<<<<< HEAD
 import com.team17.bikeworld.controllerInterface.ProductControllerInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.team17.bikeworld.serviceInterface.ProductServiceInterface;
@@ -20,6 +21,7 @@ public class ProductController extends AbstractController implements ProductCont
                               String seller) {
 
     }
+=======
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
