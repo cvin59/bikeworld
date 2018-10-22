@@ -29,4 +29,12 @@ public interface ProductRepository<Pro> extends JpaRepository<Product, Integer> 
                    Date postDate,
                    Brand brandId,
                    Category categoryId);
+
+    @Modifying
+    @Query(value = "UPDATE `product` SET status = '1' WHERE id = ?1", nativeQuery = true)
+    Integer disableProduct(int id);
+
+    List<Product> findAllByCate(int cateId);
+
+    List<Product> searchByName(String searchValue);
 }
