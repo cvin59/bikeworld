@@ -1,22 +1,53 @@
 package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
+import com.team17.bikeworld.crawl.crawler.RevzillaCrawler;
+import com.team17.bikeworld.crawl.crawler.YnebikersCrawler;
 import com.team17.bikeworld.entity.Event;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.service.CrawlService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
 import static com.team17.bikeworld.common.CoreConstant.API_CRAWL;
 
-public class CrawlController extends AbstractController  {
+public class CrawlController extends AbstractController {
 
     private final CrawlService crawlService;
 
     public CrawlController(CrawlService crawlService) {
         this.crawlService = crawlService;
+    }
+
+
+    @PostMapping(API_CRAWL + "/images/{site:.+}")
+    public String getAll(@PathVariable String site) {
+
+        int count = 0;
+        try {
+
+            if (site.equals("revzilla")) {
+                if (!RevzillaCrawler.isLock()) {
+                    RevzillaCrawler.instance = new Thread();
+                    RevzillaCrawler.instance.start();
+                    RevzillaCrawler.instance.join();
+                }
+            } else if (site.equals("ynebikers")) {
+                if (!YnebikersCrawler.isLock()) {
+                    YnebikersCrawler.instance = new Thread(new YnebikersCrawler());
+                    YnebikersCrawler.instance.start();
+                    YnebikersCrawler.instance.join();
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+
+        }
     }
 
 

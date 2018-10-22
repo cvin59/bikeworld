@@ -28,6 +28,9 @@ public class BaseCrawler {
     protected final CategoryRepository categoryRepository;
     protected final CrawlProductImageRepository crawlProductImageRepository;
 
+
+
+
     public BaseCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository) {
         this.crawlRepository = crawlRepository;
         this.categoryRepository = categoryRepository;

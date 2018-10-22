@@ -28,7 +28,17 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
     public static final String baseLink = "https://www.revzilla.com";
 
     private static boolean lock = false;
+    private  static  int count;
     public static Thread instance;
+
+
+    public static boolean isLock() {
+        return lock;
+    }
+
+    public static int getCount() {
+        return count;
+    }
 
     public NodeList getCates() throws IOException, XPathExpressionException {
         BufferedReader reader = null;

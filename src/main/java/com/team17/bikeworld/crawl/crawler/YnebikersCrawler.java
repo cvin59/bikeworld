@@ -22,10 +22,17 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
     public static final String baseLink = "https://ynebikers.com.my";
     private static boolean lock = false;
     public static Thread instance;
+    private static int count;
 
+    public static boolean isLock() {
+        return lock;
+    }
 
+    public static int getCount() {
+        return count;
+    }
 
-    public NodeList getCates() throws IOException{
+    public NodeList getCates() throws IOException {
 
         BufferedReader reader = null;
         try {
