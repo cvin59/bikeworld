@@ -80,6 +80,15 @@ public class Event implements Serializable {
     @Column(name = "fee", precision = 22)
     private Double fee;
     @Expose
+    @Column(name = "totalSlots", precision = 22)
+    private Integer totalSlots;
+    @Expose
+    @Column(name = "minSlot", precision = 22)
+    private Double minSlot;
+    @Expose
+    @Column(name = "maxSlot", precision = 22)
+    private Double maxSlot;
+    @Expose
     @Column(name = "totalRatesPoint", precision = 22)
     private Double totalRatesPoint;
     @Expose
@@ -192,6 +201,30 @@ public class Event implements Serializable {
 
     public void setFee(Double fee) {
         this.fee = fee;
+    }
+
+    public Integer getTotalSlots() {
+        return totalSlots;
+    }
+
+    public void setTotalSlots(Integer totalSlots) {
+        this.totalSlots = totalSlots;
+    }
+
+    public Double getMinSlot() {
+        return minSlot;
+    }
+
+    public void setMinSlot(Double minSlot) {
+        this.minSlot = minSlot;
+    }
+
+    public Double getMaxSlot() {
+        return maxSlot;
+    }
+
+    public void setMaxSlot(Double maxSlot) {
+        this.maxSlot = maxSlot;
     }
 
     public Double getTotalRatesPoint() {

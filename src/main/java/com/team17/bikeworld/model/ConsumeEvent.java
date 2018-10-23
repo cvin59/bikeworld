@@ -3,6 +3,7 @@ package com.team17.bikeworld.model;
 import com.google.gson.annotations.Expose;
 
 public class ConsumeEvent {
+    @Expose
     private int id;
     @Expose
     private String title;
@@ -15,9 +16,9 @@ public class ConsumeEvent {
     @Expose
     private String endDate;
     @Expose
-    private String startRegiDate;
+    private String startRegisterDate;
     @Expose
-    private String endRegiDate;
+    private String endRegisterDate;
     @Expose
     private String description;
     @Expose
@@ -28,6 +29,12 @@ public class ConsumeEvent {
     private int status;
     @Expose
     private double fee;
+    @Expose
+    private Integer totalSlots;
+    @Expose
+    private Double minSlot;
+    @Expose
+    private Double maxSlot;
     @Expose
     private String imageUrl;
 
@@ -82,20 +89,20 @@ public class ConsumeEvent {
         this.endDate = endDate;
     }
 
-    public String getStartRegiDate() {
-        return startRegiDate;
+    public String getStartRegisterDate() {
+        return startRegisterDate;
     }
 
-    public void setStartRegiDate(String startRegiDate) {
-        this.startRegiDate = startRegiDate;
+    public void setStartRegisterDate(String startRegisterDate) {
+        this.startRegisterDate = startRegisterDate;
     }
 
-    public String getEndRegiDate() {
-        return endRegiDate;
+    public String getEndRegisterDate() {
+        return endRegisterDate;
     }
 
-    public void setEndRegiDate(String endRegiDate) {
-        this.endRegiDate = endRegiDate;
+    public void setEndRegisterDate(String endRegisterDate) {
+        this.endRegisterDate = endRegisterDate;
     }
 
     public String getDescription() {
@@ -144,5 +151,29 @@ public class ConsumeEvent {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public Integer getTotalSlots() {
+        return totalSlots;
+    }
+
+    public void setTotalSlots(Integer totalSlots) {
+        this.totalSlots = totalSlots;
+    }
+
+    public Double getMinSlot() {
+        return minSlot;
+    }
+
+    public void setMinSlot(Double minSlot) {
+        this.minSlot = minSlot;
+    }
+
+    public Double getMaxSlot() {
+        return maxSlot;
+    }
+
+    public void setMaxSlot(Double maxSlot) {
+        this.maxSlot = maxSlot;
     }
 }

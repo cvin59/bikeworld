@@ -1,21 +1,18 @@
 package com.team17.bikeworld.controller;
 
-import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.Account;
-import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import java.util.Collection;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-import java.util.Optional;
+import static com.team17.bikeworld.common.CoreConstant.*;
 
 @RestController
 @CrossOrigin
@@ -25,21 +22,16 @@ public class LoginController extends AbstractController{
     private UserService userService;
 
     @GetMapping("/auth")
-    public ResponseEntity authCheck() {return ResponseEntity.status(HttpStatus.OK).body("Logged in!");
-    }
-
-    @RequestMapping(value={"/", "/login"}, method = RequestMethod.GET)
-    public ModelAndView login(){
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("login");
-        return modelAndView;
-    }
-
-    @RequestMapping(value="/registration", method = RequestMethod.GET)
-    public ModelAndView registration(){
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("registration");
-        return modelAndView;
+    public ResponseEntity authCheck() {
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        boolean hasAuthorityAdmin = authorities.contains(new SimpleGrantedAuthority(ADMIN));
+        boolean hasAuthorityMember = authorities.contains(new SimpleGrantedAuthority(MEMBER));
+        if (hasAuthorityAdmin) {
+            return ResponseEntity.status(HttpStatus.OK).body("Logged in!");
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
     }
 
     @PostMapping("/signup")
@@ -49,13 +41,5 @@ public class LoginController extends AbstractController{
             return ResponseEntity.status(HttpStatus.OK).body("Signed in");
         }
         return ResponseEntity.status(HttpStatus.OK).body("This username has been used");
-    }
-
-    @RequestMapping(value="/portal", method = RequestMethod.GET)
-    public ModelAndView home(){
-        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.addObject("userName", "Welcome " + user.getUsername());
-        modelAndView.setViewName("portal-index");
-        return modelAndView;
     }
 }
