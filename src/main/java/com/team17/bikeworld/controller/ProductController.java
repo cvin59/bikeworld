@@ -6,6 +6,7 @@ import com.team17.bikeworld.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import com.team17.bikeworld.entity.*;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -30,4 +31,18 @@ public class ProductController extends AbstractController {
         }
         return gson.toJson(response);
     }
+
+    @GetMapping(CoreConstant.API_PRODUCT + "/search/{id}/{name}")
+    public String searchTradeItem(@PathVariable int id, @PathVariable String name) {
+
+        Response<List<Product>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<Product> pros = productService.findProductByName( name);
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, pros);
+        } catch (Exception e) {
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
 }

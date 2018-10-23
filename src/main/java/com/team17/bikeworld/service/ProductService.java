@@ -1,5 +1,6 @@
 package com.team17.bikeworld.service;
 
+import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.Product;
 import com.team17.bikeworld.entity.ProductImage;
 import com.team17.bikeworld.model.ProductModel;
@@ -36,7 +37,7 @@ public class ProductService {
         return products;
     }
 
-    public List<Product> findProductByCate(int cateId) {
+    public List<Product> findProductByCate(Category cateId) {
         List<Product> products = productRepository.findProductByCategoryId(cateId);
         return products;
     }
@@ -71,6 +72,14 @@ public class ProductService {
         return false;
     }
 
+    public boolean activateTradeItem(int id) {
+        Integer count = productRepository.activateTradeItem(id);
+        if (count > 0) {
+            return true;
+        }
+        return false;
+    }
+
     public List<Product> getByCate(int cateId){
         List<Product> products = productRepository.findAllByCate(cateId);
         return products;
@@ -87,7 +96,12 @@ public class ProductService {
         if (count > 0) {
             return true;
         }
+
         return false;
     }
 
+
+    public List<Product> findProductByName(String name) {
+        return null;
+    }
 }
