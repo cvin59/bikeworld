@@ -81,6 +81,13 @@ public class ProductService {
         return products;
     }
 
+    public boolean editProduct(ProductModel proMdl) {
 
-    
+        Integer count = productRepository.disableProduct(id);
+        if (count > 0) {
+            return true;
+        }
+        return false;
+    }
+
 }

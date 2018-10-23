@@ -37,4 +37,6 @@ public interface ProductRepository<Pro> extends JpaRepository<Product, Integer> 
     List<Product> findAllByCate(int cateId);
 
     List<Product> searchByName(String searchValue);
+
+    Integer editProduct();
 }
