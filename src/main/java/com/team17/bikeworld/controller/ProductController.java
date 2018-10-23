@@ -38,22 +38,6 @@ public class ProductController extends AbstractController implements ProductCont
 
     }
 
-<<<<<<< HEAD
-@RestController
-@CrossOrigin
-public class ProductController {
->>>>>>> 42bc2ae27e48f54a1727b3683f59a650b4795bf3
-=======
-import java.util.List;
-
-@Controller
-public class ProductController extends AbstractController {
-
-    private final ProductService productService;
-
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
 
     @GetMapping(CoreConstant.API_PRODUCT + "/viewall")
     public String viewAllProduct() {
