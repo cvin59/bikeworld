@@ -38,5 +38,13 @@ public interface ProductRepository<Pro> extends JpaRepository<Product, Integer> 
 
     List<Product> searchByName(String searchValue);
 
-    Integer editProduct();
+    @Modifying
+    Integer editProduct(String name, Double price,
+                        String description,
+                        Double longitude,
+                        Double latitude,
+                        String address,
+                        Date postDate,
+                        Brand brandId,
+                        Category categoryId);
 }

@@ -81,9 +81,9 @@ public class ProductService {
         return products;
     }
 
-    public boolean editProduct(ProductModel proMdl) {
+    public boolean editProduct(ProductModel mpro) {
 
-        Integer count = productRepository.disableProduct(id);
+        Integer count = productRepository.editProduct(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongitude(), mpro.getLatitude(), mpro.getAddress(), new Date(), mpro.getBrandId(), mpro.getCategoryId());
         if (count > 0) {
             return true;
         }
