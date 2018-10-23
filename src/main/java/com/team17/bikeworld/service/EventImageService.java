@@ -16,7 +16,7 @@ public class EventImageService {
         this.eventImageRepository = eventImageRepository;
     }
 
-    public List<EventImage> getEventImageByEventId(Event event) {
-        return eventImageRepository.findAllByEventId(event);
+    public EventImage getEventImageByEventId(Event event) {
+        return eventImageRepository.findByEventId(event);
     }
 }

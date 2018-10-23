@@ -5,12 +5,11 @@ public class CoreConstant {
     public static final String API_EVENT = "/api/event";
     public static final String API_PROPOSAL_EVENT = "/api/proposal-event";
     public static final String API_PRODUCT = "/api/product";
-// HEAD
     public static final String API_CRAWL = "/api/crawl";
-
     public static final String API_EVENT_IMAGE = "/api/event-image";
-
-// master
+    public static final String API_CRAWL = "/api/crawl";
+    public static final String API_EVENT_IMAGE = "/api/event-image";
+  
     //API Response code
     public static final int STATUS_CODE_SERVER_ERROR = -1;
     public static final int STATUS_CODE_FAIL = 0;
@@ -34,5 +33,7 @@ public class CoreConstant {
     public static final int STATUS_EVENT_CANCELED= 5;
 
 
-    //thidu sua file gi do
+    //Role
+    public static final String MEMBER =  "MEMBER";
+    public static final String ADMIN =  "ADMIN";
 }

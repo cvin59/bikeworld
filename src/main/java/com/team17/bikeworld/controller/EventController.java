@@ -102,10 +102,12 @@ public class EventController extends AbstractController{
         return gson.toJson(response);
     }
 
-    //TODO: chưa làm
     @PutMapping(API_EVENT + "/{id}")
-    public ResponseEntity<ConsumeProposalEvent> createEvent(@RequestBody ConsumeProposalEvent consumeProposalEvent){
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+    public String updateEvent(@RequestParam String consumeEventString, MultipartFile image) {
+        LOGGER.info(consumeEventString);
+        ConsumeEvent consumeEvent = gson.fromJson(consumeEventString, ConsumeEvent.class);
+        Response<Event> response = eventService.updateEvent(consumeEvent, image);
+        return gson.toJson(response);
     }
 
     ///TODO: chưa làm
