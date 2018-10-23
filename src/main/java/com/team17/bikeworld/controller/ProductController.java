@@ -37,4 +37,29 @@ import com.team17.bikeworld.entity.*;
 @CrossOrigin
 public class ProductController {
 >>>>>>> 42bc2ae27e48f54a1727b3683f59a650b4795bf3
+=======
+import java.util.List;
+
+@Controller
+public class ProductController extends AbstractController {
+
+    private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
+
+    @GetMapping(CoreConstant.API_PRODUCT + "/viewall")
+    public String viewAllProduct() {
+
+        Response<List<Product>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<Product> pros = productService.findAll();
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, pros);
+        } catch (Exception e) {
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+>>>>>>> master
 }
