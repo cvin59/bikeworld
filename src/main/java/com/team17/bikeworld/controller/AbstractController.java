@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class AbstractController {
+public class AbstractController  {
 
     protected  final Gson gson;
 

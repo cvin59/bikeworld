@@ -10,7 +10,11 @@ import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
+<<<<<<< HEAD
+    Category getByName(String name);
+=======
 
 
     Optional<Category> findByName(String name);
+>>>>>>> master
 }

@@ -10,6 +10,7 @@ public class CoreConstant {
     public static final String API_PRODUCT = "/api/product";
     public static final String API_CRAWL = "/api/crawl";
     public static final String API_EVENT_IMAGE = "/api/event-image";
+
   
     //API Response code
     public static final int STATUS_CODE_SERVER_ERROR = -1;
@@ -33,6 +34,8 @@ public class CoreConstant {
     public static final int STATUS_EVENT_END = 4;
     public static final int STATUS_EVENT_CANCELED= 5;
 
+    //Product Status
+    public static final int STATUS_PRODUCT_AVAILABLE = 1;
 
     //Role
     public static final String MEMBER =  "MEMBER";

@@ -1,42 +1,124 @@
 package com.team17.bikeworld.model;
 
+import com.google.gson.annotations.Expose;
 import com.team17.bikeworld.entity.Brand;
 import com.team17.bikeworld.entity.Category;
 
 import java.util.Date;
+import java.util.List;
 
 public class ProductModel {
 
+<<<<<<< HEAD
+    @Expose
+    private int id;
+    @Expose
+=======
     private  Integer id;
+>>>>>>> master
     private String name;
-    private Double price;
+    @Expose
     private String description;
-    private Double longitude;
-    private Double latitude;
+    @Expose
+    private double price;
+    @Expose
+    private String longtitude;
+    @Expose
+    private String latitude;
+    @Expose
+    private String seller;
+    @Expose
     private String address;
+    @Expose
     private Date postDate;
+<<<<<<< HEAD
+    @Expose
+    private double totalRatePoint;
+    @Expose
+    private int totalRater;
+    @Expose
+    private int status;
+    @Expose
+    private int category;
+    @Expose
+    private int brand;
+    @Expose
+    private List<String> images;
+
+    public ProductModel() {
+    }
+
+    public ProductModel(String name, String description, double price, String longtitude, String latitude, String seller, String address, int category, int brand) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.longtitude = longtitude;
+        this.latitude = latitude;
+        this.seller = seller;
+        this.address = address;
+        this.category = category;
+        this.brand = brand;
+    }
+
+    public ProductModel(String name, String description, double price, String longtitude, String latitude, String seller, String address, Date postDate, double totalRatePoint, int totalRater, int status, int category, int brand) {
+=======
     private Brand brandId;
     private Category categoryId;
     private String username;
 
     public ProductModel(Integer id, String name, Double price, String description, Double longitude, Double latitude, String address, Date postDate, Brand brandId, Category categoryId) {
         this.id = id;
+>>>>>>> master
         this.name = name;
-        this.price = price;
         this.description = description;
-        this.longitude = longitude;
+        this.price = price;
+        this.longtitude = longtitude;
         this.latitude = latitude;
+        this.seller = seller;
         this.address = address;
         this.postDate = postDate;
-        this.brandId = brandId;
-        this.categoryId = categoryId;
+        this.totalRatePoint = totalRatePoint;
+        this.totalRater = totalRater;
+        this.status = status;
+        this.category = category;
+        this.brand = brand;
     }
 
+    public ProductModel(int id, String name, String description, double price, String longtitude, String latitude, String seller, String address, Date postDate, double totalRatePoint, int totalRater, int status, int category, int brand) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.longtitude = longtitude;
+        this.latitude = latitude;
+        this.seller = seller;
+        this.address = address;
+        this.postDate = postDate;
+        this.totalRatePoint = totalRatePoint;
+        this.totalRater = totalRater;
+        this.status = status;
+        this.category = category;
+        this.brand = brand;
+    }
+
+<<<<<<< HEAD
+    public int getId() {
+        return id;
+=======
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+>>>>>>> master
+    }
+
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -48,14 +130,6 @@ public class ProductModel {
         this.name = name;
     }
 
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -64,20 +138,36 @@ public class ProductModel {
         this.description = description;
     }
 
-    public Double getLongitude() {
-        return longitude;
+    public double getPrice() {
+        return price;
     }
 
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
-    public Double getLatitude() {
+    public String getLongtitude() {
+        return longtitude;
+    }
+
+    public void setLongtitude(String longtitude) {
+        this.longtitude = longtitude;
+    }
+
+    public String getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
+    }
+
+    public String getSeller() {
+        return seller;
+    }
+
+    public void setSeller(String seller) {
+        this.seller = seller;
     }
 
     public String getAddress() {
@@ -96,19 +186,51 @@ public class ProductModel {
         this.postDate = postDate;
     }
 
-    public Brand getBrandId() {
-        return brandId;
+    public double getTotalRatePoint() {
+        return totalRatePoint;
     }
 
-    public void setBrandId(Brand brandId) {
-        this.brandId = brandId;
+    public void setTotalRatePoint(double totalRatePoint) {
+        this.totalRatePoint = totalRatePoint;
     }
 
-    public Category getCategoryId() {
-        return categoryId;
+    public int getTotalRater() {
+        return totalRater;
     }
 
-    public void setCategoryId(Category categoryId) {
-        this.categoryId = categoryId;
+    public void setTotalRater(int totalRater) {
+        this.totalRater = totalRater;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getCategory() {
+        return category;
+    }
+
+    public void setCategory(int category) {
+        this.category = category;
+    }
+
+    public int getBrand() {
+        return brand;
+    }
+
+    public void setBrand(int brand) {
+        this.brand = brand;
+    }
+
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 }
