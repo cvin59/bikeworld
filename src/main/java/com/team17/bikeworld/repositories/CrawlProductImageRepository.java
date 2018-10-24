@@ -12,10 +12,9 @@ import java.util.List;
 public interface CrawlProductImageRepository extends JpaRepository<CrawlProductImage, Integer> {
 
 //    @Modifying
-<<<<<<< HEAD
-=======
+
 //
->>>>>>> master
+
 //    CrawlProductImage addCrawlProductImg(int crawlProId, String imgLink);
 //
 //    @Modifying

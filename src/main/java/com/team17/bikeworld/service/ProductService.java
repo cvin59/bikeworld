@@ -1,10 +1,7 @@
 package com.team17.bikeworld.service;
 
-<<<<<<< HEAD
 import com.team17.bikeworld.common.CoreConstant;
-=======
 import com.team17.bikeworld.entity.Category;
->>>>>>> master
 import com.team17.bikeworld.entity.Product;
 import com.team17.bikeworld.entity.ProductImage;
 import com.team17.bikeworld.model.ProductModel;
@@ -48,82 +45,11 @@ public class ProductService {
         return products;
     }
 
-<<<<<<< HEAD
-//    public List<Product> findProductByCate(int cateId) {
-//        List<Product> products = productRepository.findProductByCategoryId(cateId);
-//        return products;
-//    }
-
-    public boolean addProduct(ProductModel mpro, MultipartFile image) {
-//        try {
-//            if (mpro != null) {
-//
-//                Product product = productRepository.addNew(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongitude(), mpro.getLatitude(), mpro.getAddress(), new Date(), mpro.getBrandId(), mpro.getCategoryId());
-//
-//
-//                if (image != null) {
-//                    String fileName = image.getOriginalFilename() + "_" + product.getId() + ".jpg";
-//                    Files.createDirectories(rootLocation);
-//                    Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-//                    ProductImage productImage = productImageRepository.addNew(fileName, product);
-//                }
-//            }
-//            return true;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-=======
-    public List<Product> findProductByCate(Category cateId) {
-        List<Product> products = productRepository.findProductByCategoryId(cateId);
-        return products;
-    }
-
-    public boolean addProduct(ProductModel mpro, MultipartFile image) {
-        try {
-            if (mpro != null) {
-
-                Product product = productRepository.addNew(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongitude(), mpro.getLatitude(), mpro.getAddress(), new Date(), mpro.getBrandId(), mpro.getCategoryId());
-                if (image != null) {
-                    String fileName = image.getOriginalFilename() + "_" + product.getId() + ".jpg";
-                    Files.createDirectories(rootLocation);
-                    Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-
-
-                    ProductImage productImage = productImageRepository.addNew(fileName, product);
-                }
-            }
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
->>>>>>> master
-        return false;
-    }
-
-
-//    public boolean disableProduct(int id) {
-//        Integer count = productRepository.disableProduct(id);
-//        if (count > 0) {
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    public List<Product> getByCate(int cateId){
-//        List<Product> products = productRepository.findAllByCate(cateId);
-//        return products;
-//    }
-//
-//    public List<Product> searchByName(String searchValue){
-//        List<Product> products = productRepository.searchByName(searchValue);
-//        return products;
-//    }
-
     public Response<Product> createProduct(ProductModel newProduct, MultipartFile images) {
         Response<Product> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         if (newProduct != null) {
             // Add new attributes
-
+            newProduct.setId(0);
             // Add Postdate
             Date date = new Date();
             date.getTime();
@@ -149,7 +75,7 @@ public class ProductService {
                 response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
             }
         }
-<<<<<<< HEAD
+
 
         return response;
     }
@@ -176,47 +102,5 @@ public class ProductService {
 
         return response;
     }
-=======
-        return false;
-    }
 
-    public boolean activateTradeItem(int id) {
-        Integer count = productRepository.activateTradeItem(id);
-        if (count > 0) {
-            return true;
-        }
-        return false;
-    }
-
-//    public List<Product> getByCate(int cateId) {
-//        List<Product> products = productRepository.findProductByCategoryId(cateId);
-//        return products;
-//    }
-
-    public List<Product> searchByName(String searchValue) {
-        List<Product> products = productRepository.searchByName(searchValue);
-        return products;
-    }
-
-    public boolean editProduct(ProductModel mpro) {
-
-        Optional<Product> proById = productRepository.findById(mpro.getId());
-
-        if (proById != null) {
-            Product product = proById.get();
-            product.setName(mpro.getName());
-            product.setBrandId(mpro.getBrandId());
-            product.setDescription(mpro.getDescription());
-            product.setLatitude(mpro.getLatitude());
-            product.setLongitude(mpro.getLongitude());
-            product.setAddress(mpro.getAddress());
-            product.setPostDate(new Date());
-            productRepository.save(product);
-            return true;
-        }
-        return false;
-    }
-
-
->>>>>>> master
 }
