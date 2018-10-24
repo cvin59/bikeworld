@@ -23,8 +23,9 @@ public class CoreConstant {
     public static final String MESSAGE_NO_RESULT = "No result!";
 
     //Proposal Event Status
-    public static final int STATUS_PROPOSALEVENT_NOT_APPROVED =0;
+    public static final int STATUS_PROPOSALEVENT_NOT_APPROVED =2;
     public static final int STATUS_PROPOSALEVENT_APPRROVED = 1;
+    public static final int STATUS_PROPOSALEVENT_PENDING = 1;
 
     //Event Status
     public static final int STATUS_EVENT_PENDING =  1;
