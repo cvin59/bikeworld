@@ -11,14 +11,11 @@ import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,8 +37,6 @@ public class EventService {
     private final EventStatusRepository eventStatusRepository;
     private final AccountRepository accountRepository;
 
-    private final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
-
     public EventService(EventRepository eventRepository, EventImageRepository eventImageRepository, ProposalEventRepository proposalEventRepository, ProposalEventImageRepository proposalEventImageRepository, EventStatusRepository eventStatusRepository, AccountRepository accountRepository) {
         this.eventRepository = eventRepository;
         this.eventImageRepository = eventImageRepository;
@@ -53,17 +48,12 @@ public class EventService {
 
     //event section
     public List<Event> findEvents() {
-        List<Event> events = eventRepository.findAll();
-        return events;
+        return eventRepository.findAll();
     }
 
     public Event findEvent(Integer id) {
         Optional<Event> optionalEvent = eventRepository.findById(id);
-        if (optionalEvent.isPresent()){
-            Event event = optionalEvent.get();
-            return event;
-        }
-        return null;
+        return optionalEvent.orElse(null);
     }
 
     public Response<Event> createEvent(ConsumeEvent consumeEvent, MultipartFile image) {
@@ -120,7 +110,7 @@ public class EventService {
         if (image != null) {
             String fileName = image.getOriginalFilename() + "_" + consumeEvent.getTitle() + ".jpg";
             Files.createDirectories(rootLocation);
-            Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(image.getInputStream(), rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 
             consumeEvent.setImageUrl("/images/" + fileName);
         }
@@ -230,7 +220,7 @@ public class EventService {
                 //xu ly luu hinh anh
                 String fileName = image.getOriginalFilename() + "_" + consumeProposalEvent.getTitle() + ".jpg";
                 Files.createDirectories(rootLocation);
-                Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(image.getInputStream(), rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 
                 consumeProposalEvent.setImageUrl("/images/" + fileName);
 
@@ -272,7 +262,7 @@ public class EventService {
         return null;
     }
 
-    public List<ProposalEventImage> initProposalEventImages(ProposalEvent proposalEvent, ConsumeProposalEvent consumeProposalEvent) {
+    private List<ProposalEventImage> initProposalEventImages(ProposalEvent proposalEvent, ConsumeProposalEvent consumeProposalEvent) {
         List<ProposalEventImage> proposalEventImages = new LinkedList<>();
         ProposalEventImage proposalEventImage = new ProposalEventImage();
         proposalEventImage.setImageLink(consumeProposalEvent.getImageUrl());
@@ -281,18 +271,5 @@ public class EventService {
         return proposalEventImages;
     }
 
-    //load hinh
-    public Resource loadFileAsResource(String fileName) throws Exception {
-        try {
-            Path filePath = this.rootLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists()) {
-                return resource;
-            } else {
-                throw new Exception("File not found " + fileName);
-            }
-        } catch (MalformedURLException ex) {
-            throw new Exception("File not found " + fileName, ex);
-        }
-    }
+
 }
