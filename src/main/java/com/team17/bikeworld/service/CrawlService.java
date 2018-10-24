@@ -31,6 +31,11 @@ public class CrawlService {
         List<CrawlProduct> products = crawlRepository.findAll();
         return products;
     }
+    public List<CrawlProduct> viewCrawl(String site) {
+        List<CrawlProduct> products = crawlRepository.findAll();
+        return products;
+    }
+
 
     public int runCrawl(String site) {
         int count = 0;
