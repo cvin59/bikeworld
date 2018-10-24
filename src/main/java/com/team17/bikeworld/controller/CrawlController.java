@@ -4,6 +4,9 @@ import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.service.CrawlService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +15,10 @@ import java.util.List;
 
 import static com.team17.bikeworld.common.CoreConstant.API_CRAWL;
 
+@Controller
 public class CrawlController extends AbstractController {
+
+    private final Logger LOGGER = LoggerFactory.getLogger(CrawlController.class);
 
     private final CrawlService crawlService;
 
@@ -21,9 +27,9 @@ public class CrawlController extends AbstractController {
     }
 
 
-    @PostMapping(API_CRAWL + "/run/{site:.+}")
+    @PostMapping(API_CRAWL + "/run/{site}")
     public String runCrawl(@PathVariable String site) {
-
+        LOGGER.info(site);
         Response<Integer> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         Integer count = crawlService.runCrawl(site);
         response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, count);

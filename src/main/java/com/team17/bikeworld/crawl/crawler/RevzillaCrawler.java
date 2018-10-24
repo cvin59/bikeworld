@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.xpath.XPathExpressionException;
@@ -12,7 +13,10 @@ import javax.xml.xpath.XPathExpressionException;
 import com.team17.bikeworld.crawl.dict.CateDictObj;
 import com.team17.bikeworld.crawl.dict.CateObj;
 import com.team17.bikeworld.entity.Category;
+import com.team17.bikeworld.entity.CrawlProduct;
+import com.team17.bikeworld.entity.CrawlProductImage;
 import com.team17.bikeworld.repositories.*;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -21,6 +25,8 @@ import java.io.BufferedReader;
 
 public class RevzillaCrawler extends BaseCrawler implements Runnable {
 
+    private final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RevzillaCrawler.class);
+
     public RevzillaCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository) {
         super(crawlRepository, categoryRepository, crawlProductImageRepository);
     }
@@ -28,7 +34,7 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
     public static final String baseLink = "https://www.revzilla.com";
 
     private static boolean lock = false;
-    private  static  int count;
+    private static int count;
     public static Thread instance;
 
 
@@ -180,93 +186,95 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
     public boolean getItemList(String url, CateObj cate) {
 
 
-        Category cateEntity = categoryRepository.getByName(cate.getMeaning());
+        Category category = getCate(cate);
 
         BufferedReader reader = null;
+        int page = 1;
         try {
-
-            reader = getBufferedReaderForURL(url);
-            String line = "";
-            String body = "";
-            boolean isStart = false;
-            boolean isEnd = false;
-            int divClose = 1;
-            while (!isEnd && (line = reader.readLine()) != null) {
-                if (line.contains("product-index-results__product-tile-wrapper")) {
-                    isStart = true;
-                }
-                if (isStart) {
-                    body += line.trim();
-                    if (line.contains("product-index-results__pagination")) {
-                        isEnd = true;
+            do {
+                reader = getBufferedReaderForURL(url + "#page=" + page);
+                String line = "";
+                String body = "";
+                boolean isStart = false;
+                boolean isEnd = false;
+                int divClose = 1;
+                while (!isEnd && (line = reader.readLine()) != null) {
+                    if (line.contains("product-index-results__product-tile-wrapper")) {
+                        isStart = true;
                     }
-                }
+                    if (isStart) {
+                        body += line.trim();
+                        if (line.contains("product-index-results__pagination")) {
+                            isEnd = true;
+                        }
+                    }
 
-            }
+                }
 
 //            System.out.println("");
 //            System.out.println("doc-");
 //            System.out.println(body);
 //            System.out.println("-end doc");
 //            System.out.println("");
-            boolean next = true;
-            int itemPoint = 0;
-            while (next) {
-                String startStr = "product-tile-wrapper";
-                String endStr;
-                int startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                int endApos;
-                if (itemPoint < startApos) {
-                    itemPoint = startApos;
+                boolean next = true;
+                int itemPoint = 0;
+                int countInPage = 0;
+                while (next) {
+                    String startStr = "product-tile-wrapper";
+                    String endStr;
+                    int startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                    int endApos;
+                    if (itemPoint < startApos) {
+                        itemPoint = startApos;
 
-                    startStr = "href=\"";
-                    endStr = "\">";
-                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                    endApos = body.indexOf(endStr, startApos);
-                    String link = body.substring(startApos, endApos).trim().toLowerCase();
+                        startStr = "href=\"";
+                        endStr = "\">";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String link = body.substring(startApos, endApos).trim().toLowerCase();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                    itemPoint = endApos;
+                        itemPoint = endApos;
 
-                    startStr = "itemprop=\"url\" title=\"";
-                    endStr = "\">";
-                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                    endApos = body.indexOf(endStr, startApos);
-                    String name = body.substring(startApos, endApos).trim().toLowerCase();
+                        startStr = "itemprop=\"url\" title=\"";
+                        endStr = "\">";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String name = body.substring(startApos, endApos).trim().toLowerCase();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                    itemPoint = endApos;
+                        itemPoint = endApos;
 
-                    startStr = "itemprop=\"brand\" content=\"";
+                        startStr = "itemprop=\"brand\" content=\"";
 //                    System.out.println("startStr " + startStr);
-                    endStr = "\">";
-                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                    endApos = body.indexOf(endStr, startApos);
-                    String brand = body.substring(startApos, endApos).trim();
+                        endStr = "\">";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String brand = body.substring(startApos, endApos).trim();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                    itemPoint = endApos;
+                        itemPoint = endApos;
 
-                    startStr = "itemprop=\"image\" content=\"";
-                    endStr = "\">";
-                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                    endApos = body.indexOf(endStr, startApos);
-                    String img = body.substring(startApos, endApos).trim();
+                        startStr = "itemprop=\"image\" content=\"";
+                        endStr = "\">";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String img = body.substring(startApos, endApos).trim();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                    itemPoint = endApos;
+                        itemPoint = endApos;
 
-                    startStr = "itemprop=\"price\" content=\"";
-                    endStr = "\"";
-                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                    endApos = body.indexOf(endStr, startApos);
-                    String price = body.substring(startApos, endApos).trim();
+                        startStr = "itemprop=\"price\" content=\"";
+                        endStr = "\"";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String price = body.substring(startApos, endApos).trim();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                    itemPoint = endApos;
+                        itemPoint = endApos;
 
-                    startStr = "itemprop=\"priceCurrency\" content=\"";
-                    endStr = "\"";
-                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                    endApos = body.indexOf(endStr, startApos);
-                    String priceUnit = body.substring(startApos, endApos).trim();
+                        startStr = "itemprop=\"priceCurrency\" content=\"";
+                        endStr = "\"";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String priceUnit = body.substring(startApos, endApos).trim();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                    itemPoint = endApos;
+                        itemPoint = endApos;
 
 //                    String desc = getItemDetail(baseLink + link);
 //                    System.out.println("");
@@ -276,12 +284,22 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
 //                    System.out.println("price - " + priceUnit + price);
 //                    System.out.println("");
 //                    productDao.replaceProduct(connection, baseLink, cate.getMeaning(), name, link, img, price);
+                        CrawlProduct crawlProduct = saveNewCrawlProduct(name, baseLink, link, priceUnit + price, category, img);
 
-                    crawlRepository.addCrawlProduct(baseLink, cateEntity, name, link, price);
-                } else {
-                    next = false;
+                        LOGGER.info(crawlProduct.toString());
+
+//                        crawlRepository.addCrawlProduct(baseLink, cateEntity, name, link, price);
+                        countInPage++;
+                    } else {
+                        next = false;
+                    }
                 }
-            }
+                if (countInPage > 0) {
+                    page++;
+                } else {
+                    page = -1;
+                }
+            } while (page > 0);
             return true;
         } catch (Exception ex) {
 
@@ -298,7 +316,134 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
         return false;
     }
 
-
+//    public boolean getItemList2(String url, CateObj cate) {
+//
+//
+//        Optional<Category> optionalCategory = categoryRepository.findByName(cate.getMeaning());
+//        Category category;
+//        if (optionalCategory.isPresent()) {
+//            category = optionalCategory.get();
+//        } else {
+//            category = new Category();
+//            category.setName(cate.getMeaning());
+//            category = categoryRepository.save(category);
+//        }
+//
+//        BufferedReader reader = null;
+//        try {
+//
+//            reader = getBufferedReaderForURL(url);
+//            String line = "";
+//            String body = "";
+//            boolean isStart = false;
+//            boolean isEnd = false;
+//            int divClose = 1;
+//            while (!isEnd && (line = reader.readLine()) != null) {
+//                if (line.contains("product-index-results__product-tile-wrapper")) {
+//                    isStart = true;
+//                }
+//                if (isStart) {
+//                    body += line.trim();
+//                    if (line.contains("product-index-results__pagination")) {
+//                        isEnd = true;
+//                    }
+//                }
+//
+//            }
+//
+////            System.out.println("");
+////            System.out.println("doc-");
+////            System.out.println(body);
+////            System.out.println("-end doc");
+////            System.out.println("");
+//            boolean next = true;
+//            int itemPoint = 0;
+//            while (next) {
+//                String startStr = "product-tile-wrapper";
+//                String endStr;
+//                int startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+//                int endApos;
+//                if (itemPoint < startApos) {
+//                    itemPoint = startApos;
+//
+//                    startStr = "href=\"";
+//                    endStr = "\">";
+//                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+//                    endApos = body.indexOf(endStr, startApos);
+//                    String link = body.substring(startApos, endApos).trim().toLowerCase();
+////                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+//                    itemPoint = endApos;
+//
+//                    startStr = "itemprop=\"url\" title=\"";
+//                    endStr = "\">";
+//                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+//                    endApos = body.indexOf(endStr, startApos);
+//                    String name = body.substring(startApos, endApos).trim().toLowerCase();
+////                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+//                    itemPoint = endApos;
+//
+//                    startStr = "itemprop=\"brand\" content=\"";
+////                    System.out.println("startStr " + startStr);
+//                    endStr = "\">";
+//                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+//                    endApos = body.indexOf(endStr, startApos);
+//                    String brand = body.substring(startApos, endApos).trim();
+////                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+//                    itemPoint = endApos;
+//
+//                    startStr = "itemprop=\"image\" content=\"";
+//                    endStr = "\">";
+//                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+//                    endApos = body.indexOf(endStr, startApos);
+//                    String img = body.substring(startApos, endApos).trim();
+////                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+//                    itemPoint = endApos;
+//
+//                    startStr = "itemprop=\"price\" content=\"";
+//                    endStr = "\"";
+//                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+//                    endApos = body.indexOf(endStr, startApos);
+//                    String price = body.substring(startApos, endApos).trim();
+////                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+//                    itemPoint = endApos;
+//
+//                    startStr = "itemprop=\"priceCurrency\" content=\"";
+//                    endStr = "\"";
+//                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+//                    endApos = body.indexOf(endStr, startApos);
+//                    String priceUnit = body.substring(startApos, endApos).trim();
+////                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+//                    itemPoint = endApos;
+//
+////                    String desc = getItemDetail(baseLink + link);
+////                    System.out.println("");
+////                    System.out.println("name  - " + name);
+////                    System.out.println("link  - " + link);
+////                    System.out.println("img   - " + img);
+////                    System.out.println("price - " + priceUnit + price);
+////                    System.out.println("");
+////                    productDao.replaceProduct(connection, baseLink, cate.getMeaning(), name, link, img, price);
+//
+//                    crawlRepository.addCrawlProduct(baseLink, cateEntity, name, link, price);
+//                } else {
+//                    next = false;
+//                }
+//            }
+//            return true;
+//        } catch (Exception ex) {
+//
+//            Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
+//        } finally {
+//            if (reader != null) {
+//                try {
+//                    reader.close();
+//                } catch (IOException ex) {
+//                    Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
 
     /**

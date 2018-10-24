@@ -1,9 +1,12 @@
 package com.team17.bikeworld.model;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
+import com.team17.bikeworld.adapter.EmptyStringTypeAdapter;
 
 public class ConsumeEvent {
     @Expose
+    @JsonAdapter(EmptyStringTypeAdapter.class)
     private int id;
     @Expose
     private String title;

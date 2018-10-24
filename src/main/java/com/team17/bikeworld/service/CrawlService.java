@@ -6,9 +6,11 @@ import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.repositories.CategoryRepository;
 import com.team17.bikeworld.repositories.CrawlProductImageRepository;
 import com.team17.bikeworld.repositories.CrawlRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class CrawlService {
 
 
@@ -65,5 +67,7 @@ public class CrawlService {
             }
         }
     }
+
+
 
 }

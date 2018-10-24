@@ -9,9 +9,13 @@ import java.util.List;
 
 public class ProductModel {
 
+<<<<<<< HEAD
     @Expose
     private int id;
     @Expose
+=======
+    private  Integer id;
+>>>>>>> master
     private String name;
     @Expose
     private String description;
@@ -27,6 +31,7 @@ public class ProductModel {
     private String address;
     @Expose
     private Date postDate;
+<<<<<<< HEAD
     @Expose
     private double totalRatePoint;
     @Expose
@@ -56,6 +61,14 @@ public class ProductModel {
     }
 
     public ProductModel(String name, String description, double price, String longtitude, String latitude, String seller, String address, Date postDate, double totalRatePoint, int totalRater, int status, int category, int brand) {
+=======
+    private Brand brandId;
+    private Category categoryId;
+    private String username;
+
+    public ProductModel(Integer id, String name, Double price, String description, Double longitude, Double latitude, String address, Date postDate, Brand brandId, Category categoryId) {
+        this.id = id;
+>>>>>>> master
         this.name = name;
         this.description = description;
         this.price = price;
@@ -88,8 +101,21 @@ public class ProductModel {
         this.brand = brand;
     }
 
+<<<<<<< HEAD
     public int getId() {
         return id;
+=======
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+>>>>>>> master
     }
 
     public void setId(int id) {
