@@ -19,7 +19,7 @@ public class UserService {
     @Autowired
     public UserService(AccountRepository accountRepository,
                        RoleRepository roleRepository
-                       , BCryptPasswordEncoder bCryptPasswordEncoder
+            , BCryptPasswordEncoder bCryptPasswordEncoder
     ) {
         this.accountRepository = accountRepository;
         this.roleRepository = roleRepository;
@@ -38,13 +38,9 @@ public class UserService {
         return accountRepository.save(user);
     }
 
-
-
-
     public Optional<Account> getUser(String username, String password) {
         return accountRepository.findAccountByUsernameAndPassword(username, password);
     }
-
 
 
 }

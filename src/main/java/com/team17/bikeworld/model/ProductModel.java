@@ -7,6 +7,7 @@ import java.util.Date;
 
 public class ProductModel {
 
+    private  Integer id;
     private String name;
     private Double price;
     private String description;
@@ -16,8 +17,10 @@ public class ProductModel {
     private Date postDate;
     private Brand brandId;
     private Category categoryId;
+    private String username;
 
-    public ProductModel(String name, Double price, String description, Double longitude, Double latitude, String address, Date postDate, Brand brandId, Category categoryId) {
+    public ProductModel(Integer id, String name, Double price, String description, Double longitude, Double latitude, String address, Date postDate, Brand brandId, Category categoryId) {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;
@@ -27,6 +30,14 @@ public class ProductModel {
         this.postDate = postDate;
         this.brandId = brandId;
         this.categoryId = categoryId;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {

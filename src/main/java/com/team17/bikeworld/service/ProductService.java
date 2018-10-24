@@ -1,5 +1,6 @@
 package com.team17.bikeworld.service;
 
+import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.Product;
 import com.team17.bikeworld.entity.ProductImage;
 import com.team17.bikeworld.model.ProductModel;
@@ -36,7 +37,7 @@ public class ProductService {
         return products;
     }
 
-    public List<Product> findProductByCate(int cateId) {
+    public List<Product> findProductByCate(Category cateId) {
         List<Product> products = productRepository.findProductByCategoryId(cateId);
         return products;
     }
@@ -46,8 +47,6 @@ public class ProductService {
             if (mpro != null) {
 
                 Product product = productRepository.addNew(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongitude(), mpro.getLatitude(), mpro.getAddress(), new Date(), mpro.getBrandId(), mpro.getCategoryId());
-
-
                 if (image != null) {
                     String fileName = image.getOriginalFilename() + "_" + product.getId() + ".jpg";
                     Files.createDirectories(rootLocation);
@@ -71,6 +70,14 @@ public class ProductService {
         return false;
     }
 
+    public boolean activateTradeItem(int id) {
+        Integer count = productRepository.activateTradeItem(id);
+        if (count > 0) {
+            return true;
+        }
+        return false;
+    }
+
     public List<Product> getByCate(int cateId){
         List<Product> products = productRepository.findAllByCate(cateId);
         return products;
@@ -81,6 +88,15 @@ public class ProductService {
         return products;
     }
 
+    public boolean editProduct(ProductModel mpro) {
 
-    
+        Integer count = productRepository.editProduct(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongitude(), mpro.getLatitude(), mpro.getAddress(), new Date(), mpro.getBrandId(), mpro.getCategoryId());
+        if (count > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+
 }
