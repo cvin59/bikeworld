@@ -20,7 +20,7 @@ public class ProductModel {
     @Expose
     private double price;
     @Expose
-    private Double longitude;
+    private Double longtitude;
     @Expose
     private Double latitude;
     @Expose
@@ -44,41 +44,12 @@ public class ProductModel {
 
     public ProductModel() {
     }
-  
-    public ProductModel(String name, String description, double price, String longtitude, String latitude, String seller, String address, int category, int brand) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.longtitude = longtitude;
-        this.latitude = latitude;
-        this.seller = seller;
-        this.address = address;
-        this.category = category;
-        this.brand = brand;
-    }
       
     private Brand brandId;
     private Category categoryId;
     private String username;
 
     public ProductModel(int id, String name, String description, double price, Double longtitude, Double latitude, String seller, String address, Date postDate, double totalRatePoint, int totalRater, int status, int category, int brand) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.longitude = longtitude;
-        this.latitude = latitude;
-        this.seller = seller;
-        this.address = address;
-        this.postDate = postDate;
-        this.totalRatePoint = totalRatePoint;
-        this.totalRater = totalRater;
-        this.status = status;
-        this.category = category;
-        this.brand = brand;
-    }
-
-    public ProductModel(int id, String name, String description, double price, String longtitude, String latitude, String seller, String address, Date postDate, double totalRatePoint, int totalRater, int status, int category, int brand) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -127,12 +98,12 @@ public class ProductModel {
         this.price = price;
     }
 
-    public Double getLongitude() {
-        return longitude;
+    public Double getLongtitude() {
+        return longtitude;
     }
 
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
+    public void setLongtitude(Double longtitude) {
+        this.longtitude = longtitude;
     }
 
     public Double getLatitude() {

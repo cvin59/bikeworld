@@ -63,7 +63,7 @@ public class ProductController extends AbstractController {
         updatedProduct.setName(txtName);
         updatedProduct.setDescription(txtDescription);
         updatedProduct.setPrice(txtPrice);
-        updatedProduct.setLongitude(txtLongtitude);
+        updatedProduct.setLongtitude(txtLongtitude);
         updatedProduct.setLatitude(txtLatitude);
         updatedProduct.setAddress(txtAddress);
         updatedProduct.setSeller(txtSeller);

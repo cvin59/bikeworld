@@ -28,7 +28,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
-//    private final ProductTransformer productTransformer;
+    private final ProductTransformer productTransformer;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
     private final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
@@ -37,37 +37,13 @@ public class ProductService {
     public ProductService(ProductRepository productRepository, ProductImageRepository productImageRepository, ProductTransformer productTransformer) {
         this.productRepository = productRepository;
         this.productImageRepository = productImageRepository;
-//        this.productTransformer = productTransformer;
+        this.productTransformer = productTransformer;
     }
 
     public List<Product> findAll() {
         List<Product> products = productRepository.findAll();
         return products;
     }
-
-//    public List<Product> findProductByCate(int cateId) {
-//        List<Product> products = productRepository.findProductByCategoryId(cateId);
-//        return products;
-//    }
-
-//    public boolean addProduct(ProductModel mpro, MultipartFile image) {
-//        try {
-//            if (mpro != null) {
-//
-//                Product product = productRepository.addNew(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongitude(), mpro.getLatitude(), mpro.getAddress(), new Date(), mpro.getBrandId(), mpro.getCategoryId());
-//
-//
-//                if (image != null) {
-//                    String fileName = image.getOriginalFilename() + "_" + product.getId() + ".jpg";
-//                    Files.createDirectories(rootLocation);
-//                    Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-//                    ProductImage productImage = productImageRepository.addNew(fileName, product);
-//                }
-//            }
-//            return true;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
     public List<Product> findProductByCate(Category cateId) {
         List<Product> products = productRepository.findProductByCategoryId(cateId);
@@ -78,7 +54,7 @@ public class ProductService {
         try {
             if (mpro != null) {
 
-                Product product = productRepository.addNew(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongitude(), mpro.getLatitude(), mpro.getAddress(), new Date(), mpro.getBrandId(), mpro.getCategoryId());
+                Product product = productRepository.addNew(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongtitude(), mpro.getLatitude(), mpro.getAddress(), new Date(), mpro.getBrandId(), mpro.getCategoryId());
                 if (image != null) {
                     String fileName = image.getOriginalFilename() + "_" + product.getId() + ".jpg";
                     Files.createDirectories(rootLocation);
@@ -132,7 +108,7 @@ public class ProductService {
             newProduct.setStatus(CoreConstant.STATUS_PRODUCT_AVAILABLE);
             try {
                 // Transform Model to Entity
-//                Product productEntity = productTransformer.ProductModelToEntity(newProduct);
+                Product productEntity = productTransformer.ProductModelToEntity(newProduct);
 
                 // Lưu DB
                 productRepository.save(productEntity);
@@ -197,7 +173,7 @@ public class ProductService {
             product.setBrandId(mpro.getBrandId());
             product.setDescription(mpro.getDescription());
             product.setLatitude(mpro.getLatitude());
-            product.setLongitude(mpro.getLongitude());
+            product.setLongitude(mpro.getLongtitude());
             product.setAddress(mpro.getAddress());
             product.setPostDate(new Date());
             productRepository.save(product);
