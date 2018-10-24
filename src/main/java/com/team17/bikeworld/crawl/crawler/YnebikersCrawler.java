@@ -79,7 +79,7 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
                     CateObj cateObj = CateDictObj.checkCate(cateName);
                     if (!link.contains("#") && cateObj != null) {
                         System.out.println("!!!! " + cateObj.getMeaning() + " - " + link);
-                        getItemList(baseLink + link, cateObj);
+                        getItemList2(baseLink + link, cateObj);
                     }
                 } else {
                     next = false;
@@ -189,6 +189,99 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
         return false;
     }
 
+
+    public boolean getItemList2(String url, CateObj cate) {
+
+        Category cateEntity = categoryRepository.getByName(cate.getMeaning());
+        BufferedReader reader = null;
+//        boolean next = true;
+        int page = 1;
+        try {
+            do {
+
+
+                reader = getBufferedReaderForURL(url + "?page=" + page);
+                String line = "";
+                String body = "";
+                boolean isStart = false;
+                boolean isEnd = false;
+                int divClose = 1;
+                while (!isEnd && (line = reader.readLine()) != null) {
+                    if (line.contains("id=\"productcategory_view_product_list\"")) {
+                        isStart = true;
+                    }
+                    if (isStart) {
+                        body += line.trim();
+                        if (line.contains("</ul>")) {
+                            isEnd = true;
+                        }
+                    }
+
+                }
+
+                int countInPage = 0;
+                boolean next = true;
+                int itemPoint = 0;
+                while (next) {
+                    String startStr = "<a href=\"";
+                    String endStr = "\">";
+                    int startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                    int endApos = body.indexOf(endStr, startApos);
+                    if (itemPoint < startApos && startApos < endApos) {
+                        String link = body.substring(startApos, endApos).trim();
+                        itemPoint = endApos;
+
+                        startStr = "src=\"";
+                        endStr = "\">";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String img = body.substring(startApos, endApos).trim().toLowerCase();
+                        itemPoint = endApos;
+
+                        startStr = "<a href=\"" + link + "\">";
+                        endStr = "</a>";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String name = body.substring(startApos, endApos).trim();
+                        itemPoint = endApos;
+
+                        startStr = "productcategory_view_product_price\">";
+                        endStr = "</div>";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String price = body.substring(startApos, endApos).trim();
+
+                        itemPoint = endApos;
+
+                        if (CateDictObj.checkName(cate, name.toLowerCase())) {
+                            crawlRepository.addCrawlProduct(baseLink, cateEntity, name, link, price);
+                            countInPage++;
+                        }
+                    } else {
+                        next = false;
+                    }
+                }
+                if (countInPage > 0) {
+                    page++;
+                } else {
+                    page = -1;
+                }
+
+            } while (page > 0);
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return false;
+    }
 
     @Override
     public void run() {

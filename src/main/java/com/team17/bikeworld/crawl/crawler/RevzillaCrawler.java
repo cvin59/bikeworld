@@ -28,7 +28,7 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
     public static final String baseLink = "https://www.revzilla.com";
 
     private static boolean lock = false;
-    private  static  int count;
+    private static int count;
     public static Thread instance;
 
 
@@ -183,6 +183,136 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
         Category cateEntity = categoryRepository.getByName(cate.getMeaning());
 
         BufferedReader reader = null;
+        int page = 1;
+        try {
+            do {
+                reader = getBufferedReaderForURL(url + "#page=" + page);
+                String line = "";
+                String body = "";
+                boolean isStart = false;
+                boolean isEnd = false;
+                int divClose = 1;
+                while (!isEnd && (line = reader.readLine()) != null) {
+                    if (line.contains("product-index-results__product-tile-wrapper")) {
+                        isStart = true;
+                    }
+                    if (isStart) {
+                        body += line.trim();
+                        if (line.contains("product-index-results__pagination")) {
+                            isEnd = true;
+                        }
+                    }
+
+                }
+
+//            System.out.println("");
+//            System.out.println("doc-");
+//            System.out.println(body);
+//            System.out.println("-end doc");
+//            System.out.println("");
+                boolean next = true;
+                int itemPoint = 0;
+                int countInPage = 0;
+                while (next) {
+                    String startStr = "product-tile-wrapper";
+                    String endStr;
+                    int startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                    int endApos;
+                    if (itemPoint < startApos) {
+                        itemPoint = startApos;
+
+                        startStr = "href=\"";
+                        endStr = "\">";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String link = body.substring(startApos, endApos).trim().toLowerCase();
+//                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+                        itemPoint = endApos;
+
+                        startStr = "itemprop=\"url\" title=\"";
+                        endStr = "\">";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String name = body.substring(startApos, endApos).trim().toLowerCase();
+//                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+                        itemPoint = endApos;
+
+                        startStr = "itemprop=\"brand\" content=\"";
+//                    System.out.println("startStr " + startStr);
+                        endStr = "\">";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String brand = body.substring(startApos, endApos).trim();
+//                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+                        itemPoint = endApos;
+
+                        startStr = "itemprop=\"image\" content=\"";
+                        endStr = "\">";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String img = body.substring(startApos, endApos).trim();
+//                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+                        itemPoint = endApos;
+
+                        startStr = "itemprop=\"price\" content=\"";
+                        endStr = "\"";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String price = body.substring(startApos, endApos).trim();
+//                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+                        itemPoint = endApos;
+
+                        startStr = "itemprop=\"priceCurrency\" content=\"";
+                        endStr = "\"";
+                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                        endApos = body.indexOf(endStr, startApos);
+                        String priceUnit = body.substring(startApos, endApos).trim();
+//                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+                        itemPoint = endApos;
+
+//                    String desc = getItemDetail(baseLink + link);
+//                    System.out.println("");
+//                    System.out.println("name  - " + name);
+//                    System.out.println("link  - " + link);
+//                    System.out.println("img   - " + img);
+//                    System.out.println("price - " + priceUnit + price);
+//                    System.out.println("");
+//                    productDao.replaceProduct(connection, baseLink, cate.getMeaning(), name, link, img, price);
+
+                        crawlRepository.addCrawlProduct(baseLink, cateEntity, name, link, price);
+                        countInPage++;
+                    } else {
+                        next = false;
+                    }
+                }
+                if (countInPage > 0) {
+                    page++;
+                } else {
+                    page = -1;
+                }
+            } while (page > 0);
+            return true;
+        } catch (Exception ex) {
+
+            Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean getItemList2(String url, CateObj cate) {
+
+
+        Category cateEntity = categoryRepository.getByName(cate.getMeaning());
+
+        BufferedReader reader = null;
         try {
 
             reader = getBufferedReaderForURL(url);
@@ -297,8 +427,6 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
         }
         return false;
     }
-
-
 
 
     /**

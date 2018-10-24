@@ -47,8 +47,6 @@ public class ProductService {
             if (mpro != null) {
 
                 Product product = productRepository.addNew(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongitude(), mpro.getLatitude(), mpro.getAddress(), new Date(), mpro.getBrandId(), mpro.getCategoryId());
-
-
                 if (image != null) {
                     String fileName = image.getOriginalFilename() + "_" + product.getId() + ".jpg";
                     Files.createDirectories(rootLocation);
@@ -101,7 +99,4 @@ public class ProductService {
     }
 
 
-    public List<Product> findProductByName(String name) {
-        return null;
-    }
 }
