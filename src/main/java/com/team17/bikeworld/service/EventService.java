@@ -9,6 +9,8 @@ import com.team17.bikeworld.model.ConsumeEvent;
 import com.team17.bikeworld.model.ConsumeProposalEvent;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.repositories.*;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -108,7 +110,14 @@ public class EventService {
 
     private void handleImage(ConsumeEvent consumeEvent, MultipartFile image) throws IOException {
         if (image != null) {
-            String fileName = image.getOriginalFilename() + "_" + consumeEvent.getTitle() + ".jpg";
+            String sourceName = image.getOriginalFilename();
+            String sourceFileName = FilenameUtils.getBaseName(sourceName);
+            String sourceExt = FilenameUtils.getExtension(sourceName).toLowerCase();
+
+            String fileName = RandomStringUtils.randomAlphabetic(8)
+                    .concat(sourceFileName)
+                    .concat(".")
+                    .concat(sourceExt);
             Files.createDirectories(rootLocation);
             Files.copy(image.getInputStream(), rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 

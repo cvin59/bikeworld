@@ -8,6 +8,8 @@ import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.repositories.AccountRepository;
 import com.team17.bikeworld.repositories.ProposalEventImageRepository;
 import com.team17.bikeworld.repositories.ProposalEventRepository;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -67,12 +69,19 @@ public class ProposalEventService {
     }
 
     //proposal event section
-    public Response<ProposalEvent> proposeEvent(ConsumeProposalEvent consumeProposalEvent, MultipartFile image) {
+    public Response<ProposalEvent>  proposeEvent(ConsumeProposalEvent consumeProposalEvent, MultipartFile image) {
         Response<ProposalEvent> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         if (consumeProposalEvent != null) {
             try {
                 //xu ly luu hinh anh
-                String fileName = image.getOriginalFilename() + "_" + consumeProposalEvent.getTitle() + ".jpg";
+                String sourceName = image.getOriginalFilename();
+                String sourceFileName = FilenameUtils.getBaseName(sourceName);
+                String sourceExt = FilenameUtils.getExtension(sourceName).toLowerCase();
+
+                String fileName = RandomStringUtils.randomAlphabetic(8)
+                        .concat(sourceFileName)
+                        .concat(".")
+                        .concat(sourceExt);
                 Files.createDirectories(rootLocation);
                 Files.copy(image.getInputStream(), rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 
@@ -105,7 +114,7 @@ public class ProposalEventService {
                 Date endDate = format1.parse(consumeProposalEvent.getEndDate());
                 event.setEndDate(endDate);
                 event.setAccountUsename(accountRepository.findAccountByUsername ("user"));
-                event.setStatus(CoreConstant.STATUS_PROPOSALEVENT_NOT_APPROVED);
+                event.setStatus(CoreConstant.STATUS_PROPOSALEVENT_PENDING);
 
                 return event;
             } catch (Exception e) {
