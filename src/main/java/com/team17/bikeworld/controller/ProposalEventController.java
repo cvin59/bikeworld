@@ -24,12 +24,9 @@ import static com.team17.bikeworld.common.CoreConstant.*;
 @CrossOrigin
 public class ProposalEventController extends AbstractController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProposalEventController.class);
-
-    private final EventService eventService;
     private final ProposalEventService proposalEventService;
 
-    public ProposalEventController(EventService eventService, ProposalEventService proposalEventService) {
-        this.eventService = eventService;
+    public ProposalEventController(ProposalEventService proposalEventService) {
         this.proposalEventService = proposalEventService;
     }
     //Web Service
@@ -37,7 +34,7 @@ public class ProposalEventController extends AbstractController {
     public String proposeEvent(@RequestParam String consumeEventString, @RequestParam MultipartFile image) {
         LOGGER.info(consumeEventString);
         ConsumeProposalEvent consumeProposalEvent = gson.fromJson(consumeEventString, ConsumeProposalEvent.class);
-        Response<ProposalEvent> response = eventService.proposeEvent(consumeProposalEvent, image);
+        Response<ProposalEvent> response = proposalEventService.proposeEvent(consumeProposalEvent, image);
         return gson.toJson(response);
     }
 
@@ -78,31 +75,18 @@ public class ProposalEventController extends AbstractController {
     @GetMapping(API_PROPOSAL_EVENT + "/approve-event/{id}")
     public String changeStatus(@PathVariable("id") Integer id) {
         Response<ProposalEvent> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
-        changeStatus(id, response, STATUS_PROPOSALEVENT_APPRROVED);
+        proposalEventService.changeStatus(id, response, STATUS_PROPOSALEVENT_APPRROVED);
         return gson.toJson(response);
     }
 
     @GetMapping(API_PROPOSAL_EVENT + "/not-approve-event/{id}")
     public String notApproveEvent(@PathVariable("id") Integer id) {
         Response<ProposalEvent> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
-        changeStatus(id, response, STATUS_PROPOSALEVENT_NOT_APPROVED);
+        proposalEventService.changeStatus(id, response, STATUS_PROPOSALEVENT_NOT_APPROVED);
         return gson.toJson(response);
     }
 
-    private void changeStatus(@PathVariable("id") Integer id, Response<ProposalEvent> response, int statusProposaleventNotApproved) {
-        try {
-            Optional<ProposalEvent> optional = proposalEventService.findProposalEvent(id);
-            if (optional.isPresent()) {
-                ProposalEvent proposalEvent = optional.get();
-                proposalEvent.setStatus(statusProposaleventNotApproved);
-                proposalEvent = proposalEventService.saveProposalEvent(proposalEvent);
 
-                response.setResponse(STATUS_CODE_SUCCESS, MESSAGE_SUCCESS,proposalEvent);
-            }
-        } catch (Exception e) {
-            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
-        }
-    }
 
     //TODO: chưa làm
     @PutMapping(API_PROPOSAL_EVENT + "/{id}")

@@ -37,8 +37,7 @@ public class ProductController extends AbstractController {
         }
         return gson.toJson(response);
     }
-
-
+  
     @PostMapping(CoreConstant.API_PRODUCT)
     public void createProduct(@RequestParam String productModelString, MultipartFile images) {
         ProductModel newProduct = gson.fromJson(productModelString,ProductModel.class);
@@ -50,8 +49,8 @@ public class ProductController extends AbstractController {
                               @RequestParam(value = "txtName", required = false) String txtName,
                               @RequestParam(value = "txtDescription", required = false) String txtDescription,
                               @RequestParam(value = "txtPrice", required = false) Double txtPrice,
-                              @RequestParam(value = "txtLongtitude", required = false) String txtLongtitude,
-                              @RequestParam(value = "txtLatitude", required = false) String txtLatitude,
+                              @RequestParam(value = "txtLongtitude", required = false) Double txtLongtitude,
+                              @RequestParam(value = "txtLatitude", required = false) Double txtLatitude,
                               @RequestParam(value = "txtAddress", required = false) String txtAddress,
                               @RequestParam(value = "txtSeller", required = false) String txtSeller,
                               @RequestParam(value = "txtCategory", required = false) Integer txtCategory,
@@ -64,7 +63,7 @@ public class ProductController extends AbstractController {
         updatedProduct.setName(txtName);
         updatedProduct.setDescription(txtDescription);
         updatedProduct.setPrice(txtPrice);
-        updatedProduct.setLongtitude(txtLongtitude);
+        updatedProduct.setLongitude(txtLongtitude);
         updatedProduct.setLatitude(txtLatitude);
         updatedProduct.setAddress(txtAddress);
         updatedProduct.setSeller(txtSeller);
@@ -87,5 +86,16 @@ public class ProductController extends AbstractController {
 //        return gson.toJson(response);
 //    }
 
+    @GetMapping(CoreConstant.API_PRODUCT + "/search/{id}/{name}")
+    public String searchTradeItem(@PathVariable int id, @PathVariable String name) {
 
+        Response<List<Product>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<Product> pros = productService.searchByName(name);
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, pros);
+        } catch (Exception e) {
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
 }
