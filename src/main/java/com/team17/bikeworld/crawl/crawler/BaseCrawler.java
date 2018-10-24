@@ -1,5 +1,10 @@
 package com.team17.bikeworld.crawl.crawler;
 
+import com.team17.bikeworld.crawl.dict.CateObj;
+import com.team17.bikeworld.entity.Category;
+import com.team17.bikeworld.entity.CrawlProduct;
+import com.team17.bikeworld.entity.CrawlProductImage;
+import com.team17.bikeworld.entity.Product;
 import com.team17.bikeworld.repositories.CategoryRepository;
 import com.team17.bikeworld.repositories.CrawlProductImageRepository;
 import com.team17.bikeworld.repositories.CrawlRepository;
@@ -13,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -164,6 +170,35 @@ public class BaseCrawler {
         return reader;
     }
 
+
+    protected Category getCate(CateObj cateObj){
+        Optional<Category> optionalCategory = categoryRepository.findByName(cateObj.getMeaning());
+        Category category;
+        if (optionalCategory.isPresent()) {
+            category = optionalCategory.get();
+        } else {
+            category = new Category();
+            category.setName(cateObj.getMeaning());
+            category = categoryRepository.save(category);
+        }
+        return category;
+    }
+
+    protected CrawlProduct saveNewCrawlProduct(String name, String site, String link, String price, Category category, String img){
+        CrawlProduct crawlProduct = new CrawlProduct();
+        crawlProduct.setName(name);
+        crawlProduct.setSite(site);
+        crawlProduct.setUrl(link);
+        crawlProduct.setPrice(price);
+        crawlProduct.setCategoryId(category);
+        crawlProduct = crawlRepository.save(crawlProduct);
+
+        CrawlProductImage crawlProductImage = new CrawlProductImage();
+        crawlProductImage.setImageLink(img);
+        crawlProductImage.setCrawlProductid(crawlProduct);
+        crawlProductImageRepository.save(crawlProductImage);
+        return crawlProduct;
+    }
 
 
 }

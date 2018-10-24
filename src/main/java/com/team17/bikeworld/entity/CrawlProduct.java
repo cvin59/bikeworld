@@ -42,6 +42,10 @@ public class CrawlProduct implements Serializable {
     private String name;
     @Column(name = "url", length = 255)
     private String url;
+    @Column(name = "site", length = 255)
+    private String site;
+    @Column(name = "price", length = 255)
+    private String price;
     @JoinColumn(name = "brand_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Brand brandId;
@@ -80,6 +84,22 @@ public class CrawlProduct implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getSite() {
+        return site;
+    }
+
+    public void setSite(String site) {
+        this.site = site;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public Brand getBrandId() {
@@ -129,7 +149,15 @@ public class CrawlProduct implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.CrawlProduct[ id=" + id + " ]";
+        return "CrawlProduct{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                ", site='" + site + '\'' +
+                ", price='" + price + '\'' +
+                ", brandId=" + brandId +
+                ", categoryId=" + categoryId +
+                ", crawlProductImageCollection=" + crawlProductImageCollection +
+                '}';
     }
-    
 }

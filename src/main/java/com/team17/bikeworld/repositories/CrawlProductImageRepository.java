@@ -9,9 +9,10 @@ import java.util.List;
 
 public interface CrawlProductImageRepository extends JpaRepository<CrawlProductImage, Integer> {
 
-    @Modifying
-    CrawlProductImage addCrawlProductImg(int crawlProId, String imgLink);
-
-    @Modifying
-    int deleteAllBySite(String site);
+//    @Modifying
+//
+//    CrawlProductImage addCrawlProductImg(int crawlProId, String imgLink);
+//
+//    @Modifying
+//    int deleteAllBySite(String site);
 }

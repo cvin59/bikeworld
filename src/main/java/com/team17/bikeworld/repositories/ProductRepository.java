@@ -14,8 +14,8 @@ import java.util.Optional;
 
 public interface ProductRepository<Pro> extends JpaRepository<Product, Integer> {
 
-//    @Query("SELECT u FROM Product u WHERE u.cateId = ?1")
-    List<Product> findProductByCategoryId(Category cateId);
+    @Query("SELECT u FROM Product u WHERE u.categoryId = ?1")
+    List<Product> findProductByCategoryId(Category categoryId);
 
 
     @Modifying
@@ -34,19 +34,11 @@ public interface ProductRepository<Pro> extends JpaRepository<Product, Integer> 
     @Query(value = "UPDATE `product` SET status = '2' WHERE id = ?1", nativeQuery = true)
     Integer disableProduct(int id);
 
-    List<Product> findAllByCate(int cateId);
 
-    List<Product> searchByName(String searchValue);
 
-    @Modifying
-    Integer editProduct(String name, Double price,
-                        String description,
-                        Double longitude,
-                        Double latitude,
-                        String address,
-                        Date postDate,
-                        Brand brandId,
-                        Category categoryId);
+    @Query("SELECT u FROM Product u WHERE u.name like  %?1%")
+    List<Product> searchByName(String name);
+
 
     @Modifying
     @Query(value = "UPDATE `product` SET status = '1' WHERE id = ?1", nativeQuery = true)

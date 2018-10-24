@@ -51,6 +51,8 @@ public class ProductService {
                     String fileName = image.getOriginalFilename() + "_" + product.getId() + ".jpg";
                     Files.createDirectories(rootLocation);
                     Files.copy(image.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+
+
                     ProductImage productImage = productImageRepository.addNew(fileName, product);
                 }
             }
@@ -78,23 +80,32 @@ public class ProductService {
         return false;
     }
 
-    public List<Product> getByCate(int cateId){
-        List<Product> products = productRepository.findAllByCate(cateId);
-        return products;
-    }
+//    public List<Product> getByCate(int cateId) {
+//        List<Product> products = productRepository.findProductByCategoryId(cateId);
+//        return products;
+//    }
 
-    public List<Product> searchByName(String searchValue){
+    public List<Product> searchByName(String searchValue) {
         List<Product> products = productRepository.searchByName(searchValue);
         return products;
     }
 
     public boolean editProduct(ProductModel mpro) {
 
-        Integer count = productRepository.editProduct(mpro.getName(), mpro.getPrice(), mpro.getDescription(), mpro.getLongitude(), mpro.getLatitude(), mpro.getAddress(), new Date(), mpro.getBrandId(), mpro.getCategoryId());
-        if (count > 0) {
+        Optional<Product> proById = productRepository.findById(mpro.getId());
+
+        if (proById != null) {
+            Product product = proById.get();
+            product.setName(mpro.getName());
+            product.setBrandId(mpro.getBrandId());
+            product.setDescription(mpro.getDescription());
+            product.setLatitude(mpro.getLatitude());
+            product.setLongitude(mpro.getLongitude());
+            product.setAddress(mpro.getAddress());
+            product.setPostDate(new Date());
+            productRepository.save(product);
             return true;
         }
-
         return false;
     }
 

@@ -3,6 +3,7 @@ package com.team17.bikeworld.crawl.crawler;
 import com.team17.bikeworld.crawl.dict.CateDictObj;
 import com.team17.bikeworld.crawl.dict.CateObj;
 import com.team17.bikeworld.entity.Category;
+import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.repositories.CategoryRepository;
 import com.team17.bikeworld.repositories.CrawlProductImageRepository;
 import com.team17.bikeworld.repositories.CrawlRepository;
@@ -10,6 +11,7 @@ import org.w3c.dom.NodeList;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -79,7 +81,7 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
                     CateObj cateObj = CateDictObj.checkCate(cateName);
                     if (!link.contains("#") && cateObj != null) {
                         System.out.println("!!!! " + cateObj.getMeaning() + " - " + link);
-                        getItemList2(baseLink + link, cateObj);
+                        getItemList(baseLink + link, cateObj);
                     }
                 } else {
                     next = false;
@@ -94,112 +96,117 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
         }
     }
 
-    public boolean getItemList(String url, CateObj cate) {
+//    public boolean getItemList2(String url, CateObj cate) {
+//
+//        Optional<Category> optionalCategory = categoryRepository.findByName(cate.getMeaning());
+//        Category category;
+//        if (optionalCategory.isPresent()) {
+//            category = optionalCategory.get();
+//        } else {
+//            category = new Category();
+//            category.setName(cate.getMeaning());
+//            category = categoryRepository.save(category);
+//        }
+//        BufferedReader reader = null;
+//        try {
+//            reader = getBufferedReaderForURL(url);
+//            String line = "";
+//            String body = "";
+//            boolean isStart = false;
+//            boolean isEnd = false;
+//            int divClose = 1;
+//            while (!isEnd && (line = reader.readLine()) != null) {
+//                if (line.contains("id=\"productcategory_view_product_list\"")) {
+//                    isStart = true;
+//                }
+//                if (isStart) {
+//                    body += line.trim();
+//                    if (line.contains("</ul>")) {
+//                        isEnd = true;
+//                    }
+//                }
+//
+//            }
+//
+////            System.out.println("");
+////            System.out.println("doc-");
+////            System.out.println(body);
+////            System.out.println("-end doc");
+////            System.out.println("");
+//            boolean next = true;
+//            int itemPoint = 0;
+//            while (next) {
+//                String startStr = "<a href=\"";
+//                String endStr = "\">";
+//                int startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+//                int endApos = body.indexOf(endStr, startApos);
+//                if (itemPoint < startApos && startApos < endApos) {
+//                    String link = body.substring(startApos, endApos).trim();
+////                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+//                    itemPoint = endApos;
+//
+//                    startStr = "src=\"";
+//                    endStr = "\">";
+//                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+//                    endApos = body.indexOf(endStr, startApos);
+//                    String img = body.substring(startApos, endApos).trim().toLowerCase();
+////                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+//                    itemPoint = endApos;
+//
+//                    startStr = "<a href=\"" + link + "\">";
+////                    System.out.println("startStr " + startStr);
+//                    endStr = "</a>";
+//                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+//                    endApos = body.indexOf(endStr, startApos);
+//                    String name = body.substring(startApos, endApos).trim();
+////                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+//                    itemPoint = endApos;
+//
+//                    startStr = "productcategory_view_product_price\">";
+//                    endStr = "</div>";
+//                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+//                    endApos = body.indexOf(endStr, startApos);
+//                    String price = body.substring(startApos, endApos).trim();
+////                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+//                    itemPoint = endApos;
+//
+//                    if (CateDictObj.checkName(cate, name.toLowerCase())) {
+////                        System.out.println(itemPoint + " - " + startApos + " - " + endApos);
+////                        System.out.println("");
+////                        System.out.println("name  - " + name);
+////                        System.out.println("link  - " + link);
+////                        System.out.println("img   - " + img);
+////                        System.out.println("price - " + price);
+////                        System.out.println("");
+//                        crawlRepository.addCrawlProduct(baseLink, category, name, link, price);
+//                    }
+//                } else {
+//                    next = false;
+//                }
+//            }
+//            return true;
+//        } catch (IOException ex) {
+//            Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
+//        } finally {
+//            if (reader != null) {
+//                try {
+//                    reader.close();
+//                } catch (IOException ex) {
+//                    Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
-        Category cateEntity = categoryRepository.getByName(cate.getMeaning());
+
+    public boolean getItemList(String url, CateObj cateObj) {
+
+        Category category = getCate(cateObj);
         BufferedReader reader = null;
-        try {
-            reader = getBufferedReaderForURL(url);
-            String line = "";
-            String body = "";
-            boolean isStart = false;
-            boolean isEnd = false;
-            int divClose = 1;
-            while (!isEnd && (line = reader.readLine()) != null) {
-                if (line.contains("id=\"productcategory_view_product_list\"")) {
-                    isStart = true;
-                }
-                if (isStart) {
-                    body += line.trim();
-                    if (line.contains("</ul>")) {
-                        isEnd = true;
-                    }
-                }
-
-            }
-
-//            System.out.println("");
-//            System.out.println("doc-");
-//            System.out.println(body);
-//            System.out.println("-end doc");
-//            System.out.println("");
-            boolean next = true;
-            int itemPoint = 0;
-            while (next) {
-                String startStr = "<a href=\"";
-                String endStr = "\">";
-                int startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                int endApos = body.indexOf(endStr, startApos);
-                if (itemPoint < startApos && startApos < endApos) {
-                    String link = body.substring(startApos, endApos).trim();
-//                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                    itemPoint = endApos;
-
-                    startStr = "src=\"";
-                    endStr = "\">";
-                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                    endApos = body.indexOf(endStr, startApos);
-                    String img = body.substring(startApos, endApos).trim().toLowerCase();
-//                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                    itemPoint = endApos;
-
-                    startStr = "<a href=\"" + link + "\">";
-//                    System.out.println("startStr " + startStr);
-                    endStr = "</a>";
-                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                    endApos = body.indexOf(endStr, startApos);
-                    String name = body.substring(startApos, endApos).trim();
-//                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                    itemPoint = endApos;
-
-                    startStr = "productcategory_view_product_price\">";
-                    endStr = "</div>";
-                    startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                    endApos = body.indexOf(endStr, startApos);
-                    String price = body.substring(startApos, endApos).trim();
-//                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                    itemPoint = endApos;
-
-                    if (CateDictObj.checkName(cate, name.toLowerCase())) {
-//                        System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-//                        System.out.println("");
-//                        System.out.println("name  - " + name);
-//                        System.out.println("link  - " + link);
-//                        System.out.println("img   - " + img);
-//                        System.out.println("price - " + price);
-//                        System.out.println("");
-                        crawlRepository.addCrawlProduct(baseLink, cateEntity, name, link, price);
-                    }
-                } else {
-                    next = false;
-                }
-            }
-            return true;
-        } catch (IOException ex) {
-            Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(BaseCrawler.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        return false;
-    }
-
-
-    public boolean getItemList2(String url, CateObj cate) {
-
-        Category cateEntity = categoryRepository.getByName(cate.getMeaning());
-        BufferedReader reader = null;
-//        boolean next = true;
         int page = 1;
         try {
             do {
-
-
                 reader = getBufferedReaderForURL(url + "?page=" + page);
                 String line = "";
                 String body = "";
@@ -216,9 +223,7 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
                             isEnd = true;
                         }
                     }
-
                 }
-
                 int countInPage = 0;
                 boolean next = true;
                 int itemPoint = 0;
@@ -253,8 +258,9 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
                         itemPoint = endApos;
 
-                        if (CateDictObj.checkName(cate, name.toLowerCase())) {
-                            crawlRepository.addCrawlProduct(baseLink, cateEntity, name, link, price);
+                        if (CateDictObj.checkName(cateObj, name.toLowerCase())) {
+//                            crawlRepository.addCrawlProduct(baseLink, category, name, link, price);
+                            CrawlProduct crawlProduct = saveNewCrawlProduct(name, baseLink, link, price, category, img);
                             countInPage++;
                         }
                     } else {
