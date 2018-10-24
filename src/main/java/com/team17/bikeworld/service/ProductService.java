@@ -113,12 +113,12 @@ public class ProductService {
 //        List<Product> products = productRepository.searchByName(searchValue);
 //        return products;
 //    }
-
+  
     public Response<Product> createProduct(ProductModel newProduct, MultipartFile images) {
         Response<Product> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         if (newProduct != null) {
             // Add new attributes
-
+            newProduct.setId(0);
             // Add Postdate
             Date date = new Date();
             date.getTime();

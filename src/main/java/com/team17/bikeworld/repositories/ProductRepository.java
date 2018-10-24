@@ -7,13 +7,14 @@ import com.team17.bikeworld.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProductRepository<Pro> extends JpaRepository<Product, Integer> {
-
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT u FROM Product u WHERE u.categoryId = ?1")
     List<Product> findProductByCategoryId(Category categoryId);
 
@@ -43,5 +44,4 @@ public interface ProductRepository<Pro> extends JpaRepository<Product, Integer> 
     @Modifying
     @Query(value = "UPDATE `product` SET status = '1' WHERE id = ?1", nativeQuery = true)
     Integer activateTradeItem(int id);
-
 }

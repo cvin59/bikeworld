@@ -1,6 +1,8 @@
 package com.team17.bikeworld.model;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
+import com.team17.bikeworld.adapter.EmptyStringTypeAdapter;
 import com.team17.bikeworld.entity.Brand;
 import com.team17.bikeworld.entity.Category;
 
@@ -9,6 +11,7 @@ import java.util.List;
 
 public class ProductModel {
     @Expose
+    @JsonAdapter(EmptyStringTypeAdapter.class)
     private  Integer id;
     @Expose
     private String name;
@@ -41,7 +44,19 @@ public class ProductModel {
 
     public ProductModel() {
     }
-
+  
+    public ProductModel(String name, String description, double price, String longtitude, String latitude, String seller, String address, int category, int brand) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.longtitude = longtitude;
+        this.latitude = latitude;
+        this.seller = seller;
+        this.address = address;
+        this.category = category;
+        this.brand = brand;
+    }
+      
     private Brand brandId;
     private Category categoryId;
     private String username;
@@ -62,6 +77,24 @@ public class ProductModel {
         this.category = category;
         this.brand = brand;
     }
+
+    public ProductModel(int id, String name, String description, double price, String longtitude, String latitude, String seller, String address, Date postDate, double totalRatePoint, int totalRater, int status, int category, int brand) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.longtitude = longtitude;
+        this.latitude = latitude;
+        this.seller = seller;
+        this.address = address;
+        this.postDate = postDate;
+        this.totalRatePoint = totalRatePoint;
+        this.totalRater = totalRater;
+        this.status = status;
+        this.category = category;
+        this.brand = brand;
+    }
+
     public Integer getId() {
         return id;
     }
