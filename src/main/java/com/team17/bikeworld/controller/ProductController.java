@@ -4,12 +4,11 @@ import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.model.ProductModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import com.team17.bikeworld.entity.*;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
 @RestController
 @CrossOrigin
 public class ProductController extends AbstractController {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
     private final ProductService productService;
 
     public ProductController(ProductService productService) {
@@ -37,20 +36,9 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/create")
-    public void createProduct(String txtName, String txtDescription, Double txtPrice, String txtLongtitude, String txtLatitude, String txtAddress, String txtSeller, Integer txtCategory, Integer txtBrand, MultipartFile images) {
-        ProductModel newProduct = new ProductModel();
-
-        newProduct.setName(txtName);
-        newProduct.setDescription(txtDescription);
-        newProduct.setPrice(txtPrice);
-        newProduct.setLongtitude(txtLongtitude);
-        newProduct.setLatitude(txtLatitude);
-        newProduct.setAddress(txtAddress);
-        newProduct.setSeller(txtSeller);
-        newProduct.setCategory(txtCategory);
-        newProduct.setBrand(txtBrand);
-
+    @PostMapping(CoreConstant.API_PRODUCT)
+    public void createProduct(@RequestParam String productModelString, MultipartFile images) {
+        ProductModel newProduct = gson.fromJson(productModelString,ProductModel.class);
         productService.createProduct(newProduct, null);
     }
 
