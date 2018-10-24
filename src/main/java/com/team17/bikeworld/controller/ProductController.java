@@ -37,7 +37,6 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-<<<<<<< HEAD
     @PostMapping(CoreConstant.API_PRODUCT)
     public void createProduct(@RequestParam String productModelString, MultipartFile images) {
         ProductModel newProduct = gson.fromJson(productModelString,ProductModel.class);
@@ -49,8 +48,8 @@ public class ProductController extends AbstractController {
                               @RequestParam(value = "txtName", required = false) String txtName,
                               @RequestParam(value = "txtDescription", required = false) String txtDescription,
                               @RequestParam(value = "txtPrice", required = false) Double txtPrice,
-                              @RequestParam(value = "txtLongtitude", required = false) String txtLongtitude,
-                              @RequestParam(value = "txtLatitude", required = false) String txtLatitude,
+                              @RequestParam(value = "txtLongtitude", required = false) Double txtLongtitude,
+                              @RequestParam(value = "txtLatitude", required = false) Double txtLatitude,
                               @RequestParam(value = "txtAddress", required = false) String txtAddress,
                               @RequestParam(value = "txtSeller", required = false) String txtSeller,
                               @RequestParam(value = "txtCategory", required = false) Integer txtCategory,
@@ -63,7 +62,7 @@ public class ProductController extends AbstractController {
         updatedProduct.setName(txtName);
         updatedProduct.setDescription(txtDescription);
         updatedProduct.setPrice(txtPrice);
-        updatedProduct.setLongtitude(txtLongtitude);
+        updatedProduct.setLongitude(txtLongtitude);
         updatedProduct.setLatitude(txtLatitude);
         updatedProduct.setAddress(txtAddress);
         updatedProduct.setSeller(txtSeller);
@@ -72,7 +71,7 @@ public class ProductController extends AbstractController {
 
         productService.updateProduct(updatedProduct,null);
     }
-=======
+
     @GetMapping(CoreConstant.API_PRODUCT + "/search/{id}/{name}")
     public String searchTradeItem(@PathVariable int id, @PathVariable String name) {
 
@@ -85,6 +84,4 @@ public class ProductController extends AbstractController {
         }
         return gson.toJson(response);
     }
-
->>>>>>> master
 }

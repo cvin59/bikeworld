@@ -1,10 +1,7 @@
 package com.team17.bikeworld.service;
 
-<<<<<<< HEAD
 import com.team17.bikeworld.common.CoreConstant;
-=======
 import com.team17.bikeworld.entity.Category;
->>>>>>> master
 import com.team17.bikeworld.entity.Product;
 import com.team17.bikeworld.entity.ProductImage;
 import com.team17.bikeworld.model.ProductModel;
@@ -31,7 +28,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
-    private final ProductTransformer productTransformer;
+//    private final ProductTransformer productTransformer;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
     private final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
@@ -40,7 +37,7 @@ public class ProductService {
     public ProductService(ProductRepository productRepository, ProductImageRepository productImageRepository, ProductTransformer productTransformer) {
         this.productRepository = productRepository;
         this.productImageRepository = productImageRepository;
-        this.productTransformer = productTransformer;
+//        this.productTransformer = productTransformer;
     }
 
     public List<Product> findAll() {
@@ -48,13 +45,12 @@ public class ProductService {
         return products;
     }
 
-<<<<<<< HEAD
 //    public List<Product> findProductByCate(int cateId) {
 //        List<Product> products = productRepository.findProductByCategoryId(cateId);
 //        return products;
 //    }
 
-    public boolean addProduct(ProductModel mpro, MultipartFile image) {
+//    public boolean addProduct(ProductModel mpro, MultipartFile image) {
 //        try {
 //            if (mpro != null) {
 //
@@ -72,7 +68,7 @@ public class ProductService {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-=======
+
     public List<Product> findProductByCate(Category cateId) {
         List<Product> products = productRepository.findProductByCategoryId(cateId);
         return products;
@@ -96,7 +92,6 @@ public class ProductService {
         } catch (IOException e) {
             e.printStackTrace();
         }
->>>>>>> master
         return false;
     }
 
@@ -137,10 +132,8 @@ public class ProductService {
             newProduct.setStatus(CoreConstant.STATUS_PRODUCT_AVAILABLE);
             try {
                 // Transform Model to Entity
-                Product productEntity = productTransformer.ProductModelToEntity(newProduct);
-                //test
+//                Product productEntity = productTransformer.ProductModelToEntity(newProduct);
 
-                //ong thu them brand voi category vao di, entity bao ko dc null, ma nay null
                 // Lưu DB
                 productRepository.save(productEntity);
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, productEntity);
@@ -149,7 +142,6 @@ public class ProductService {
                 response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
             }
         }
-<<<<<<< HEAD
 
         return response;
     }
@@ -175,9 +167,6 @@ public class ProductService {
         }
 
         return response;
-    }
-=======
-        return false;
     }
 
     public boolean activateTradeItem(int id) {
@@ -216,7 +205,4 @@ public class ProductService {
         }
         return false;
     }
-
-
->>>>>>> master
 }

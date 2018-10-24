@@ -13,14 +13,10 @@ import java.util.List;
 
 @Repository
 public interface ProductImageRepository<Pro> extends JpaRepository<ProductImage, Integer> {
-<<<<<<< HEAD
-=======
-
 //    @Query("SELECT u FROM ProductImage u WHERE u.product_id = ?1")
 //    List<Product> findAllByProId(int proId);
 
     @Modifying
     @Query(value = "INSERT INTO `ProductImage` ( `name`, `price`, `description`, `longitude`, `latitude`, `address`,`postDate`, `brandId`, `categoryId`) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8,?9)", nativeQuery = true)
     ProductImage addNew(String link, Product pro);
->>>>>>> master
 }
