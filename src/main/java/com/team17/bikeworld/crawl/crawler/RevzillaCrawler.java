@@ -25,7 +25,6 @@ import java.io.BufferedReader;
 
 public class RevzillaCrawler extends BaseCrawler implements Runnable {
 
-    private final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RevzillaCrawler.class);
 
     public RevzillaCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository) {
         super(crawlRepository, categoryRepository, crawlProductImageRepository);
@@ -192,7 +191,9 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
         int page = 1;
         try {
             do {
-                reader = getBufferedReaderForURL(url + "#page=" + page);
+
+                String pageLink = url + "?page=" + page;
+                reader = getBufferedReaderForURL(pageLink);
                 String line = "";
                 String body = "";
                 boolean isStart = false;
@@ -231,50 +232,51 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
                         endStr = "\">";
                         startApos = body.indexOf(startStr, itemPoint) + startStr.length();
                         endApos = body.indexOf(endStr, startApos);
-                        String link = body.substring(startApos, endApos).trim().toLowerCase();
+                        if (itemPoint < startApos && startApos < endApos) {
+                            String link = body.substring(startApos, endApos).trim().toLowerCase();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                        itemPoint = endApos;
+                            itemPoint = endApos;
 
-                        startStr = "itemprop=\"url\" title=\"";
-                        endStr = "\">";
-                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                        endApos = body.indexOf(endStr, startApos);
-                        String name = body.substring(startApos, endApos).trim().toLowerCase();
+                            startStr = "itemprop=\"url\" title=\"";
+                            endStr = "\">";
+                            startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                            endApos = body.indexOf(endStr, startApos);
+                            String name = body.substring(startApos, endApos).trim().toLowerCase();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                        itemPoint = endApos;
+                            itemPoint = endApos;
 
-                        startStr = "itemprop=\"brand\" content=\"";
+                            startStr = "itemprop=\"brand\" content=\"";
 //                    System.out.println("startStr " + startStr);
-                        endStr = "\">";
-                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                        endApos = body.indexOf(endStr, startApos);
-                        String brand = body.substring(startApos, endApos).trim();
+                            endStr = "\">";
+                            startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                            endApos = body.indexOf(endStr, startApos);
+                            String brand = body.substring(startApos, endApos).trim();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                        itemPoint = endApos;
+                            itemPoint = endApos;
 
-                        startStr = "itemprop=\"image\" content=\"";
-                        endStr = "\">";
-                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                        endApos = body.indexOf(endStr, startApos);
-                        String img = body.substring(startApos, endApos).trim();
+                            startStr = "itemprop=\"image\" content=\"";
+                            endStr = "\">";
+                            startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                            endApos = body.indexOf(endStr, startApos);
+                            String img = body.substring(startApos, endApos).trim();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                        itemPoint = endApos;
+                            itemPoint = endApos;
 
-                        startStr = "itemprop=\"price\" content=\"";
-                        endStr = "\"";
-                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                        endApos = body.indexOf(endStr, startApos);
-                        String price = body.substring(startApos, endApos).trim();
+                            startStr = "itemprop=\"price\" content=\"";
+                            endStr = "\"";
+                            startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                            endApos = body.indexOf(endStr, startApos);
+                            String price = body.substring(startApos, endApos).trim();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                        itemPoint = endApos;
+                            itemPoint = endApos;
 
-                        startStr = "itemprop=\"priceCurrency\" content=\"";
-                        endStr = "\"";
-                        startApos = body.indexOf(startStr, itemPoint) + startStr.length();
-                        endApos = body.indexOf(endStr, startApos);
-                        String priceUnit = body.substring(startApos, endApos).trim();
+                            startStr = "itemprop=\"priceCurrency\" content=\"";
+                            endStr = "\"";
+                            startApos = body.indexOf(startStr, itemPoint) + startStr.length();
+                            endApos = body.indexOf(endStr, startApos);
+                            String priceUnit = body.substring(startApos, endApos).trim();
 //                    System.out.println(itemPoint + " - " + startApos + " - " + endApos);
-                        itemPoint = endApos;
+                            itemPoint = endApos;
 
 //                    String desc = getItemDetail(baseLink + link);
 //                    System.out.println("");
@@ -286,14 +288,18 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
 //                    productDao.replaceProduct(connection, baseLink, cate.getMeaning(), name, link, img, price);
                         CrawlProduct crawlProduct = saveNewCrawlProduct(name, baseLink, link, priceUnit + price, category, img);
 
-                        LOGGER.info(crawlProduct.toString());
+//                        LOGGER.info(crawlProduct.toString());
 
 //                        crawlRepository.addCrawlProduct(baseLink, cateEntity, name, link, price);
-                        countInPage++;
+                            countInPage++;
+                        } else {
+                            next = false;
+                        }
                     } else {
                         next = false;
                     }
                 }
+//                LOGGER.info("url = " + pageLink + ", record = " + countInPage + ", page = " + page);
                 if (countInPage > 0) {
                     page++;
                 } else {

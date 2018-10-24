@@ -8,6 +8,7 @@ import com.team17.bikeworld.entity.Product;
 import com.team17.bikeworld.repositories.CategoryRepository;
 import com.team17.bikeworld.repositories.CrawlProductImageRepository;
 import com.team17.bikeworld.repositories.CrawlRepository;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -35,7 +36,7 @@ public class BaseCrawler {
     protected final CrawlProductImageRepository crawlProductImageRepository;
 
 
-
+    protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCrawler.class);
 
     public BaseCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository) {
         this.crawlRepository = crawlRepository;
