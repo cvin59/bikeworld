@@ -1,5 +1,8 @@
 package com.team17.bikeworld.common;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class CoreConstant {
 
     public static final String API_EVENT = "/api/event";
@@ -34,4 +37,7 @@ public class CoreConstant {
     //Role
     public static final String MEMBER =  "MEMBER";
     public static final String ADMIN =  "ADMIN";
+
+    public static final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
+
 }
