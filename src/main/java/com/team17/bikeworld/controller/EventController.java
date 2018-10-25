@@ -79,7 +79,7 @@ public class EventController extends AbstractController{
         return gson.toJson(response);
     }
 
-    @PutMapping(API_EVENT + "/{id}")
+    @PutMapping(API_EVENT)
     public String updateEvent(@RequestParam String consumeEventString, MultipartFile image) {
         LOGGER.info(consumeEventString);
         ConsumeEvent consumeEvent = gson.fromJson(consumeEventString, ConsumeEvent.class);
