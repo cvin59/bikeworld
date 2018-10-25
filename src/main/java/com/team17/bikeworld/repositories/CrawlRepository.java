@@ -22,4 +22,8 @@ public interface CrawlRepository extends JpaRepository<CrawlProduct, Integer> {
 
     @Query(value = "SELECT * FROM crawlproduct ", nativeQuery = true)
     List<CrawlProduct> getAll();
+
+
+
+    List<CrawlProduct> findAllBySite(String site);
 }

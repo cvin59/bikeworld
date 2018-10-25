@@ -16,6 +16,7 @@ import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.entity.CrawlProductImage;
 import com.team17.bikeworld.repositories.*;
+import com.team17.bikeworld.service.CrawlService;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -466,6 +467,7 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
     @Override
     public void run() {
         try {
+            crawlRepository.deleteAllBySite(baseLink);
             getCates();
         } catch (IOException e) {
             e.printStackTrace();
