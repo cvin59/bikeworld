@@ -14,8 +14,6 @@ import java.util.List;
 public class CrawlService {
 
 
-
-
     private final CrawlRepository crawlRepository;
     private final CrawlProductImageRepository crawlProductImageRepository;
     private final CategoryRepository categoryRepository;
@@ -31,11 +29,17 @@ public class CrawlService {
         List<CrawlProduct> products = crawlRepository.findAll();
         return products;
     }
+
     public List<CrawlProduct> viewCrawl(String site) {
-        List<CrawlProduct> products = crawlRepository.findAll();
+        List<CrawlProduct> products = crawlRepository.findAllBySite(site);
         return products;
     }
 
+
+    public Integer deleteAllBySite(String site) {
+        int i = crawlRepository.deleteAllBySite(site);
+        return i;
+    }
 
     public int runCrawl(String site) {
         int count = 0;
@@ -72,7 +76,6 @@ public class CrawlService {
             }
         }
     }
-
 
 
 }

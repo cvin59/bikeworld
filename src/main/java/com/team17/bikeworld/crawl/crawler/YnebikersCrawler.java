@@ -292,6 +292,7 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
     @Override
     public void run() {
         try {
+            crawlRepository.deleteAllBySite(baseLink);
             getCates();
         } catch (IOException e) {
             e.printStackTrace();
