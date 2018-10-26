@@ -28,11 +28,10 @@ public class CoreConstant {
     public static final int STATUS_PROPOSALEVENT_PENDING = 1;
 
     //Event Status
-    public static final int STATUS_EVENT_PENDING =  1;
-    public static final int STATUS_EVENT_REGISTERING = 2;
-    public static final int STATUS_EVENT_ONGOING = 3;
-    public static final int STATUS_EVENT_END = 4;
-    public static final int STATUS_EVENT_CANCELED= 5;
+    public static final int STATUS_EVENT_UPCOMING =  1;
+    public static final int STATUS_EVENT_ONGOING = 2;
+    public static final int STATUS_EVENT_FINISH = 3;
+    public static final int STATUS_EVENT_DEACTIVATED = 4;
 
     //Product Status
     public static final int STATUS_PRODUCT_AVAILABLE = 1;
