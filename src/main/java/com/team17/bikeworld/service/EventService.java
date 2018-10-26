@@ -110,7 +110,7 @@ public class EventService {
 
     private void handleImage(ConsumeEvent consumeEvent, MultipartFile image) throws IOException {
         if (image != null) {
-            String sourceName = image.getOriginalFilename();
+            String sourceName = image.getName();
             String sourceFileName = FilenameUtils.getBaseName(sourceName);
             String sourceExt = FilenameUtils.getExtension(sourceName).toLowerCase();
 
