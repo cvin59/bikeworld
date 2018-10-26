@@ -1,6 +1,7 @@
 package com.team17.bikeworld.service;
 
 import com.team17.bikeworld.common.CoreConstant;
+import com.team17.bikeworld.entity.Brand;
 import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.Product;
 import com.team17.bikeworld.entity.ProductImage;
@@ -46,11 +47,27 @@ public class ProductService {
         return products;
     }
 
-    public List<Product> findProductByCate(Category cateId) {
-        List<Product> products = productRepository.findProductByCategoryId(cateId);
+    public List<Product> getProductByCate(int id) {
+        Category category = new Category();
+        category.setId(id);
+        List<Product> products = productRepository.findByCategoryId(category);
         return products;
     }
-  
+
+    public List<Product> getProductByBrand(int id) {
+        Brand brand = new Brand();
+        brand.setId(id);
+        List<Product> products = productRepository.findByBrandId(brand);
+        return products;
+    }
+
+    public List<Product> getProductBySeller(String username) {
+        Account seller = new Account();
+        seller.setUsername(username);
+        List<Product> products = productRepository.findByAccountUsename(seller);
+        return products;
+    }
+
     public Response<Product> createProduct(ProductModel newProduct, MultipartFile[] images) {
         Response<Product> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         if (newProduct != null) {
@@ -140,8 +157,8 @@ public class ProductService {
         return response;
     }
 
-    public Product getProductById(int id){
-        Optional<Product> entity= productRepository.findById(id);
+    public Product getProductById(int id) {
+        Optional<Product> entity = productRepository.findById(id);
         return entity.orElse(null);
     }
 
