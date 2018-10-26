@@ -76,4 +76,30 @@ public class ProductController extends AbstractController {
         }
         return gson.toJson(response);
     }
+
+    @GetMapping(CoreConstant.API_PRODUCT + "/category/{id}")
+    public String getByCategory(@PathVariable int id) {
+
+        Response<List<Product>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<Product> pros = productService.getProductByCate(id);
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, pros);
+        } catch (Exception e) {
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+    @GetMapping(CoreConstant.API_PRODUCT + "/brand/{id}")
+    public String getByBrand(@PathVariable int id) {
+
+        Response<List<Product>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<Product> pros = productService.getProductByCate(id);
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, pros);
+        } catch (Exception e) {
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
 }
