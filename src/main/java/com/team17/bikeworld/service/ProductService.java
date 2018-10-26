@@ -55,9 +55,16 @@ public class ProductService {
     }
 
     public List<Product> getProductByBrand(int id) {
-        Brand brand=new Brand();
+        Brand brand = new Brand();
         brand.setId(id);
         List<Product> products = productRepository.findByBrandId(brand);
+        return products;
+    }
+
+    public List<Product> getProductBySeller(String username) {
+        Account seller = new Account();
+        seller.setUsername(username);
+        List<Product> products = productRepository.findByAccountUsename(seller);
         return products;
     }
 

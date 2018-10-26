@@ -1,6 +1,7 @@
 package com.team17.bikeworld.repositories;
 
 
+import com.team17.bikeworld.entity.Account;
 import com.team17.bikeworld.entity.Brand;
 import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.Product;
@@ -20,6 +21,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> findByBrandId(Brand brand);
 
+    List<Product> findByAccountUsename(Account account);
+
     @Modifying
     @Query(value = "UPDATE `product` SET status = '2' WHERE id = ?1", nativeQuery = true)
     Integer disableProduct(int id);
@@ -30,4 +33,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Modifying
     @Query(value = "UPDATE `product` SET status = '1' WHERE id = ?1", nativeQuery = true)
     Integer activateTradeItem(int id);
+
 }
