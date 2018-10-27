@@ -41,9 +41,9 @@ public class ProductController extends AbstractController {
     }
 
     @PostMapping(CoreConstant.API_PRODUCT)
-    public void createProduct(@RequestParam String productModelString, MultipartFile images) {
+    public void createProduct(@RequestParam String productModelString, MultipartFile[] images) {
         ProductModel newProduct = gson.fromJson(productModelString, ProductModel.class);
-        productService.createProduct(newProduct, null);
+        productService.createProduct(newProduct, images);
     }
 
     @GetMapping(CoreConstant.API_PRODUCT + "/update")
@@ -53,7 +53,7 @@ public class ProductController extends AbstractController {
     }
 
     @GetMapping(CoreConstant.API_PRODUCT + "/{id}")
-    public String getProductById(@PathVariable int id) {
+    public @ResponseBody String getProductById(@PathVariable int id) {
         Response<Product> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             Product product = productService.getProductById(id);

@@ -1,10 +1,7 @@
 package com.team17.bikeworld.service;
 
 import com.team17.bikeworld.common.CoreConstant;
-import com.team17.bikeworld.entity.Brand;
-import com.team17.bikeworld.entity.Category;
-import com.team17.bikeworld.entity.Product;
-import com.team17.bikeworld.entity.ProductImage;
+import com.team17.bikeworld.entity.*;
 import com.team17.bikeworld.model.ProductModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.repositories.ProductImageRepository;
