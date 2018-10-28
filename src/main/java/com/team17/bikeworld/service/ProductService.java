@@ -9,6 +9,9 @@ import com.team17.bikeworld.repositories.ProductRepository;
 import com.team17.bikeworld.transformer.ProductTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,24 +47,24 @@ public class ProductService {
         return products;
     }
 
-    public List<Product> getProductByCate(int id) {
+    public List<Product> getProductByCate(int id, Pageable pageable) {
         Category category = new Category();
         category.setId(id);
-        List<Product> products = productRepository.findByCategoryId(category);
+        List<Product> products = productRepository.findByCategoryId(category, pageable);
         return products;
     }
 
-    public List<Product> getProductByBrand(int id) {
+    public List<Product> getProductByBrand(int id, Pageable pageable) {
         Brand brand = new Brand();
         brand.setId(id);
-        List<Product> products = productRepository.findByBrandId(brand);
+        List<Product> products = productRepository.findByBrandId(brand, pageable);
         return products;
     }
 
-    public List<Product> getProductBySeller(String username) {
+    public List<Product> getProductBySeller(String username, Pageable pageable) {
         Account seller = new Account();
         seller.setUsername(username);
-        List<Product> products = productRepository.findByAccountUsename(seller);
+        List<Product> products = productRepository.findByAccountUsename(seller, pageable);
         return products;
     }
 

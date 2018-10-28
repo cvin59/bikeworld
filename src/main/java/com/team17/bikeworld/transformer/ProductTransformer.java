@@ -55,6 +55,7 @@ public class ProductTransformer {
             brand.setId(model.getBrand());
             entity.setBrandId(brand);
 
+            entity.setQuantity(model.getQuantity());
             entity.setDescription(model.getDescription());
 //            entity.setLatitude();
 //            entity.setLongitude();

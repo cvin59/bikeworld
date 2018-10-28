@@ -15,7 +15,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
  * @author asus
  */
 @Entity
@@ -40,6 +39,9 @@ public class Product implements Serializable {
     @Expose
     @Column(name = "description", length = 255)
     private String description;
+    @Expose
+    @Column(name = "quantity")
+    private Integer quantity;
     @Expose
     @Column(name = "longitude", precision = 22)
     private Double longitude;
@@ -118,6 +120,14 @@ public class Product implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public Double getLongitude() {
@@ -251,5 +261,5 @@ public class Product implements Serializable {
     public String toString() {
         return "entity.Product[ id=" + id + " ]";
     }
-    
+
 }
