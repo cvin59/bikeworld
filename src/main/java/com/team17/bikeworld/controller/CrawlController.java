@@ -52,6 +52,7 @@ public class CrawlController extends AbstractController {
         Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<CrawlProduct> crawlPros = crawlService.viewCrawl(site);
+            LOGGER.info(crawlPros.toString());
             if (crawlPros != null) {
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, crawlPros);
             } else {

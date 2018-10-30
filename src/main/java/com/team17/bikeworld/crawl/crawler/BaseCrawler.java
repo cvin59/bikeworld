@@ -9,6 +9,7 @@ import com.team17.bikeworld.repositories.CategoryRepository;
 import com.team17.bikeworld.repositories.CrawlProductImageRepository;
 import com.team17.bikeworld.repositories.CrawlRepository;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -19,11 +20,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -34,7 +38,7 @@ public class BaseCrawler {
     protected final CrawlRepository crawlRepository;
     protected final CategoryRepository categoryRepository;
     protected final CrawlProductImageRepository crawlProductImageRepository;
-
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCrawler.class);
 
@@ -200,6 +204,14 @@ public class BaseCrawler {
         crawlProductImageRepository.save(crawlProductImage);
         return crawlProduct;
     }
+
+
+    protected String getHash(String name, String link, String price){
+        String fullStr = name+ link + price;
+        String encode = bCryptPasswordEncoder.encode(fullStr);
+        return encode;
+    }
+
 
 
 }

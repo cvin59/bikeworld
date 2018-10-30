@@ -20,10 +20,9 @@ public interface CrawlRepository extends JpaRepository<CrawlProduct, Integer> {
     int deleteAllBySite(String site);
 
 
-    @Query(value = "SELECT * FROM crawlproduct ", nativeQuery = true)
+    @Query(value = "SELECT * FROM `crawlproduct` ", nativeQuery = true)
     List<CrawlProduct> getAll();
 
-
-
+    @Query(value = "SELECT * FROM `crawlproduct` WHERE site = ?1", nativeQuery = true)
     List<CrawlProduct> findAllBySite(String site);
 }

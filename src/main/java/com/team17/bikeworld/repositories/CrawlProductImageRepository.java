@@ -1,9 +1,11 @@
 package com.team17.bikeworld.repositories;
 
 
+import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.entity.CrawlProductImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,7 +15,11 @@ public interface CrawlProductImageRepository extends JpaRepository<CrawlProductI
 
 //    @Modifying
 //    CrawlProductImage addCrawlProductImg(int crawlProId, String imgLink);
-//
-//    @Modifying
-//    int deleteAllBySite(String site);
+
+    @Modifying
+    @Query(value = "DELETE FROM `crawlproductimage` WHERE site = ?1", nativeQuery = true)
+    int deleteAllBySite(String site);
+
+    @Query(value = "SELECT * FROM `crawlproduct` WHERE site = ?1", nativeQuery = true)
+    List<CrawlProductImage> findAllBySite(String site);
 }

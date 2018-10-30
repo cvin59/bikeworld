@@ -230,7 +230,7 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
                         itemPoint = startApos;
 
                         startStr = "href=\"";
-                        endStr = "\">";
+                        endStr = "\"";
                         startApos = body.indexOf(startStr, itemPoint) + startStr.length();
                         endApos = body.indexOf(endStr, startApos);
                         if (itemPoint < startApos && startApos < endApos) {
@@ -239,7 +239,7 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
                             itemPoint = endApos;
 
                             startStr = "itemprop=\"url\" title=\"";
-                            endStr = "\">";
+                            endStr = "\"";
                             startApos = body.indexOf(startStr, itemPoint) + startStr.length();
                             endApos = body.indexOf(endStr, startApos);
                             String name = body.substring(startApos, endApos).trim().toLowerCase();
@@ -248,7 +248,7 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
 
                             startStr = "itemprop=\"brand\" content=\"";
 //                    System.out.println("startStr " + startStr);
-                            endStr = "\">";
+                            endStr = "\"";
                             startApos = body.indexOf(startStr, itemPoint) + startStr.length();
                             endApos = body.indexOf(endStr, startApos);
                             String brand = body.substring(startApos, endApos).trim();
@@ -256,7 +256,7 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
                             itemPoint = endApos;
 
                             startStr = "itemprop=\"image\" content=\"";
-                            endStr = "\">";
+                            endStr = "\"";
                             startApos = body.indexOf(startStr, itemPoint) + startStr.length();
                             endApos = body.indexOf(endStr, startApos);
                             String img = body.substring(startApos, endApos).trim();
@@ -467,7 +467,10 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
     @Override
     public void run() {
         try {
-            crawlRepository.deleteAllBySite(baseLink);
+//            List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(baseLink);
+//            crawlProductImageRepository.deleteAll(imgBySite);
+//            List<CrawlProduct> allBySite = crawlRepository.findAllBySite(baseLink);
+//            crawlRepository.deleteAll(allBySite);
             getCates();
         } catch (IOException e) {
             e.printStackTrace();
