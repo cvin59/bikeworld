@@ -72,13 +72,14 @@ public class ProductService {
     }
 
 
-//    public boolean disableProduct(int id) {
-//        Integer count = productRepository.disableProduct(id);
-//        if (count > 0) {
-//            return true;
-//        }
-//        return false;
-//    }
+    public boolean disableProduct(int id) {
+        Optional<Product> byId = productRepository.findById(id);
+
+        if (byId.isPresent()) {
+            Product product = byId.get();
+        }
+        return false;
+    }
 //
 //    public List<Product> getByCate(int cateId){
 //        List<Product> products = productRepository.findAllByCate(cateId);

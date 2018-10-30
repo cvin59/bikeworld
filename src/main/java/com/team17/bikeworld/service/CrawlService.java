@@ -3,6 +3,7 @@ package com.team17.bikeworld.service;
 import com.team17.bikeworld.crawl.crawler.RevzillaCrawler;
 import com.team17.bikeworld.crawl.crawler.YnebikersCrawler;
 import com.team17.bikeworld.entity.CrawlProduct;
+import com.team17.bikeworld.entity.CrawlProductImage;
 import com.team17.bikeworld.repositories.CategoryRepository;
 import com.team17.bikeworld.repositories.CrawlProductImageRepository;
 import com.team17.bikeworld.repositories.CrawlRepository;
@@ -31,8 +32,18 @@ public class CrawlService {
     }
 
     public List<CrawlProduct> viewCrawl(String site) {
-        List<CrawlProduct> products = crawlRepository.findAllBySite(site);
-        return products;
+        String url = null;
+        if (site.equals("revzilla")) {
+            url = RevzillaCrawler.baseLink;
+        } else if (site.equals("ynebikers")) {
+            url = YnebikersCrawler.baseLink;
+        }
+        if (url != null) {
+            List<CrawlProduct> products = crawlRepository.findAllBySite(url);
+            return products;
+        } else {
+            return null;
+        }
     }
 
 
@@ -77,5 +88,12 @@ public class CrawlService {
         }
     }
 
+
+    public void DeleteBySite(String site) {
+        List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(site);
+        crawlProductImageRepository.deleteAll(imgBySite);
+        List<CrawlProduct> allBySite = crawlRepository.findAllBySite(site);
+        crawlRepository.deleteAll(allBySite);
+    }
 
 }

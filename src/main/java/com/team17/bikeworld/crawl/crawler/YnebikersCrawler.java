@@ -4,6 +4,7 @@ import com.team17.bikeworld.crawl.dict.CateDictObj;
 import com.team17.bikeworld.crawl.dict.CateObj;
 import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.CrawlProduct;
+import com.team17.bikeworld.entity.CrawlProductImage;
 import com.team17.bikeworld.repositories.CategoryRepository;
 import com.team17.bikeworld.repositories.CrawlProductImageRepository;
 import com.team17.bikeworld.repositories.CrawlRepository;
@@ -11,6 +12,7 @@ import org.w3c.dom.NodeList;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -292,7 +294,10 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
     @Override
     public void run() {
         try {
-            crawlRepository.deleteAllBySite(baseLink);
+//            List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(baseLink);
+//            crawlProductImageRepository.deleteAll(imgBySite);
+//            List<CrawlProduct> allBySite = crawlRepository.findAllBySite(baseLink);
+//            crawlRepository.deleteAll(allBySite);
             getCates();
         } catch (IOException e) {
             e.printStackTrace();
