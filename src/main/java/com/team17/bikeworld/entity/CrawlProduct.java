@@ -5,16 +5,18 @@
  */
 package com.team17.bikeworld.entity;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -28,7 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author asus
  */
 @Entity
-@Table(name = "crawlproduct", catalog = "bikeworld", schema = "")
+@Table(catalog = "bikeworld", schema = "")
 @XmlRootElement
 public class CrawlProduct implements Serializable {
 
@@ -36,23 +38,39 @@ public class CrawlProduct implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id", nullable = false)
+    @Column(nullable = false)
+    @Expose
     private Integer id;
-    @Column(name = "name", length = 255)
+    @Column(length = 45)
+    @Expose
     private String name;
-    @Column(name = "url", length = 255)
+    @Column(length = 255)
+    @Expose
     private String url;
-    @Column(name = "site", length = 255)
-    private String site;
-    @Column(name = "price", length = 255)
+    @Column(length = 45)
+    @Expose
     private String price;
-    @JoinColumn(name = "brand_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
+    @Lob
+    @Column(length = 2147483647)
+    @Expose
+    private String desc;
+    @JoinColumn(name = "brand_id", referencedColumnName = "id")
+    @ManyToOne
+    @Expose
     private Brand brandId;
-    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    @ManyToOne
+    @Expose
     private Category categoryId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "crawlProductid")
+    @JoinColumn(name = "site_id", referencedColumnName = "id")
+    @ManyToOne
+    @Expose
+    private CrawlSite siteId;
+    @JoinColumn(name = "status", referencedColumnName = "id")
+    @ManyToOne
+    @Expose
+    private CrawlStatus status;
+    @OneToMany(mappedBy = "crawlProductid")
     private Collection<CrawlProductImage> crawlProductImageCollection;
 
     public CrawlProduct() {
@@ -86,20 +104,20 @@ public class CrawlProduct implements Serializable {
         this.url = url;
     }
 
-    public String getSite() {
-        return site;
-    }
-
-    public void setSite(String site) {
-        this.site = site;
-    }
-
     public String getPrice() {
         return price;
     }
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public Brand getBrandId() {
@@ -116,6 +134,22 @@ public class CrawlProduct implements Serializable {
 
     public void setCategoryId(Category categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public CrawlSite getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(CrawlSite siteId) {
+        this.siteId = siteId;
+    }
+
+    public CrawlStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(CrawlStatus status) {
+        this.status = status;
     }
 
     @XmlTransient
@@ -149,15 +183,7 @@ public class CrawlProduct implements Serializable {
 
     @Override
     public String toString() {
-        return "CrawlProduct{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", url='" + url + '\'' +
-                ", site='" + site + '\'' +
-                ", price='" + price + '\'' +
-                ", brandId=" + brandId +
-                ", categoryId=" + categoryId +
-                ", crawlProductImageCollection=" + crawlProductImageCollection +
-                '}';
+        return "entity.CrawlProduct[ id=" + id + " ]";
     }
+
 }

@@ -62,8 +62,9 @@ public class Product implements Serializable {
     @Column(name = "totalRates")
     private Integer totalRates;
     @Expose
-    @Column(name = "status")
-    private Integer status;
+    @JoinColumn(name = "status_id", referencedColumnName = "id")
+    @ManyToOne
+    private ProductStatus statusId;
     @Expose
     @ManyToOne(targetEntity = Account.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_usename")
@@ -178,12 +179,16 @@ public class Product implements Serializable {
         this.totalRates = totalRates;
     }
 
-    public Integer getStatus() {
-        return status;
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public ProductStatus getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(ProductStatus statusId) {
+        this.statusId = statusId;
     }
 
     public Account getAccountUsename() {
