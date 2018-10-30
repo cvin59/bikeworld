@@ -8,18 +8,19 @@ package com.team17.bikeworld.entity;
 import com.google.gson.annotations.Expose;
 
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -28,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(catalog = "bikeworld", schema = "")
 @XmlRootElement
-public class CrawlProductImage implements Serializable {
+public class CrawlStatus implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -37,18 +38,19 @@ public class CrawlProductImage implements Serializable {
     @Column(nullable = false)
     @Expose
     private Integer id;
+    @Column(length = 45)
+    @Expose
+    private String name;
     @Column(length = 255)
     @Expose
-    private String imageLink;
-    @Expose
-    @JoinColumn(name = "crawlProduct_id", referencedColumnName = "id")
-    @ManyToOne
-    private CrawlProduct crawlProductid;
+    private String decs;
+    @OneToMany(mappedBy = "status")
+    private Collection<CrawlProduct> crawlProductCollection;
 
-    public CrawlProductImage() {
+    public CrawlStatus() {
     }
 
-    public CrawlProductImage(Integer id) {
+    public CrawlStatus(Integer id) {
         this.id = id;
     }
 
@@ -60,20 +62,29 @@ public class CrawlProductImage implements Serializable {
         this.id = id;
     }
 
-    public String getImageLink() {
-        return imageLink;
+    public String getName() {
+        return name;
     }
 
-    public void setImageLink(String imageLink) {
-        this.imageLink = imageLink;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public CrawlProduct getCrawlProductid() {
-        return crawlProductid;
+    public String getDecs() {
+        return decs;
     }
 
-    public void setCrawlProductid(CrawlProduct crawlProductid) {
-        this.crawlProductid = crawlProductid;
+    public void setDecs(String decs) {
+        this.decs = decs;
+    }
+
+    @XmlTransient
+    public Collection<CrawlProduct> getCrawlProductCollection() {
+        return crawlProductCollection;
+    }
+
+    public void setCrawlProductCollection(Collection<CrawlProduct> crawlProductCollection) {
+        this.crawlProductCollection = crawlProductCollection;
     }
 
     @Override
@@ -86,10 +97,10 @@ public class CrawlProductImage implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CrawlProductImage)) {
+        if (!(object instanceof CrawlStatus)) {
             return false;
         }
-        CrawlProductImage other = (CrawlProductImage) object;
+        CrawlStatus other = (CrawlStatus) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -98,7 +109,7 @@ public class CrawlProductImage implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.CrawlProductImage[ id=" + id + " ]";
+        return "entity.CrawlStatus[ id=" + id + " ]";
     }
 
 }
