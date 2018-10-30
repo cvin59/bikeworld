@@ -5,14 +5,17 @@ import com.google.gson.annotations.JsonAdapter;
 import com.team17.bikeworld.adapter.EmptyStringTypeAdapter;
 import com.team17.bikeworld.entity.Brand;
 import com.team17.bikeworld.entity.Category;
+import com.team17.bikeworld.entity.ProductImage;
+import com.team17.bikeworld.entity.ProductStatus;
 
 import java.util.Date;
 import java.util.List;
 
 public class ProductModel {
+
     @Expose
-    @JsonAdapter(EmptyStringTypeAdapter.class)
-    private Integer id;
+   // @JsonAdapter(EmptyStringTypeAdapter.class)
+    private int id;
     @Expose
     private String name;
     @Expose
@@ -35,21 +38,18 @@ public class ProductModel {
     private double totalRatePoint;
     @Expose
     private int totalRater;
+
+    @Expose
+    private List<String> images;
     @Expose
     private int status;
     @Expose
     private int category;
     @Expose
     private int brand;
-    @Expose
-    private List<String> images;
 
     public ProductModel() {
     }
-
-    private Brand brandId;
-    private Category categoryId;
-    private String username;
 
     public ProductModel(int id, String name, String description, double price, Double longtitude, Double latitude, String seller, String address, Date postDate, double totalRatePoint, int totalRater, int status, int category, int brand) {
         this.id = id;
@@ -188,22 +188,6 @@ public class ProductModel {
         this.images = images;
     }
 
-    public Brand getBrandId() {
-        return brandId;
-    }
-
-    public void setBrandId(Brand brandId) {
-        this.brandId = brandId;
-    }
-
-    public Category getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Category categoryId) {
-        this.categoryId = categoryId;
-    }
-
     public int getQuantity() {
         return quantity;
     }
@@ -212,11 +196,4 @@ public class ProductModel {
         this.quantity = quantity;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 }
