@@ -33,7 +33,7 @@ public class UserService {
     public Account saveUser(Account user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setIsActive((short) 1);
-        Role userRole = roleRepository.findByName("CUSTOMER");
+        Role userRole = roleRepository.findByName("MEMBER");
         user.setRoleId(userRole);
         return accountRepository.save(user);
     }

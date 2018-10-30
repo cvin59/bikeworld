@@ -34,6 +34,18 @@ public class LoginController extends AbstractController{
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
     }
 
+    @GetMapping("/authMember")
+    public ResponseEntity authMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        boolean hasAuthorityAdmin = authorities.contains(new SimpleGrantedAuthority(ADMIN));
+        boolean hasAuthorityMember = authorities.contains(new SimpleGrantedAuthority(MEMBER));
+        if (hasAuthorityMember) {
+            return ResponseEntity.status(HttpStatus.OK).body(authentication.getName());
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
+    }
+
     @PostMapping("/signup")
     public ResponseEntity signupNewUser(@RequestBody Account account) {
         if (userService.findUserByUsername(account.getUsername()) == null) {

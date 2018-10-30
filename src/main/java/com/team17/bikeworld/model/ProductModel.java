@@ -12,13 +12,15 @@ import java.util.List;
 public class ProductModel {
     @Expose
     @JsonAdapter(EmptyStringTypeAdapter.class)
-    private  Integer id;
+    private Integer id;
     @Expose
     private String name;
     @Expose
     private String description;
     @Expose
     private double price;
+    @Expose
+    private int quantity;
     @Expose
     private Double longtitude;
     @Expose
@@ -44,7 +46,7 @@ public class ProductModel {
 
     public ProductModel() {
     }
-      
+
     private Brand brandId;
     private Category categoryId;
     private String username;
@@ -200,5 +202,21 @@ public class ProductModel {
 
     public void setCategoryId(Category categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

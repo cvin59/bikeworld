@@ -1,10 +1,7 @@
 package com.team17.bikeworld.service;
 
 import com.team17.bikeworld.common.CoreConstant;
-import com.team17.bikeworld.entity.Event;
-import com.team17.bikeworld.entity.EventImage;
-import com.team17.bikeworld.entity.ProposalEvent;
-import com.team17.bikeworld.entity.ProposalEventImage;
+import com.team17.bikeworld.entity.*;
 import com.team17.bikeworld.model.ConsumeEvent;
 import com.team17.bikeworld.model.ConsumeProposalEvent;
 import com.team17.bikeworld.model.Response;
@@ -118,6 +115,7 @@ public class EventService {
                     .concat(sourceFileName)
                     .concat(".")
                     .concat(sourceExt);
+            System.out.println(fileName);
             Files.createDirectories(rootLocation);
             Files.copy(image.getInputStream(), rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 
@@ -162,12 +160,12 @@ public class EventService {
                 event.setEndDate(endDate);
 
                 //start register date - end register date
-                Date startRegiDate = format1.parse(consumeEvent.getStartRegisterDate());
-                event.setStartRegisterDate(startRegiDate);
-                Date endRegiDate = format1.parse(consumeEvent.getEndRegisterDate());
-                event.setEndRegisterDate(endRegiDate);
+//                Date startRegiDate = format1.parse(consumeEvent.getStartRegisterDate());
+//                event.setStartRegisterDate(startRegiDate);
+//                Date endRegiDate = format1.parse(consumeEvent.getEndRegisterDate());
+//                event.setEndRegisterDate(endRegiDate);
 
-                event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_PENDING).get());
+                event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_UPCOMING).get());
 
                 return event;
             } catch (Exception e) {
@@ -204,10 +202,10 @@ public class EventService {
                 event.setEndDate(endDate);
 
                 //start register date - end register date
-                Date startRegiDate = format1.parse(consumeEvent.getStartRegisterDate());
-                event.setStartRegisterDate(startRegiDate);
-                Date endRegiDate = format1.parse(consumeEvent.getEndRegisterDate());
-                event.setEndRegisterDate(endRegiDate);
+//                Date startRegiDate = format1.parse(consumeEvent.getStartRegisterDate());
+//                event.setStartRegisterDate(startRegiDate);
+//                Date endRegiDate = format1.parse(consumeEvent.getEndRegisterDate());
+//                event.setEndRegisterDate(endRegiDate);
 
 //                event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_PENDING).get());
 
@@ -220,4 +218,41 @@ public class EventService {
         return null;
     }
 
+    public Response<Event> deactivateEvent(Integer id) {
+        Response<Event> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
+        try {
+            Optional<Event> optionalEvent = eventRepository.findById(id);
+            if (optionalEvent.isPresent()) {
+                Event event = optionalEvent.get();
+                EventStatus status = eventStatusRepository.findEventStatusById(STATUS_EVENT_DEACTIVATED).get();
+                event.setEventStautsid(status);
+
+                event = eventRepository.save(event);
+                response.setResponse(STATUS_CODE_SUCCESS, MESSAGE_SUCCESS, event);
+            } else {
+                response.setResponse(STATUS_CODE_NO_RESULT, MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e){
+            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    public Response<List<Event>> getUpcomingEvent() {
+        Response<List<Event>> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
+        try {
+            List<Event> events = eventRepository
+                    .findByEventStautsid(eventStatusRepository
+                            .findEventStatusById(STATUS_EVENT_UPCOMING)
+                            .get());
+            if (!events.isEmpty()) {
+                response.setResponse(STATUS_CODE_SUCCESS, MESSAGE_SUCCESS, events);
+            } else {
+                response.setResponse(STATUS_CODE_NO_RESULT, MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e){
+            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
+        }
+        return response;
+    }
 }
