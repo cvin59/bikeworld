@@ -3,6 +3,8 @@ package com.team17.bikeworld.controller;
 import com.team17.bikeworld.entity.Account;
 import com.team17.bikeworld.model.ConsumeAccount;
 import com.team17.bikeworld.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import static com.team17.bikeworld.common.CoreConstant.*;
 @RestController
 @CrossOrigin
 public class LoginController extends AbstractController{
+    private final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
     private UserService userService;
@@ -54,5 +57,14 @@ public class LoginController extends AbstractController{
             return ResponseEntity.status(HttpStatus.OK).body("Signed in");
         }
         return ResponseEntity.status(HttpStatus.OK).body("This username has been used");
+    }
+
+    @GetMapping("/check-username")
+    public ResponseEntity checkUsername(@RequestParam String username) {
+        LOGGER.info(username);
+        if (userService.findUserByUsername(username) == null) {
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(0);
     }
 }
