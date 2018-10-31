@@ -10,6 +10,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,6 +57,10 @@ public class EventService {
     public Event findEvent(Integer id) {
         Optional<Event> optionalEvent = eventRepository.findById(id);
         return optionalEvent.orElse(null);
+    }
+
+    public List<Event> findEventHome() {
+        return eventRepository.findTop3By();
     }
 
     public Response<Event> createEvent(ConsumeEvent consumeEvent, MultipartFile image) {
@@ -160,12 +168,17 @@ public class EventService {
                 event.setEndDate(endDate);
 
                 //start register date - end register date
-//                Date startRegiDate = format1.parse(consumeEvent.getStartRegisterDate());
-//                event.setStartRegisterDate(startRegiDate);
-//                Date endRegiDate = format1.parse(consumeEvent.getEndRegisterDate());
-//                event.setEndRegisterDate(endRegiDate);
+                Date startRegiDate = format1.parse(consumeEvent.getStartRegisterDate());
+                event.setStartRegisterDate(startRegiDate);
+                Date endRegiDate = format1.parse(consumeEvent.getEndRegisterDate());
+                event.setEndRegisterDate(endRegiDate);
 
-                event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_UPCOMING).get());
+//                int checkStartRegister = Calendar.getInstance().getTime().compareTo(event.getStartRegisterDate());
+//                int checkEndRegister = Calendar.getInstance().getTime().compareTo(event.getEndRegisterDate());
+//                int checkStart = Calendar.getInstance().getTime().compareTo(event.getStartDate());
+//                int checkEnd = Calendar.getInstance().getTime().compareTo(event.getEndDate());
+
+                event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_INACTIVE).get());
 
                 return event;
             } catch (Exception e) {
@@ -175,6 +188,20 @@ public class EventService {
         }
         return null;
     }
+
+//    private void setEventStatus(Event event, int checkStartRegister, int checkEndRegister, int checkStart, int checkEnd) {
+//        if (checkStartRegister < 0) {
+//            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_COMING_SOON).get());
+//        } else if (checkStartRegister >= 0 && checkEndRegister <= 0){
+//            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_REGISTERING).get());
+//        } else if (checkEndRegister > 0 && checkStart < 0) {
+//            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_UPCOMING).get());
+//        } else if (checkStart >= 0 && checkEnd <= 0) {
+//            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_ONGOING).get());
+//        } else {
+//            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_FINISH).get());
+//        }
+//    }
 
     private Event updateEvent(Event event, ConsumeEvent consumeEvent) {
         if (consumeEvent != null) {
@@ -202,12 +229,11 @@ public class EventService {
                 event.setEndDate(endDate);
 
                 //start register date - end register date
-//                Date startRegiDate = format1.parse(consumeEvent.getStartRegisterDate());
-//                event.setStartRegisterDate(startRegiDate);
-//                Date endRegiDate = format1.parse(consumeEvent.getEndRegisterDate());
-//                event.setEndRegisterDate(endRegiDate);
+                Date startRegiDate = format1.parse(consumeEvent.getStartRegisterDate());
+                event.setStartRegisterDate(startRegiDate);
+                Date endRegiDate = format1.parse(consumeEvent.getEndRegisterDate());
+                event.setEndRegisterDate(endRegiDate);
 
-//                event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_PENDING).get());
 
                 return event;
             } catch (Exception e) {
@@ -224,7 +250,7 @@ public class EventService {
             Optional<Event> optionalEvent = eventRepository.findById(id);
             if (optionalEvent.isPresent()) {
                 Event event = optionalEvent.get();
-                EventStatus status = eventStatusRepository.findEventStatusById(STATUS_EVENT_DEACTIVATED).get();
+                EventStatus status = eventStatusRepository.findEventStatusById(STATUS_EVENT_CANCELED).get();
                 event.setEventStautsid(status);
 
                 event = eventRepository.save(event);
@@ -240,10 +266,21 @@ public class EventService {
 
     public Response<List<Event>> getUpcomingEvent() {
         Response<List<Event>> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
+        statusEvent(response, STATUS_EVENT_INACTIVE);
+        return response;
+    }
+
+    public Response<List<Event>> getComingSoon() {
+        Response<List<Event>> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
+        statusEvent(response, STATUS_EVENT_INACTIVE);
+        return response;
+    }
+
+    private void statusEvent(Response<List<Event>> response, int statusEventComingSoon) {
         try {
             List<Event> events = eventRepository
                     .findByEventStautsid(eventStatusRepository
-                            .findEventStatusById(STATUS_EVENT_UPCOMING)
+                            .findEventStatusById(statusEventComingSoon)
                             .get());
             if (!events.isEmpty()) {
                 response.setResponse(STATUS_CODE_SUCCESS, MESSAGE_SUCCESS, events);
@@ -253,6 +290,28 @@ public class EventService {
         } catch (Exception e){
             response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
         }
-        return response;
+    }
+
+    public Page<Event> getEventPage(int pageNumber, int itemsPerPage, String sortBy, int direction) {
+        if (direction == 1) {
+            Pageable pageable = PageRequest.of(pageNumber - 1, itemsPerPage, Sort.Direction.ASC, sortBy);
+            return eventRepository.findAll(pageable);
+        }
+        Pageable pageable = PageRequest.of(pageNumber - 1, itemsPerPage, Sort.Direction.DESC, sortBy);
+        return eventRepository.findAll(pageable);
+    }
+
+    public Page<Event> getEventPage(String search, int pageNumber, int itemsPerPage, String sortBy, int direction) {
+        if (direction == 1) {
+            Pageable pageable = PageRequest.of(pageNumber - 1, itemsPerPage, Sort.Direction.ASC, sortBy);
+            return eventRepository.findByTitleIgnoreCaseContaining(search, pageable);
+        }
+        Pageable pageable = PageRequest.of(pageNumber - 1, itemsPerPage, Sort.Direction.DESC, sortBy);
+        return eventRepository.findByTitleIgnoreCaseContaining(search, pageable);
+    }
+
+    public Page<Event> getEventPage(String search, int pageNumber, int itemsPerPage) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, itemsPerPage);
+        return eventRepository.findByTitleIgnoreCaseContaining(search, pageable);
     }
 }

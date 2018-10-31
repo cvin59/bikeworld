@@ -4,18 +4,21 @@ import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.Event;
 import com.team17.bikeworld.model.ConsumeEvent;
 import com.team17.bikeworld.model.Response;
+import com.team17.bikeworld.model.ResponseEventPage;
 import com.team17.bikeworld.service.EventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 import static com.team17.bikeworld.common.CoreConstant.*;
 
 @RestController
 @CrossOrigin
-public class EventController extends AbstractController{
+public class EventController extends AbstractController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventController.class);
 
@@ -57,9 +60,15 @@ public class EventController extends AbstractController{
         return gson.toJson(response);
     }
 
-    @GetMapping(API_EVENT + "/upcoming-event")
-    public String getUpcomingEvent(){
+    @GetMapping(API_EVENT + "/registering-event")
+    public String getUpcomingEvent() {
         Response<List<Event>> response = eventService.getUpcomingEvent();
+        return gson.toJson(response);
+    }
+
+    @GetMapping(API_EVENT + "/comingsoon-event")
+    public String getComingSoonEvent() {
+        Response<List<Event>> response = eventService.getComingSoon();
         return gson.toJson(response);
     }
 
@@ -82,6 +91,54 @@ public class EventController extends AbstractController{
     @GetMapping(API_EVENT + "/deactivate-event/{id}")
     public String deactivateEvent(@PathVariable("id") Integer id) {
         Response<Event> response = eventService.deactivateEvent(id);
+        return gson.toJson(response);
+    }
+
+    @GetMapping(API_EVENT + "/get")
+    public String findPaginated(@RequestParam("page") int page
+            , @RequestParam("sort") String sort
+            , @RequestParam("direction") int direction) {
+        Page<Event> resultPage = eventService.getEventPage(page, 6, sort, direction);
+        ResponseEventPage responseEventPage = new ResponseEventPage();
+        responseEventPage.setContent(resultPage.getContent());
+        responseEventPage.setCurrPage(page);
+        responseEventPage.setTotalPage(resultPage.getTotalPages());
+        return gson.toJson(responseEventPage);
+    }
+
+    @GetMapping(API_EVENT + "/search")
+    public String findPaginatedSearch(@RequestParam("q") String q
+            ,@RequestParam("page") int page
+            , @RequestParam("sort") String sort
+            , @RequestParam("direction") int direction) {
+        Page<Event> resultPage = eventService.getEventPage(q, page, 12, sort, direction);
+        ResponseEventPage responseEventPage = new ResponseEventPage();
+        responseEventPage.setContent(resultPage.getContent());
+        responseEventPage.setCurrPage(page);
+        responseEventPage.setTotalPage(resultPage.getTotalPages());
+        return gson.toJson(responseEventPage);
+    }
+
+    @GetMapping(API_EVENT + "/result")
+    public String searchEventByTitle(@RequestParam("q") String q
+            ,@RequestParam("page") int page) {
+        Page<Event> resultPage = eventService.getEventPage(q, page, 12);
+        ResponseEventPage responseEventPage = new ResponseEventPage();
+        responseEventPage.setContent(resultPage.getContent());
+        responseEventPage.setCurrPage(page);
+        responseEventPage.setTotalPage(resultPage.getTotalPages());
+        return gson.toJson(responseEventPage);
+    }
+
+    @GetMapping(API_EVENT + "/event-home")
+    public String viewEventHome() {
+        Response<List<Event>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<Event> events = eventService.findEventHome();
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, events);
+        } catch (Exception e) {
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
         return gson.toJson(response);
     }
 
