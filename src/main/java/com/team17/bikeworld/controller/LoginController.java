@@ -1,6 +1,7 @@
 package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.entity.Account;
+import com.team17.bikeworld.model.ConsumeAccount;
 import com.team17.bikeworld.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,9 +48,9 @@ public class LoginController extends AbstractController{
     }
 
     @PostMapping("/signup")
-    public ResponseEntity signupNewUser(@RequestBody Account account) {
-        if (userService.findUserByUsername(account.getUsername()) == null) {
-            userService.saveUser(account);
+    public ResponseEntity signupNewUser(@RequestBody ConsumeAccount consumeAccount) {
+        if (userService.findUserByUsername(consumeAccount.getUsername()) == null) {
+            userService.saveUser(consumeAccount);
             return ResponseEntity.status(HttpStatus.OK).body("Signed in");
         }
         return ResponseEntity.status(HttpStatus.OK).body("This username has been used");
