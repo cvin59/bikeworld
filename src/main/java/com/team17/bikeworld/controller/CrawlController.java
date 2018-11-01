@@ -1,15 +1,18 @@
 package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
+import com.team17.bikeworld.model.CrawlProductModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.service.CrawlService;
+import org.hibernate.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -25,7 +28,6 @@ public class CrawlController extends AbstractController {
     public CrawlController(CrawlService crawlService) {
         this.crawlService = crawlService;
     }
-
 
     @PostMapping(API_CRAWL + "/run/{site}")
     public String runCrawl(@PathVariable String site) {
@@ -43,6 +45,16 @@ public class CrawlController extends AbstractController {
         Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         crawlService.stopCrawl(site);
         response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
+        return gson.toJson(response);
+    }
+
+    @PostMapping(API_CRAWL + "/create")
+    public String createCrawl(@RequestParam String crawlString){
+        LOGGER.info("Request Param: " + crawlString);
+        //Translate json to CrawlProduct
+        CrawlProductModel crawlProductModel = gson.fromJson(crawlString, CrawlProductModel.class);
+        //Add crawl product to database and response
+        Response<CrawlProduct> response = crawlService.createCrawlProduct(crawlProductModel);
         return gson.toJson(response);
     }
 
