@@ -4,29 +4,26 @@ import com.team17.bikeworld.crawl.dict.CateDictObj;
 import com.team17.bikeworld.crawl.dict.CateObj;
 import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.CrawlProduct;
-import com.team17.bikeworld.entity.CrawlProductImage;
-import com.team17.bikeworld.repositories.CategoryRepository;
-import com.team17.bikeworld.repositories.CrawlProductImageRepository;
-import com.team17.bikeworld.repositories.CrawlRepository;
+import com.team17.bikeworld.entity.CrawlSite;
+import com.team17.bikeworld.repositories.*;
 import org.w3c.dom.NodeList;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
-    public YnebikersCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository) {
-        super(crawlRepository, categoryRepository, crawlProductImageRepository);
+    public YnebikersCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository) {
+        super(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, "ynebikers");
     }
 
     public static final String baseLink = "https://ynebikers.com.my";
     private static boolean lock = false;
     public static Thread instance;
     private static int count;
+    private CrawlSite site;
 
     public static boolean isLock() {
         return lock;
@@ -37,6 +34,7 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
     }
 
     public NodeList getCates() throws IOException {
+
 
         BufferedReader reader = null;
         try {
@@ -262,7 +260,7 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
                         if (CateDictObj.checkName(cateObj, name.toLowerCase())) {
 //                            crawlRepository.addCrawlProduct(baseLink, category, name, link, price);
-                            CrawlProduct crawlProduct = saveNewCrawlProduct(name, baseLink, link, price, category, img);
+                            CrawlProduct crawlProduct = saveNewCrawlProduct(name, site, link, price, category, img);
                             countInPage++;
                         }
                     } else {
@@ -294,6 +292,10 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
     @Override
     public void run() {
         try {
+//            if(site==null){
+//                site = getSite("ynebikers");
+//            }
+
 //            List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(baseLink);
 //            crawlProductImageRepository.deleteAll(imgBySite);
 //            List<CrawlProduct> allBySite = crawlRepository.findAllBySite(baseLink);
