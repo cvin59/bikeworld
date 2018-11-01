@@ -10,6 +10,8 @@ public class ProductViewModel {
     Product productInfo;
     @Expose
     List<String> ProductImg;
+    @Expose
+    List<Integer> ProductImgId;
 
     public ProductViewModel() {
     }
@@ -33,5 +35,13 @@ public class ProductViewModel {
 
     public void setProductImg(List<String> productImg) {
         ProductImg = productImg;
+    }
+
+    public List<Integer> getProductImgId() {
+        return ProductImgId;
+    }
+
+    public void setProductImgId(List<Integer> productImgId) {
+        ProductImgId = productImgId;
     }
 }

@@ -13,9 +13,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductImageRepository<Pro> extends JpaRepository<ProductImage, Integer> {
+public interface ProductImageRepository extends JpaRepository<ProductImage, Integer> {
 //    @Query("SELECT u FROM ProductImage u WHERE u.product_id = ?1")
 //    List<Product> findAllByProId(int proId);
 
     Optional<List<ProductImage>> findByProductId(Product product);
+
+    @Override
+    void deleteById(Integer integer);
+
 }

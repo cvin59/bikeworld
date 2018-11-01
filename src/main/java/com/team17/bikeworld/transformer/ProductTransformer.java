@@ -25,10 +25,13 @@ public class ProductTransformer {
             view.setProductInfo(entity);
             if (images != null) {
                 List<String> imageList = new ArrayList<>();
+                List<Integer> imageIdList = new ArrayList<>();
                 for (ProductImage image : images) {
                     imageList.add(image.getImageLink());
+                    imageIdList.add(image.getId());
                 }
                 view.setProductImg(imageList);
+                view.setProductImgId(imageIdList);
             }
             return view;
         }

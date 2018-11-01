@@ -71,20 +71,37 @@ public class ProductController extends AbstractController {
     }
 
     @PostMapping(CoreConstant.API_PRODUCT)
-    public void createProduct(@RequestParam String productModelString, MultipartFile[] images) {
-        ProductModel newProduct = gson.fromJson(productModelString, ProductModel.class);
-        productService.createProduct(newProduct, images);
+    public String createProduct(@RequestParam String productModelString, MultipartFile[] images) {
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            ProductModel newProduct = gson.fromJson(productModelString, ProductModel.class);
+            productService.createProduct(newProduct, images);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/update")
-    public void updateProduct(@RequestParam String productModelString, MultipartFile[] images) {
-        ProductModel updatedProduct = gson.fromJson(productModelString, ProductModel.class);
-        productService.updateProduct(updatedProduct, images);
+    @PutMapping(CoreConstant.API_PRODUCT)
+    public String updateProduct(@RequestParam String productModelString, @RequestParam List<Integer> deleteImgList, MultipartFile[] images) {
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            ProductModel updatedProduct = gson.fromJson(productModelString, ProductModel.class);
+            productService.updateProduct(updatedProduct, images);
+            if (deleteImgList != null) {
+                productService.deleteImage(deleteImgList);
+            }
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
     }
 
     @GetMapping(CoreConstant.API_PRODUCT + "/{id}")
-    public @ResponseBody
-    String getProductById(@PathVariable int id) {
+    public String getProductById(@PathVariable int id) {
         Response<ProductViewModel> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             Product product = productService.getProductById(id);
