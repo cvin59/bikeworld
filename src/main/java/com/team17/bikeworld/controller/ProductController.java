@@ -52,11 +52,12 @@ public class ProductController extends AbstractController {
         Response<List<ProductViewModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<ProductViewModel> views = new ArrayList<>();
-            ProductViewModel view = new ProductViewModel();
+
 
             List<Product> products = productService.findAll();
             for (Product product : products
             ) {
+                ProductViewModel view = new ProductViewModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
                 view = productTransformer.ProductEntityToView(product, view, imgs);
                 views.add(view);
@@ -131,11 +132,12 @@ public class ProductController extends AbstractController {
         Response<List<ProductViewModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<ProductViewModel> views = new ArrayList<>();
-            ProductViewModel view = new ProductViewModel();
+
 
             List<Product> products = productService.getProductByCate(id, pageable);
             for (Product product : products
             ) {
+                ProductViewModel view = new ProductViewModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
                 view = productTransformer.ProductEntityToView(product, view, imgs);
                 views.add(view);
@@ -168,11 +170,12 @@ public class ProductController extends AbstractController {
         Response<List<ProductViewModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<ProductViewModel> views = new ArrayList<>();
-            ProductViewModel view = new ProductViewModel();
+
 
             List<Product> products = productService.getProductByBrand(id, pageable);
             for (Product product : products
             ) {
+                ProductViewModel view = new ProductViewModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
                 view = productTransformer.ProductEntityToView(product, view, imgs);
                 views.add(view);
@@ -203,11 +206,12 @@ public class ProductController extends AbstractController {
         Response<List<ProductViewModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<ProductViewModel> views = new ArrayList<>();
-            ProductViewModel view = new ProductViewModel();
+
 
             List<Product> products = productService.getProductBySeller(seller, pageable);
             for (Product product : products
             ) {
+                ProductViewModel view = new ProductViewModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
                 view = productTransformer.ProductEntityToView(product, view, imgs);
                 views.add(view);

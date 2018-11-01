@@ -22,13 +22,13 @@ public class ProductTransformer {
 
     public ProductViewModel ProductEntityToView(Product entity, ProductViewModel view, List<ProductImage> images) {
         if (entity != null) {
-            view.setProduct(entity);
+            view.setProductInfo(entity);
             if (images != null) {
                 List<String> imageList = new ArrayList<>();
                 for (ProductImage image : images) {
                     imageList.add(image.getImageLink());
                 }
-                view.setImg(imageList);
+                view.setProductImg(imageList);
             }
             return view;
         }

@@ -9,29 +9,29 @@ public class ProductViewModel {
     @Expose
     Product productInfo;
     @Expose
-    List<String> img;
+    List<String> ProductImg;
 
     public ProductViewModel() {
     }
 
-    public ProductViewModel(Product product, List<String> img) {
-        this.productInfo = product;
-        this.img = img;
+    public ProductViewModel(Product productInfo, List<String> productImg) {
+        this.productInfo = productInfo;
+        ProductImg = productImg;
     }
 
-    public Product getProduct() {
+    public Product getProductInfo() {
         return productInfo;
     }
 
-    public void setProduct(Product product) {
-        this.productInfo = product;
+    public void setProductInfo(Product productInfo) {
+        this.productInfo = productInfo;
     }
 
-    public List<String> getImg() {
-        return img;
+    public List<String> getProductImg() {
+        return ProductImg;
     }
 
-    public void setImg(List<String> img) {
-        this.img = img;
+    public void setProductImg(List<String> productImg) {
+        ProductImg = productImg;
     }
 }
