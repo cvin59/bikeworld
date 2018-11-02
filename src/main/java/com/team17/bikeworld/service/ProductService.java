@@ -9,6 +9,7 @@ import com.team17.bikeworld.repositories.ProductRepository;
 import com.team17.bikeworld.transformer.ProductTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,8 +44,8 @@ public class ProductService {
         this.productTransformer = productTransformer;
     }
 
-    public List<Product> findAll() {
-        List<Product> products = productRepository.findAll();
+    public Page<Product> findAll(Pageable pageable) {
+        Page<Product> products = productRepository.findAll(pageable);
         return products;
     }
 
@@ -62,10 +63,10 @@ public class ProductService {
         return products;
     }
 
-    public List<Product> getProductBySeller(String username, Pageable pageable) {
+    public Page<Product> getProductBySeller(String username, Pageable pageable) {
         Account seller = new Account();
         seller.setUsername(username);
-        List<Product> products = productRepository.findByAccountUsename(seller, pageable);
+        Page<Product> products = productRepository.findByAccountUsename(seller, pageable);
         return products;
     }
 

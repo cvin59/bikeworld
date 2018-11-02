@@ -5,7 +5,7 @@ import com.team17.bikeworld.entity.Product;
 
 import java.util.List;
 
-public class ProductViewModel {
+public class ProductViewModel{
     @Expose
     Product productInfo;
     @Expose
