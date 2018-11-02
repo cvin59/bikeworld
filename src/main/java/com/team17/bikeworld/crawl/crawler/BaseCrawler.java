@@ -30,8 +30,7 @@ public class BaseCrawler {
     protected CrawlStatus statPending;
     protected CrawlSite site;
     protected Brand brandDefault;
-    protected PrintWriter outCrw;
-    protected PrintWriter outImg;
+
 
     protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCrawler.class);
 
