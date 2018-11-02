@@ -10,15 +10,14 @@ import com.team17.bikeworld.crawl.dict.CateDictObj;
 import com.team17.bikeworld.crawl.dict.CateObj;
 import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.CrawlProduct;
-import com.team17.bikeworld.entity.CrawlSite;
 import com.team17.bikeworld.repositories.*;
 import org.w3c.dom.NodeList;
 
 public class RevzillaCrawler extends BaseCrawler implements Runnable {
 
 
-    public RevzillaCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository) {
-        super(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, "revzilla");
+    public RevzillaCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository) {
+        super(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository, "revzilla");
 
     }
 
