@@ -72,6 +72,11 @@ public class CrawlProduct implements Serializable {
     private CrawlStatus status;
     @OneToMany(mappedBy = "crawlProductid")
     private Collection<CrawlProductImage> crawlProductImageCollection;
+    @Column(length = 255)
+    @Expose
+    private String hash;
+
+
 
     public CrawlProduct() {
     }
@@ -118,6 +123,14 @@ public class CrawlProduct implements Serializable {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     public Brand getBrandId() {

@@ -1,15 +1,9 @@
 package com.team17.bikeworld.crawl.crawler;
 
 import com.team17.bikeworld.crawl.dict.CateObj;
-import com.team17.bikeworld.entity.Category;
-import com.team17.bikeworld.entity.CrawlProduct;
-import com.team17.bikeworld.entity.CrawlProductImage;
-import com.team17.bikeworld.entity.Product;
-import com.team17.bikeworld.repositories.CategoryRepository;
-import com.team17.bikeworld.repositories.CrawlProductImageRepository;
-import com.team17.bikeworld.repositories.CrawlRepository;
+import com.team17.bikeworld.entity.*;
+import com.team17.bikeworld.repositories.*;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -25,27 +19,31 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.TransformerConfigurationException;
 
 public class BaseCrawler {
 
     protected final CrawlRepository crawlRepository;
     protected final CategoryRepository categoryRepository;
     protected final CrawlProductImageRepository crawlProductImageRepository;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    protected final CrawlSiteRepository crawlSiteRepository;
+    protected final CrawlStatusRepository crawlStatusRepository;
+    protected CrawlStatus statPending;
+    protected CrawlSite site;
 
     protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCrawler.class);
 
-    public BaseCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository) {
+    public BaseCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository,String siteName) {
         this.crawlRepository = crawlRepository;
         this.categoryRepository = categoryRepository;
         this.crawlProductImageRepository = crawlProductImageRepository;
+        this.crawlSiteRepository = crawlSiteRepository;
+        this.crawlStatusRepository = crawlStatusRepository;
+        this.statPending = crawlStatusRepository.findByName("NEW").get();
+        this.site = getSite(siteName);
     }
 
     protected BufferedReader getBufferedReaderForURL(String urlString) throws MalformedURLException, IOException {
@@ -176,7 +174,7 @@ public class BaseCrawler {
     }
 
 
-    protected Category getCate(CateObj cateObj){
+    protected Category getCate(CateObj cateObj) {
         Optional<Category> optionalCategory = categoryRepository.findByName(cateObj.getMeaning());
         Category category;
         if (optionalCategory.isPresent()) {
@@ -189,6 +187,7 @@ public class BaseCrawler {
         return category;
     }
 
+<<<<<<< HEAD
     protected CrawlProduct saveNewCrawlProduct(String name, String site, String link, String price, Category category, String img){
         CrawlProduct crawlProduct = new CrawlProduct();
         crawlProduct.setName(name);
@@ -203,15 +202,85 @@ public class BaseCrawler {
         crawlProductImage.setCrawlProductid(crawlProduct);
         crawlProductImageRepository.save(crawlProductImage);
         return crawlProduct;
+=======
+
+    protected CrawlSite getSite(String name) {
+        Optional<CrawlSite> crawlSite = crawlSiteRepository.findByName(name);
+        if (crawlSite.isPresent()) {
+            return crawlSite.get();
+        } else {
+            return null;
+        }
+>>>>>>> master
     }
 
 
-    protected String getHash(String name, String link, String price){
-        String fullStr = name+ link + price;
-        String encode = bCryptPasswordEncoder.encode(fullStr);
+    protected CrawlProduct saveNewCrawlProduct(String name, CrawlSite site, String link, String price, Category category, String img) {
+
+        String hash = getHash(name, link, price);
+
+        Optional<CrawlProduct> hashedProduct = crawlRepository.findByHash(hash);
+        if (hashedProduct.isPresent()) {
+            return hashedProduct.get();
+        }else{
+            CrawlProduct crawlProduct = new CrawlProduct();
+            crawlProduct.setStatus(statPending);
+            crawlProduct.setHash(hash);
+            crawlProduct.setSiteId(site);
+            crawlProduct.setCategoryId(category);
+            crawlProduct.setPrice(price);
+            crawlProduct.setUrl(link);
+            crawlProduct.setName(name);
+            crawlProduct.setDesc("New Product");
+            crawlProduct = crawlRepository.save(crawlProduct);
+
+//            crawlRepository.addCrawlProduct(name,link,category,site,price,statPending,"NEW PRODUCT", hash);
+//            CrawlProduct crawlProduct =  crawlRepository.findByHash(hash).get();
+
+
+            CrawlProductImage crawlProductImage = new CrawlProductImage();
+            crawlProductImage.setImageLink(img);
+            crawlProductImage.setCrawlProductid(crawlProduct);
+            crawlProductImageRepository.save(crawlProductImage);
+            return crawlProduct;
+        }
+
+    }
+
+//    protected CrawlProduct saveNewCrawlProductOld(String name, CrawlSite site, String link, String price, Category category, String img) {
+//        CrawlProduct crawlProduct = new CrawlProduct();
+//        crawlProduct.setSiteId(site);
+//        crawlProduct.setCategoryId(category);
+//        crawlProduct.setPrice(price);
+//        crawlProduct.setUrl(link);
+//        crawlProduct.setName(name);
+//        crawlProduct.setHash(getHash(name, link, price));
+//        crawlProduct.setStatus(statPending);
+//
+//        crawlProduct = crawlRepository.save(crawlProduct);
+//        CrawlProductImage crawlProductImage = new CrawlProductImage();
+//        crawlProductImage.setImageLink(img);
+//        crawlProductImage.setCrawlProductid(crawlProduct);
+//        crawlProductImageRepository.save(crawlProductImage);
+//        return crawlProduct;
+//    }
+
+
+    protected String getHash(String name, String link, String price) {
+        String fullStr = name + link + price;
+//        String encode = bCryptPasswordEncoder.encode(fullStr);
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        md.update(fullStr.getBytes());
+        byte[] digest = md.digest();
+        String encode = DatatypeConverter.printHexBinary(digest).toUpperCase();
+//        assertThat(myHash.equals(hash)).isTrue();
         return encode;
     }
-
 
 
 }

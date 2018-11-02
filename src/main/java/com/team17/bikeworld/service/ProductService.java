@@ -185,4 +185,9 @@ public class ProductService {
             LOGGER.info("file name:" + fileName);
         }
     }
+
+    public List<ProductImage> getImagesByProduct(Product product) {
+        Optional<List<ProductImage>> images = productImageRepository.findByProductId(product);
+        return images.orElse(null);
+    }
 }

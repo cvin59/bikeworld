@@ -1,25 +1,21 @@
 package com.team17.bikeworld.repositories;
 
-import com.team17.bikeworld.entity.CrawlStatus;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-
-public interface CrawlStatusRepository extends JpaRepository<CrawlStatus, Integer> {
-}
-
-
+import com.team17.bikeworld.entity.Category;
+import com.team17.bikeworld.entity.CrawlProductImage;
 import com.team17.bikeworld.entity.CrawlSite;
-import com.team17.bikeworld.entity.CrawlStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CrawlStatusRepository extends JpaRepository<CrawlStatus, Integer> {
+public interface CrawlSiteRepository extends JpaRepository<CrawlSite, Integer> {
 
-    Optional<CrawlStatus> findByName(String name);
+    Optional<CrawlSite> findByName(String name);
 //    @Modifying
 //    CrawlProductImage addCrawlProductImg(int crawlProId, String imgLink);
 
@@ -30,4 +26,3 @@ public interface CrawlStatusRepository extends JpaRepository<CrawlStatus, Intege
 //    @Query(value = "SELECT * FROM `crawlsite` WHERE site = ?1", nativeQuery = true)
 //    List<CrawlProductImage> findAllBySite(String site);
 }
->>>>>>> master

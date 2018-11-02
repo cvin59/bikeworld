@@ -3,9 +3,11 @@ package com.team17.bikeworld.transformer;
 import com.team17.bikeworld.entity.*;
 import com.team17.bikeworld.model.ProductModel;
 import com.team17.bikeworld.repositories.AccountRepository;
+import com.team17.bikeworld.viewModel.ProductViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,26 +20,24 @@ public class ProductTransformer {
     public ProductTransformer() {
     }
 
-    public ProductModel ProductEntityToModel(Product entity, ProductModel model) {
+    public ProductViewModel ProductEntityToView(Product entity, ProductViewModel view, List<ProductImage> images) {
         if (entity != null) {
-            model.setId(entity.getId());
-            model.setName(entity.getName());
-            model.setDescription(entity.getDescription());
-            model.setPrice(entity.getPrice());
-            model.setAddress(entity.getAddress());
-            model.setBrand(entity.getBrandId().getId());
-            model.setCategory(entity.getCategoryId().getId());
-
-            return model;
+            view.setProduct(entity);
+            if (images != null) {
+                List<String> imageList = new ArrayList<>();
+                for (ProductImage image : images) {
+                    imageList.add(image.getImageLink());
+                }
+                view.setImg(imageList);
+            }
+            return view;
         }
         return null;
     }
 
     public Product ProductModelToEntity(ProductModel model, Product entity) {
         if (model != null) {
-            if (model.getId() != 0) {
-                entity.setId(model.getId());
-            }
+            entity.setId(0);
             // Set seller
             Account account = new Account();
             account.setUsername(model.getSeller());
@@ -66,7 +66,10 @@ public class ProductTransformer {
             entity.setPrice(model.getPrice());
             entity.setTotalRatePoint(model.getTotalRatePoint());
             entity.setTotalRates(model.getTotalRater());
-            entity.setStatus(model.getStatus());
+
+            ProductStatus status = new ProductStatus();
+            status.setId(model.getStatus());
+            entity.setStatusId(status);
 
             return entity;
         }

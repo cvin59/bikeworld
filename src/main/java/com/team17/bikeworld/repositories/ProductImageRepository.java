@@ -10,13 +10,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductImageRepository<Pro> extends JpaRepository<ProductImage, Integer> {
 //    @Query("SELECT u FROM ProductImage u WHERE u.product_id = ?1")
 //    List<Product> findAllByProId(int proId);
 
-    @Modifying
-    @Query(value = "INSERT INTO `ProductImage` ( `name`, `price`, `description`, `longitude`, `latitude`, `address`,`postDate`, `brandId`, `categoryId`) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8,?9)", nativeQuery = true)
-    ProductImage addNew(String link, Product pro);
+    Optional<List<ProductImage>> findByProductId(Product product);
 }

@@ -2,10 +2,6 @@ package com.team17.bikeworld.crawl.crawler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.xpath.XPathExpressionException;
@@ -14,21 +10,16 @@ import com.team17.bikeworld.crawl.dict.CateDictObj;
 import com.team17.bikeworld.crawl.dict.CateObj;
 import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.CrawlProduct;
-import com.team17.bikeworld.entity.CrawlProductImage;
+import com.team17.bikeworld.entity.CrawlSite;
 import com.team17.bikeworld.repositories.*;
-import com.team17.bikeworld.service.CrawlService;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import java.io.BufferedReader;
 
 public class RevzillaCrawler extends BaseCrawler implements Runnable {
 
 
-    public RevzillaCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository) {
-        super(crawlRepository, categoryRepository, crawlProductImageRepository);
+    public RevzillaCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository) {
+        super(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, "revzilla");
+
     }
 
     public static final String baseLink = "https://www.revzilla.com";
@@ -287,7 +278,12 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
 //                    System.out.println("price - " + priceUnit + price);
 //                    System.out.println("");
 //                    productDao.replaceProduct(connection, baseLink, cate.getMeaning(), name, link, img, price);
-                        CrawlProduct crawlProduct = saveNewCrawlProduct(name, baseLink, link, priceUnit + price, category, img);
+
+                            System.out.println(name);
+                            System.out.println(link);
+                            System.out.println();
+
+                            CrawlProduct crawlProduct = saveNewCrawlProduct(name, site, link, priceUnit + price, category, img);
 
 //                        LOGGER.info(crawlProduct.toString());
 
@@ -466,7 +462,15 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
      */
     @Override
     public void run() {
+
+
         try {
+//
+            System.out.println(site.getLink());
+            System.out.println();
+            System.out.println(statPending.getId());
+            System.out.println();
+
 //            List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(baseLink);
 //            crawlProductImageRepository.deleteAll(imgBySite);
 //            List<CrawlProduct> allBySite = crawlRepository.findAllBySite(baseLink);
