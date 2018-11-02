@@ -1,6 +1,7 @@
 package com.team17.bikeworld.repositories;
 
 
+import com.team17.bikeworld.entity.Brand;
 import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.entity.CrawlSite;
@@ -15,6 +16,9 @@ import java.util.Optional;
 
 public interface CrawlRepository extends JpaRepository<CrawlProduct, Integer> {
 
+    @Query(value = "INSERT INTO `bikeworld`.`crawlproduct` (`name`, `url`, `category_id`, `brand_id`, `site_id`, `price`, `status`, `desc`) VALUES ('abc', 'abc', '1', '1', '1', '1', '1', 'sdf')", nativeQuery = true)
+    CrawlProduct addCrawlProduct();
+
 
     @Query(value = "INSERT INTO `crawlproduct` ( `name`, `url`, `category_id`, `site_id`, `price`, `status`, `desc`, `hash`) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)", nativeQuery = true)
     void addCrawlProduct(String name, String url, Category category_id, CrawlSite site_id, String price, CrawlStatus status, String desc, String hash);
@@ -22,7 +26,6 @@ public interface CrawlRepository extends JpaRepository<CrawlProduct, Integer> {
 //    @Modifying
 //    @Query(value = "DELETE FROM `crawlproduct` WHERE site_id = ?1", nativeQuery = true)
 //    int deleteAllBySite(CrawlSite site_id);
-
 
     @Query(value = "SELECT * FROM `crawlproduct` ", nativeQuery = true)
     List<CrawlProduct> getAll();

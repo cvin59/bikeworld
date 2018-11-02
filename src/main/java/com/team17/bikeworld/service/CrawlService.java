@@ -5,6 +5,12 @@ import com.team17.bikeworld.controller.ProductController;
 import com.team17.bikeworld.crawl.crawler.RevzillaCrawler;
 import com.team17.bikeworld.crawl.crawler.YnebikersCrawler;
 import com.team17.bikeworld.entity.CrawlProduct;
+import com.team17.bikeworld.entity.CrawlProductImage;
+import com.team17.bikeworld.model.CrawlProductModel;
+import com.team17.bikeworld.model.Response;
+import com.team17.bikeworld.repositories.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.team17.bikeworld.entity.CrawlSite;
 import com.team17.bikeworld.model.CrawlProductModel;
 import com.team17.bikeworld.model.Response;
@@ -24,6 +30,15 @@ public class CrawlService {
     private final CrawlRepository crawlRepository;
     private final CrawlProductImageRepository crawlProductImageRepository;
     private final CategoryRepository categoryRepository;
+    private final BrandRepository brandRepository;
+    private final CrawlStatusRepository crawlStatusRepository;
+
+
+    public CrawlService(CrawlRepository crawlRepository, CrawlProductImageRepository crawlProductImageRepository, CategoryRepository categoryRepository, BrandRepository brandRepository, CrawlStatusRepository crawlStatusRepository) {
+        this.crawlRepository = crawlRepository;
+        this.crawlProductImageRepository = crawlProductImageRepository;
+        this.categoryRepository = categoryRepository;
+        this.brandRepository = brandRepository;
     private final CrawlSiteRepository crawlSiteRepository;
     private final CrawlStatusRepository crawlStatusRepository;
     private final BrandRepository brandRepository;
@@ -65,6 +80,25 @@ public class CrawlService {
         } else {
             return null;
         }
+    }
+
+    public Response<CrawlProduct> createCrawlProduct(CrawlProductModel crawlProductModel){
+        LOGGER.info("Request create crawl model: " + crawlProductModel);
+        Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        if (crawlProductModel != null){
+            try {
+                LOGGER.info("Before Save");
+                CrawlProduct crawlProduct = mapCrawlProduct(crawlProductModel);
+
+                CrawlProduct result = crawlRepository.addCrawlProduct();
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
+            }
+            catch (Exception e){
+                LOGGER.error(e.getMessage(), e.getCause());
+                response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+            }
+        }
+        return response;
     }
 
 
@@ -163,5 +197,29 @@ public class CrawlService {
 //        List<CrawlProduct> allBySite = crawlRepository.findAllBySite(site);
 //        crawlRepository.deleteAll(allBySite);
 //    }
+
+    //Used to map from CrawlProductModel to CrawlProduct
+    private CrawlProduct mapCrawlProduct(CrawlProductModel model){
+        CrawlProduct result = new CrawlProduct();
+        result.setId(0);
+        result.setName(model.getName());
+        LOGGER.info("Mapped crawl product name:" + result.getName());
+        //Find Category by Id,
+        result.setCategoryId(categoryRepository.findById(model.getCatergoryId()).orElse(null));
+        LOGGER.info("Mapped crawl product category:" + result.getCategoryId().getName());
+        //Convert price from float to string
+        result.setPrice(Float.toString(model.getPrice()));
+        LOGGER.info("Mapped crawl product price:" + result.getPrice());
+        result.setBrandId(brandRepository.findById(model.getBranId()).orElse(null));
+        LOGGER.info("Mapped crawl product brand:" + result.getBrandId().getName());
+        result.setStatus(crawlStatusRepository.findById(model.getStatus()).orElse(null));
+        LOGGER.info("Mapped crawl product status:" + result.getStatus());
+        result.setDesc(model.getDescription());
+        LOGGER.info("Mapped crawl product description:" + result.getDesc());
+        result.setUrl(null);
+        result.setSiteId(null);
+        LOGGER.info("Mapped crawl product:" + result);
+        return result;
+    }
 
 }

@@ -1,5 +1,13 @@
 package com.team17.bikeworld.repositories;
 
+import com.team17.bikeworld.entity.CrawlStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface CrawlStatusRepository extends JpaRepository<CrawlStatus, Integer> {
+}
+
 
 import com.team17.bikeworld.entity.CrawlSite;
 import com.team17.bikeworld.entity.CrawlStatus;
@@ -22,3 +30,4 @@ public interface CrawlStatusRepository extends JpaRepository<CrawlStatus, Intege
 //    @Query(value = "SELECT * FROM `crawlsite` WHERE site = ?1", nativeQuery = true)
 //    List<CrawlProductImage> findAllBySite(String site);
 }
+>>>>>>> master

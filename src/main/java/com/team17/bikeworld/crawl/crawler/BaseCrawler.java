@@ -187,6 +187,22 @@ public class BaseCrawler {
         return category;
     }
 
+<<<<<<< HEAD
+    protected CrawlProduct saveNewCrawlProduct(String name, String site, String link, String price, Category category, String img){
+        CrawlProduct crawlProduct = new CrawlProduct();
+        crawlProduct.setName(name);
+//        crawlProduct.setSite(site);
+        crawlProduct.setUrl(link);
+        crawlProduct.setPrice(price);
+        crawlProduct.setCategoryId(category);
+        crawlProduct = crawlRepository.save(crawlProduct);
+
+        CrawlProductImage crawlProductImage = new CrawlProductImage();
+        crawlProductImage.setImageLink(img);
+        crawlProductImage.setCrawlProductid(crawlProduct);
+        crawlProductImageRepository.save(crawlProductImage);
+        return crawlProduct;
+=======
 
     protected CrawlSite getSite(String name) {
         Optional<CrawlSite> crawlSite = crawlSiteRepository.findByName(name);
@@ -195,6 +211,7 @@ public class BaseCrawler {
         } else {
             return null;
         }
+>>>>>>> master
     }
 
     protected CrawlProduct saveNewCrawlProduct(String name, CrawlSite siteId, String link, String price, Category category, String img) {

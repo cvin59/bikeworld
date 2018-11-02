@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author asus
  */
 @Entity
-@Table(catalog = "bikeworld", schema = "")
+@Table(name="crawlproduct",catalog = "bikeworld", schema = "")
 @XmlRootElement
 public class CrawlProduct implements Serializable {
 
