@@ -192,7 +192,7 @@ public class BaseCrawler {
     protected CrawlProduct saveNewCrawlProduct(String name, String site, String link, String price, Category category, String img){
         CrawlProduct crawlProduct = new CrawlProduct();
         crawlProduct.setName(name);
-        crawlProduct.setSite(site);
+//        crawlProduct.setSite(site);
         crawlProduct.setUrl(link);
         crawlProduct.setPrice(price);
         crawlProduct.setCategoryId(category);

@@ -13,8 +13,8 @@ import java.util.Locale;
 
 public interface CrawlRepository extends JpaRepository<CrawlProduct, Integer> {
 
-    @Query(value = "INSERT INTO `crawlproduct` ( `name`, `url`, `category_id`, `brand_id`, `site_id`, `price`, 'status', 'desc') VALUES (?1, ?2, ?3,  ?4, ?5, ?6, ?7, ?8)", nativeQuery = true)
-    CrawlProduct addCrawlProduct(String name, String url, Category category_id, Brand brand_id, String site_id, String price, Integer status, String description);
+    @Query(value = "INSERT INTO `bikeworld`.`crawlproduct` (`name`, `url`, `category_id`, `brand_id`, `site_id`, `price`, `status`, `desc`) VALUES ('abc', 'abc', '1', '1', '1', '1', '1', 'sdf')", nativeQuery = true)
+    CrawlProduct addCrawlProduct();
 
     @Modifying
     @Query(value = "DELETE FROM `crawlproduct` WHERE site = ?1", nativeQuery = true)

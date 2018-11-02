@@ -62,7 +62,7 @@ public class CrawlService {
                 LOGGER.info("Before Save");
                 CrawlProduct crawlProduct = mapCrawlProduct(crawlProductModel);
 
-                CrawlProduct result = crawlRepository.save(crawlProduct);
+                CrawlProduct result = crawlRepository.addCrawlProduct();
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
             }
             catch (Exception e){
