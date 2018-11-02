@@ -5,12 +5,7 @@ import com.team17.bikeworld.entity.*;
 import com.team17.bikeworld.repositories.*;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -35,6 +30,8 @@ public class BaseCrawler {
     protected CrawlStatus statPending;
     protected CrawlSite site;
     protected Brand brandDefault;
+    protected PrintWriter outCrw;
+    protected PrintWriter outImg;
 
     protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCrawler.class);
 
@@ -203,11 +200,10 @@ public class BaseCrawler {
 
 
     protected CrawlProduct saveNewCrawlProduct(String name, CrawlSite siteId, String link, String price, Category category, String img) {
-
         String hash = getHash(name, link, price);
-
         Optional<CrawlProduct> hashedProduct = crawlRepository.findByHash(hash);
         if (hashedProduct.isPresent()) {
+<<<<<<< HEAD
             return hashedProduct.get();
         }else{
             CrawlProduct crawlProduct = new CrawlProduct();
@@ -231,9 +227,52 @@ public class BaseCrawler {
             crawlProductImage.setCrawlProductid(crawlProduct);
             crawlProductImageRepository.save(crawlProductImage);
             return crawlProduct;
+            return null;
+        } else {
+            outCrw.println("INSERT INTO `bikeworld`.`crawlproduct` (`name`, `url`, `category_id`, `brand_id`, `site_id`, `price`, `status`, `desc`, `hash`) VALUES ('" + name + "', '" + link + "', '" + category.getId() + "', null, '" + siteId.getId() + "', '" + price + "', '1', null, '" + hash + "');");
+            outImg.println("INSERT INTO `bikeworld`.`crawlproductimage` (`imageLink`, `crawlProduct_id`) VALUES ('" + img + "', (SELECT `id` FROM `bikeworld`.`crawlproduct` WHERE `hash` = '" + hash + "'));");
+//            System.out.println("INSERT INTO `bikeworld`.`crawlproduct` (`name`, `url`, `category_id`, `brand_id`, `site_id`, `price`, `status`, `desc`, `hash`) VALUES ('" + name + "', '" + link + "', '" + category.getId() + "', null, '" + siteId.getId() + "', '" + price + "', '1', null, '" + hash + "');");
+//            System.out.println("INSERT INTO `bikeworld`.`crawlproductimage` (`imageLink`, `crawlProduct_id`) VALUES ('" + img + "', SELECT `id` FROM `bikeworld`.`crawlproduct` WHERE `hash` = '" + hash + "');");
         }
-
+        return null;
     }
+
+//    protected CrawlProduct saveNewCrawlProductOld2(String name, CrawlSite siteId, String link, String price, Category category, String img) {
+//
+//        String hash = getHash(name, link, price);
+//
+//        Optional<CrawlProduct> hashedProduct = crawlRepository.findByHash(hash);
+//        if (hashedProduct.isPresent()) {
+//            return hashedProduct.get();
+//        } else {
+//            CrawlProduct crawlProduct = new CrawlProduct();
+//            crawlProduct.setStatus(statPending);
+//            crawlProduct.setHash(hash);
+//            crawlProduct.setSiteId(siteId);
+//            crawlProduct.setCategoryId(category);
+//            crawlProduct.setPrice(price);
+//            crawlProduct.setUrl(link);
+//            crawlProduct.setName(name);
+//            crawlProduct.setDesc("New Product");
+//            crawlProduct.setBrandId(brandDefault);
+////            crawlProduct = crawlRepository.save(crawlProduct);
+//
+//
+//            System.out.println("INSERT INTO `bikeworld`.`crawlproduct` (`name`, `url`, `category_id`, `brand_id`, `site_id`, `price`, `status`, `desc`, `hash`) VALUES ('" + name + "', '" + link + "', '" + category.getId() + "', null, '" + siteId.getId() + "', '" + price + "', '1', null, '" + hash + "');");
+//
+//
+////            crawlRepository.addCrawlProduct(name,link,category,site,price,statPending,"NEW PRODUCT", hash);
+////            CrawlProduct crawlProduct =  crawlRepository.findByHash(hash).get();
+//
+//
+//            CrawlProductImage crawlProductImage = new CrawlProductImage();
+//            crawlProductImage.setImageLink(img);
+//            crawlProductImage.setCrawlProductid(crawlProduct);
+//            crawlProductImageRepository.save(crawlProductImage);
+//            return crawlProduct;
+//        }
+//
+//    }
 
 //    protected CrawlProduct saveNewCrawlProductOld(String name, CrawlSite site, String link, String price, Category category, String img) {
 //        CrawlProduct crawlProduct = new CrawlProduct();

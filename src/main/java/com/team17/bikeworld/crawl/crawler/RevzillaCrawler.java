@@ -2,6 +2,7 @@ package com.team17.bikeworld.crawl.crawler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.xpath.XPathExpressionException;
@@ -278,9 +279,9 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
 //                    System.out.println("");
 //                    productDao.replaceProduct(connection, baseLink, cate.getMeaning(), name, link, img, price);
 
-                            System.out.println(name);
-                            System.out.println(link);
-                            System.out.println();
+//                            System.out.println(name);
+//                            System.out.println(link);
+//                            System.out.println();
 
                             CrawlProduct crawlProduct = saveNewCrawlProduct(name, site, link, priceUnit + price, category, img);
 
@@ -470,15 +471,27 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
             System.out.println(statPending.getId());
             System.out.println();
 
+            outCrw = new PrintWriter("D:\\crw.txt");
+            outImg = new PrintWriter("D:\\img.txt");
+
 //            List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(baseLink);
 //            crawlProductImageRepository.deleteAll(imgBySite);
 //            List<CrawlProduct> allBySite = crawlRepository.findAllBySite(baseLink);
 //            crawlRepository.deleteAll(allBySite);
             getCates();
+
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (XPathExpressionException e) {
             e.printStackTrace();
+        } finally {
+            if (outCrw != null) {
+                outCrw.close();
+            }
+            if (outImg != null) {
+                outImg.close();
+            }
         }
     }
 }
