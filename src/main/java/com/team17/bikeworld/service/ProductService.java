@@ -128,10 +128,11 @@ public class ProductService {
                 Optional<Product> optionalProduct = productRepository.findById(id);
 
                 Product productEntity = optionalProduct.get();
-                productEntity.setDescription(updatedProduct.getDescription());
 
+                productEntity = productTransformer.ProductModelToEntity(updatedProduct, productEntity);
                 //test
-                productRepository.save(productEntity);
+                LOGGER.info("Edit product: " + productEntity.toString());
+                productEntity = productRepository.save(productEntity);
 
                 // Save images
                 if (images != null) {

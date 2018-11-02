@@ -84,13 +84,14 @@ public class ProductController extends AbstractController {
     }
 
     @PutMapping(CoreConstant.API_PRODUCT)
-    public String updateProduct(@RequestParam String productModelString, @RequestParam List<Integer> deleteImgList, MultipartFile[] images) {
+    public String updateProduct(@RequestParam String productModelString, @RequestParam String deleteImgList, MultipartFile[] images) {
         Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             ProductModel updatedProduct = gson.fromJson(productModelString, ProductModel.class);
             productService.updateProduct(updatedProduct, images);
+            LOGGER.info(deleteImgList);
             if (deleteImgList != null) {
-                productService.deleteImage(deleteImgList);
+               // productService.deleteImage(deleteImgList);
             }
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
         } catch (Exception e) {
