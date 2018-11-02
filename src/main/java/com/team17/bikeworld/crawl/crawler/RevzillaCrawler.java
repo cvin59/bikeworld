@@ -480,7 +480,6 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
 //            crawlRepository.deleteAll(allBySite);
             getCates();
 
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (XPathExpressionException e) {
