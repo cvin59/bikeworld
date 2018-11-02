@@ -11,6 +11,7 @@ public class CoreConstant {
     public static final String API_CRAWL = "/api/crawl";
     public static final String API_EVENT_IMAGE = "/api/event-image";
     public static final String API_COMMON = "/api/common";
+    public static final String API_PARTICIPANT = "/api/participant";
 
     //API Response code
     public static final int STATUS_CODE_SERVER_ERROR = -1;
@@ -29,10 +30,10 @@ public class CoreConstant {
     public static final int STATUS_PROPOSALEVENT_PENDING = 1;
 
     //Event Status
-    public static final int STATUS_EVENT_UPCOMING =  1;
-    public static final int STATUS_EVENT_ONGOING = 2;
+    public static final int STATUS_EVENT_INACTIVE =  1;
+    public static final int STATUS_EVENT_ACTIVE =  2;
     public static final int STATUS_EVENT_FINISH = 3;
-    public static final int STATUS_EVENT_DEACTIVATED = 4;
+    public static final int STATUS_EVENT_CANCELED = 4;
 
     //Product Status
     public static final int STATUS_PRODUCT_AVAILABLE = 1;
