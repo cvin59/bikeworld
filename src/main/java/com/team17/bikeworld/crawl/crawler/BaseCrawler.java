@@ -218,7 +218,7 @@ public class BaseCrawler {
             crawlProduct.setPrice(price);
             crawlProduct.setUrl(link);
             crawlProduct.setName(name);
-            crawlProduct.setDesc("New Product");
+            crawlProduct.setDescription("New Product");
             crawlProduct.setBrandId(brandDefault);
             crawlProduct = crawlRepository.save(crawlProduct);
 

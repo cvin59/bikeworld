@@ -41,7 +41,7 @@ public class CrawlProduct implements Serializable {
     @Column(nullable = false)
     @Expose
     private Integer id;
-    @Column(length = 45)
+    @Column(length = 255)
     @Expose
     private String name;
     @Column(length = 255)
@@ -53,7 +53,7 @@ public class CrawlProduct implements Serializable {
     @Lob
     @Column(length = 2147483647)
     @Expose
-    private String desc;
+    private String description;
     @JoinColumn(name = "brand_id", referencedColumnName = "id")
     @ManyToOne
     @Expose
@@ -117,12 +117,12 @@ public class CrawlProduct implements Serializable {
         this.price = price;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getHash() {

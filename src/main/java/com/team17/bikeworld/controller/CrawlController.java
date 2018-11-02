@@ -1,6 +1,7 @@
 package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
+import com.team17.bikeworld.model.CrawlProductModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.service.CrawlService;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -78,6 +80,16 @@ public class CrawlController extends AbstractController {
         } catch (Exception e) {
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
         }
+        return gson.toJson(response);
+    }
+
+    @PostMapping(API_CRAWL + "/create")
+    public String createCrawl(@RequestParam String crawlString){
+        LOGGER.info("Request Param: " + crawlString);
+        //Translate json to CrawlProduct
+        CrawlProductModel crawlProductModel = gson.fromJson(crawlString, CrawlProductModel.class);
+        //Add crawl product to database and response
+        Response<CrawlProduct> response = crawlService.createCrawlProduct(crawlProductModel);
         return gson.toJson(response);
     }
 

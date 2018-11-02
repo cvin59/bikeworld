@@ -1,10 +1,16 @@
 package com.team17.bikeworld.service;
 
+import com.team17.bikeworld.common.CoreConstant;
+import com.team17.bikeworld.controller.ProductController;
 import com.team17.bikeworld.crawl.crawler.RevzillaCrawler;
 import com.team17.bikeworld.crawl.crawler.YnebikersCrawler;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.entity.CrawlSite;
+import com.team17.bikeworld.model.CrawlProductModel;
+import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.repositories.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +19,7 @@ import java.util.Optional;
 @Service
 public class CrawlService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrawlService.class);
 
     private final CrawlRepository crawlRepository;
     private final CrawlProductImageRepository crawlProductImageRepository;
@@ -105,6 +112,48 @@ public class CrawlService {
                 YnebikersCrawler.instance.stop();
             }
         }
+    }
+
+    public Response<CrawlProduct> createCrawlProduct(CrawlProductModel crawlProductModel){
+        Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        if (crawlProductModel != null){
+            try {
+                CrawlProduct crawlProduct = mapCrawlProduct(crawlProductModel);
+
+                CrawlProduct result = crawlRepository.save(crawlProduct);
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
+            }
+            catch (Exception e){
+                response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+                LOGGER.error(e.getMessage());
+            }
+        }
+        return response;
+    }
+
+    //Used to map from CrawlProductModel to CrawlProduct
+    private CrawlProduct mapCrawlProduct(CrawlProductModel model){
+        CrawlProduct result = new CrawlProduct();
+        result.setId(0);
+        result.setName(model.getName());
+        LOGGER.info("Mapped crawl product name:" + result.getName());
+        //Find Category by Id,
+        result.setCategoryId(categoryRepository.findById(model.getCatergoryId()).orElse(null));
+        LOGGER.info("Mapped crawl product category:" + result.getCategoryId().getName());
+        //Convert price from float to string
+        result.setPrice(Float.toString(model.getPrice()));
+        LOGGER.info("Mapped crawl product price:" + result.getPrice());
+        result.setBrandId(brandRepository.findById(model.getBranId()).orElse(null));
+        LOGGER.info("Mapped crawl product brand:" + result.getBrandId().getName());
+        result.setStatus(crawlStatusRepository.findById(model.getStatus()).orElse(null));
+        LOGGER.info("Mapped crawl product status:" + result.getStatus());
+        result.setDescription(model.getDescription());
+        LOGGER.info("Mapped crawl product description:" + result.getDescription());
+        result.setUrl(null);
+        result.setSiteId(null);
+        LOGGER.info("Mapped crawl product:" + result);
+        result.setHash(null);
+        return result;
     }
 
 
