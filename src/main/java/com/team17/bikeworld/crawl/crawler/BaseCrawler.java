@@ -31,19 +31,23 @@ public class BaseCrawler {
     protected final CrawlProductImageRepository crawlProductImageRepository;
     protected final CrawlSiteRepository crawlSiteRepository;
     protected final CrawlStatusRepository crawlStatusRepository;
+    protected final BrandRepository brandRepository;
     protected CrawlStatus statPending;
     protected CrawlSite site;
+    protected Brand brandDefault;
 
     protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCrawler.class);
 
-    public BaseCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository,String siteName) {
+    public BaseCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository, String siteName) {
         this.crawlRepository = crawlRepository;
         this.categoryRepository = categoryRepository;
         this.crawlProductImageRepository = crawlProductImageRepository;
         this.crawlSiteRepository = crawlSiteRepository;
         this.crawlStatusRepository = crawlStatusRepository;
         this.statPending = crawlStatusRepository.findByName("NEW").get();
+        this.brandRepository = brandRepository;
         this.site = getSite(siteName);
+        this.brandDefault = brandRepository.findById(1).get();
     }
 
     protected BufferedReader getBufferedReaderForURL(String urlString) throws MalformedURLException, IOException {
@@ -198,7 +202,7 @@ public class BaseCrawler {
     }
 
 
-    protected CrawlProduct saveNewCrawlProduct(String name, CrawlSite site, String link, String price, Category category, String img) {
+    protected CrawlProduct saveNewCrawlProduct(String name, CrawlSite siteId, String link, String price, Category category, String img) {
 
         String hash = getHash(name, link, price);
 
@@ -209,12 +213,13 @@ public class BaseCrawler {
             CrawlProduct crawlProduct = new CrawlProduct();
             crawlProduct.setStatus(statPending);
             crawlProduct.setHash(hash);
-            crawlProduct.setSiteId(site);
+            crawlProduct.setSiteId(siteId);
             crawlProduct.setCategoryId(category);
             crawlProduct.setPrice(price);
             crawlProduct.setUrl(link);
             crawlProduct.setName(name);
             crawlProduct.setDesc("New Product");
+            crawlProduct.setBrandId(brandDefault);
             crawlProduct = crawlRepository.save(crawlProduct);
 
 //            crawlRepository.addCrawlProduct(name,link,category,site,price,statPending,"NEW PRODUCT", hash);
