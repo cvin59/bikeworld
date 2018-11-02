@@ -93,6 +93,16 @@ public class CrawlController extends AbstractController {
         return gson.toJson(response);
     }
 
+    @PostMapping(API_CRAWL + "/create")
+    public String createCrawl(@RequestParam String crawlString){
+        LOGGER.info("Request Param: " + crawlString);
+        //Translate json to CrawlProduct
+        CrawlProductModel crawlProductModel = gson.fromJson(crawlString, CrawlProductModel.class);
+        //Add crawl product to database and response
+        Response<CrawlProduct> response = crawlService.createCrawlProduct(crawlProductModel);
+        return gson.toJson(response);
+    }
+
     @GetMapping(API_CRAWL)
     public String getAll() {
         Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);

@@ -52,11 +52,12 @@ public class ProductController extends AbstractController {
         Response<List<ProductViewModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<ProductViewModel> views = new ArrayList<>();
-            ProductViewModel view = new ProductViewModel();
+
 
             List<Product> products = productService.findAll();
             for (Product product : products
             ) {
+                ProductViewModel view = new ProductViewModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
                 view = productTransformer.ProductEntityToView(product, view, imgs);
                 views.add(view);
@@ -70,20 +71,38 @@ public class ProductController extends AbstractController {
     }
 
     @PostMapping(CoreConstant.API_PRODUCT)
-    public void createProduct(@RequestParam String productModelString, MultipartFile[] images) {
-        ProductModel newProduct = gson.fromJson(productModelString, ProductModel.class);
-        productService.createProduct(newProduct, images);
+    public String createProduct(@RequestParam String productModelString, MultipartFile[] images) {
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            ProductModel newProduct = gson.fromJson(productModelString, ProductModel.class);
+            productService.createProduct(newProduct, images);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/update")
-    public void updateProduct(@RequestParam String productModelString, MultipartFile[] images) {
-        ProductModel updatedProduct = gson.fromJson(productModelString, ProductModel.class);
-        productService.updateProduct(updatedProduct, images);
+    @PutMapping(CoreConstant.API_PRODUCT)
+    public String updateProduct(@RequestParam String productModelString, @RequestParam String deleteImgList, MultipartFile[] images) {
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            ProductModel updatedProduct = gson.fromJson(productModelString, ProductModel.class);
+            productService.updateProduct(updatedProduct, images);
+            LOGGER.info(deleteImgList);
+            if (deleteImgList != null) {
+               // productService.deleteImage(deleteImgList);
+            }
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
     }
 
     @GetMapping(CoreConstant.API_PRODUCT + "/{id}")
-    public @ResponseBody
-    String getProductById(@PathVariable int id) {
+    public String getProductById(@PathVariable int id) {
         Response<ProductViewModel> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             Product product = productService.getProductById(id);
@@ -131,11 +150,12 @@ public class ProductController extends AbstractController {
         Response<List<ProductViewModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<ProductViewModel> views = new ArrayList<>();
-            ProductViewModel view = new ProductViewModel();
+
 
             List<Product> products = productService.getProductByCate(id, pageable);
             for (Product product : products
             ) {
+                ProductViewModel view = new ProductViewModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
                 view = productTransformer.ProductEntityToView(product, view, imgs);
                 views.add(view);
@@ -168,11 +188,12 @@ public class ProductController extends AbstractController {
         Response<List<ProductViewModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<ProductViewModel> views = new ArrayList<>();
-            ProductViewModel view = new ProductViewModel();
+
 
             List<Product> products = productService.getProductByBrand(id, pageable);
             for (Product product : products
             ) {
+                ProductViewModel view = new ProductViewModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
                 view = productTransformer.ProductEntityToView(product, view, imgs);
                 views.add(view);
@@ -203,11 +224,12 @@ public class ProductController extends AbstractController {
         Response<List<ProductViewModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<ProductViewModel> views = new ArrayList<>();
-            ProductViewModel view = new ProductViewModel();
+
 
             List<Product> products = productService.getProductBySeller(seller, pageable);
             for (Product product : products
             ) {
+                ProductViewModel view = new ProductViewModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
                 view = productTransformer.ProductEntityToView(product, view, imgs);
                 views.add(view);

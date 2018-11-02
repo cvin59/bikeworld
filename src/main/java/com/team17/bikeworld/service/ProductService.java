@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -127,10 +128,11 @@ public class ProductService {
                 Optional<Product> optionalProduct = productRepository.findById(id);
 
                 Product productEntity = optionalProduct.get();
-                productEntity.setDescription(updatedProduct.getDescription());
 
+                productEntity = productTransformer.ProductModelToEntity(updatedProduct, productEntity);
                 //test
-                productRepository.save(productEntity);
+                LOGGER.info("Edit product: " + productEntity.toString());
+                productEntity = productRepository.save(productEntity);
 
                 // Save images
                 if (images != null) {
@@ -189,5 +191,12 @@ public class ProductService {
     public List<ProductImage> getImagesByProduct(Product product) {
         Optional<List<ProductImage>> images = productImageRepository.findByProductId(product);
         return images.orElse(null);
+    }
+
+    public void deleteImage(List<Integer> deleteList) {
+        for (int i = 0; i < deleteList.size(); i++) {
+            Integer deleteId = deleteList.get(i);
+            productImageRepository.deleteById(deleteId);
+        }
     }
 }

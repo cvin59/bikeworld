@@ -22,13 +22,16 @@ public class ProductTransformer {
 
     public ProductViewModel ProductEntityToView(Product entity, ProductViewModel view, List<ProductImage> images) {
         if (entity != null) {
-            view.setProduct(entity);
+            view.setProductInfo(entity);
             if (images != null) {
                 List<String> imageList = new ArrayList<>();
+                List<Integer> imageIdList = new ArrayList<>();
                 for (ProductImage image : images) {
                     imageList.add(image.getImageLink());
+                    imageIdList.add(image.getId());
                 }
-                view.setImg(imageList);
+                view.setProductImg(imageList);
+                view.setProductImgId(imageIdList);
             }
             return view;
         }
@@ -37,39 +40,62 @@ public class ProductTransformer {
 
     public Product ProductModelToEntity(ProductModel model, Product entity) {
         if (model != null) {
-            entity.setId(0);
-            // Set seller
-            Account account = new Account();
-            account.setUsername(model.getSeller());
-            entity.setAccountUsename(account);
+            if (model.getId() == null) {
+                entity.setId(0);
+            } else {
+                entity.setId(model.getId());
+            }
 
-
-            // Set Category
-            Category category = new Category();
-            category.setId(model.getCategory());
-            entity.setCategoryId(category);
-
-
-            //Set Brand
-            Brand brand = new Brand();
-            brand.setId(model.getBrand());
-            entity.setBrandId(brand);
-
+            entity.setPrice(model.getPrice());
             entity.setQuantity(model.getQuantity());
             entity.setDescription(model.getDescription());
+            entity.setAddress(model.getAddress());
+
 //            entity.setLatitude();
 //            entity.setLongitude();
-            entity.setName(model.getName());
-            entity.setPostDate(model.getPostDate());
+            if (entity.getName() == null) {
+                entity.setName(model.getName());
+            }
+            if (entity.getPostDate() == null) {
+                entity.setPostDate(model.getPostDate());
+            }
 
-            entity.setAddress(model.getAddress());
-            entity.setPrice(model.getPrice());
-            entity.setTotalRatePoint(model.getTotalRatePoint());
-            entity.setTotalRates(model.getTotalRater());
+            if (entity.getTotalRatePoint() == null) {
+                entity.setTotalRatePoint(model.getTotalRatePoint());
+            }
 
-            ProductStatus status = new ProductStatus();
-            status.setId(model.getStatus());
-            entity.setStatusId(status);
+            if (entity.getTotalRates() == null) {
+                entity.setTotalRates(model.getTotalRater());
+            }
+
+
+            if (entity.getAccountUsename() == null) {
+                // Set seller
+                Account account = new Account();
+                account.setUsername(model.getSeller());
+                entity.setAccountUsename(account);
+            }
+
+            if (entity.getCategoryId() == null) {
+                // Set Category
+                Category category = new Category();
+                category.setId(model.getCategory());
+                entity.setCategoryId(category);
+            }
+
+            if (entity.getBrandId() == null) {
+                //Set Brand
+                Brand brand = new Brand();
+                brand.setId(model.getBrand());
+                entity.setBrandId(brand);
+            }
+
+
+            if (entity.getStatusId() == null) {
+                ProductStatus status = new ProductStatus();
+                status.setId(model.getStatus());
+                entity.setStatusId(status);
+            }
 
             return entity;
         }

@@ -37,7 +37,8 @@ public class Product implements Serializable {
     @Column(name = "price", precision = 22)
     private Double price;
     @Expose
-    @Column(name = "description", length = 255)
+    @Lob
+    @Column(length = 2147483647)
     private String description;
     @Expose
     @Column(name = "quantity")
