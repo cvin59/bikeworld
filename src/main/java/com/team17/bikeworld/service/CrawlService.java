@@ -36,14 +36,15 @@ public class CrawlService {
         this.brandRepository = brandRepository;
     private final CrawlSiteRepository crawlSiteRepository;
     private final CrawlStatusRepository crawlStatusRepository;
+    private final BrandRepository brandRepository;
 
-
-    public CrawlService(CrawlRepository crawlRepository, CrawlProductImageRepository crawlProductImageRepository, CategoryRepository categoryRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository) {
+    public CrawlService(CrawlRepository crawlRepository, CrawlProductImageRepository crawlProductImageRepository, CategoryRepository categoryRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository) {
         this.crawlRepository = crawlRepository;
         this.crawlProductImageRepository = crawlProductImageRepository;
         this.categoryRepository = categoryRepository;
         this.crawlSiteRepository = crawlSiteRepository;
         this.crawlStatusRepository = crawlStatusRepository;
+        this.brandRepository = brandRepository;
     }
 
     public List<CrawlProduct> getAll() {
@@ -111,14 +112,14 @@ public class CrawlService {
         try {
             if (site.equals("revzilla")) {
                 if (!RevzillaCrawler.isLock()) {
-                    RevzillaCrawler.instance = new Thread(new RevzillaCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository));
+                    RevzillaCrawler.instance = new Thread(new RevzillaCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
                     RevzillaCrawler.instance.start();
                     RevzillaCrawler.instance.join();
                     count = RevzillaCrawler.getCount();
                 }
             } else if (site.equals("ynebikers")) {
                 if (!YnebikersCrawler.isLock()) {
-                    YnebikersCrawler.instance = new Thread(new YnebikersCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository));
+                    YnebikersCrawler.instance = new Thread(new YnebikersCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
                     YnebikersCrawler.instance.start();
                     YnebikersCrawler.instance.join();
                     count = YnebikersCrawler.getCount();

@@ -15,8 +15,8 @@ import java.util.logging.Logger;
 
 public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
-    public YnebikersCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository) {
-        super(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, "ynebikers");
+    public YnebikersCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository) {
+        super(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository, "ynebikers");
     }
 
     public static final String baseLink = "https://ynebikers.com.my";
