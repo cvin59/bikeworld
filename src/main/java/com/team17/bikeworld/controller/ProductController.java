@@ -123,16 +123,42 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/search/{id}/{name}")
-    public String searchTradeItem(@PathVariable int id, @PathVariable String name) {
-
-        Response<List<Product>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
-        try {
-            List<Product> pros = null;
-            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, pros);
-        } catch (Exception e) {
-            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+    @GetMapping(CoreConstant.API_PRODUCT + "/search")
+    public String searchTradeItem(@RequestParam(name = "searchValue") String searchValue,
+                                  @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+                                  @RequestParam(name = "size", required = false, defaultValue = "12 ") Integer size,
+                                  @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
+                                  @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy) {
+        Sort sortable = null;
+        if (sort.equals("ASC")) {
+            sortable = Sort.by(sortBy).ascending();
         }
+        if (sort.equals("DESC")) {
+            sortable = Sort.by(sortBy).descending();
+        }
+        Pageable pageable = PageRequest.of(page - 1, size, sortable);
+
+        Response<MultiProductModel> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        MultiProductModel data = new MultiProductModel();
+
+        List<ProductViewModel> views = new ArrayList<>();
+        Page<Product> products = productService.searchByName(searchValue, pageable);
+
+        for (Product product : products
+        ) {
+            ProductViewModel view = new ProductViewModel();
+            List<ProductImage> imgs = productService.getImagesByProduct(product);
+
+            view = productTransformer.ProductEntityToView(product, view, imgs);
+            views.add(view);
+        }
+
+        data.setTotalPage(products.getTotalPages());
+        data.setTotalRecord(products.getTotalElements());
+        data.setCurrentPage(page);
+        data.setViewModels(views);
+
+        response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, data);
         return gson.toJson(response);
     }
 
