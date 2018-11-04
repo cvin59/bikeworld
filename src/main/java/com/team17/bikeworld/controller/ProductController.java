@@ -81,6 +81,7 @@ public class ProductController extends AbstractController {
         try {
             ProductModel newProduct = gson.fromJson(productModelString, ProductModel.class);
             productService.createProduct(newProduct, images);
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
@@ -96,7 +97,7 @@ public class ProductController extends AbstractController {
             productService.updateProduct(updatedProduct, images);
             LOGGER.info(deleteImgList.toString());
             if (deleteImgList != null) {
-                // productService.deleteImage(deleteImgList);
+                productService.deleteImage(deleteImgList);
             }
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
         } catch (Exception e) {

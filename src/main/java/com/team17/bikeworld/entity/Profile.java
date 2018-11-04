@@ -40,7 +40,7 @@ public class Profile implements Serializable {
     private String email;
     @Expose
     @Column(name = "phone")
-    private BigInteger phone;
+    private String phone;
     @Expose
     @Column(name = "address", length = 255)
     private String address;
@@ -89,11 +89,11 @@ public class Profile implements Serializable {
         this.email = email;
     }
 
-    public BigInteger getPhone() {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(BigInteger phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 
