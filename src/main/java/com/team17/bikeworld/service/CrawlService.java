@@ -143,24 +143,29 @@ public class CrawlService {
         CrawlProduct result = new CrawlProduct();
         result.setId(0);
         result.setName(model.getName());
-        LOGGER.info("Mapped crawl product name:" + result.getName());
+//        LOGGER.info("Mapped crawl product name:" + result.getName());
         //Find Category by Id,
         result.setCategoryId(categoryRepository.findById(model.getCatergoryId()).orElse(null));
-        LOGGER.info("Mapped crawl product category:" + result.getCategoryId().getName());
+//        LOGGER.info("Mapped crawl product category:" + result.getCategoryId().getName());
         //Convert price from float to string
         result.setPrice(Float.toString(model.getPrice()));
-        LOGGER.info("Mapped crawl product price:" + result.getPrice());
+//        LOGGER.info("Mapped crawl product price:" + result.getPrice());
         result.setBrandId(brandRepository.findById(model.getBranId()).orElse(null));
-        LOGGER.info("Mapped crawl product brand:" + result.getBrandId().getName());
+//        LOGGER.info("Mapped crawl product brand:" + result.getBrandId().getName());
         result.setStatus(crawlStatusRepository.findById(model.getStatus()).orElse(null));
-        LOGGER.info("Mapped crawl product status:" + result.getStatus());
+//        LOGGER.info("Mapped crawl product status:" + result.getStatus());
         result.setDescription(model.getDescription());
-        LOGGER.info("Mapped crawl product description:" + result.getDescription());
+//        LOGGER.info("Mapped crawl product description:" + result.getDescription());
         result.setUrl(null);
         result.setSiteId(null);
-        LOGGER.info("Mapped crawl product:" + result);
+//        LOGGER.info("Mapped crawl product:" + result);
         result.setHash(null);
         return result;
+    }
+
+    public Integer countPending() {
+        Integer integer = crawlRepository.countPending();
+        return integer;
     }
 
 

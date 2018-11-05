@@ -40,4 +40,7 @@ public interface CrawlRepository extends JpaRepository<CrawlProduct, Integer> {
     Optional<CrawlProduct> findByHash(String hash);
 
     List<CrawlProduct> findAllBySiteId(CrawlSite crawlSite);
+
+    @Query(value = "SELECT COUNT(*) FROM `crawlproduct` WHERE `status`='1'", nativeQuery = true)
+    Integer countPending();
 }

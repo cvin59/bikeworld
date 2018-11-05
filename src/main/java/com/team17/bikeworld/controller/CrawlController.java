@@ -49,7 +49,7 @@ public class CrawlController extends AbstractController {
     }
 
     @PostMapping(API_CRAWL + "/create")
-    public String createCrawl(@RequestParam String crawlString){
+    public String createCrawl(@RequestParam String crawlString) {
         LOGGER.info("Request Param: " + crawlString);
         //Translate json to CrawlProduct
         CrawlProductModel crawlProductModel = gson.fromJson(crawlString, CrawlProductModel.class);
@@ -59,7 +59,7 @@ public class CrawlController extends AbstractController {
     }
 
 
-    @GetMapping(API_CRAWL+ "/view/{site:.+}")
+    @GetMapping(API_CRAWL + "/view/{site:.+}")
     public String viewCrawl(@PathVariable String site) {
         Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
@@ -76,7 +76,13 @@ public class CrawlController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(API_CRAWL+ "/pending/{page:.+}")
+    @GetMapping(API_CRAWL + "/countpending")
+    public String getCountPending() {
+        Integer countPending = crawlService.countPending();
+        return countPending.toString();
+    }
+
+    @GetMapping(API_CRAWL + "/pending/{page:.+}")
     public String getPending(@PathVariable int page) {
         Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
