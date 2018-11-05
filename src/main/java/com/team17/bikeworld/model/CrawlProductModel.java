@@ -1,20 +1,54 @@
 package com.team17.bikeworld.model;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
+import com.team17.bikeworld.adapter.EmptyStringTypeAdapter;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CrawlProductModel {
-@Expose
+    @Expose
+    @JsonAdapter(EmptyStringTypeAdapter.class)
+    private int id;
+
+    @Expose
     String name;
+
     @Expose
-    int catergoryId;
+    private int catergoryId;
+
     @Expose
-    int branId;
+    private int branId;
+
     @Expose
-    float price;
+    private float price;
+
     @Expose
-    int status;
+    private int status;
+
     @Expose
-    String description;
+    private String description;
+
+    @Expose
+    private MultipartFile[] images;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public MultipartFile[] getImages() {
+        return images;
+    }
+
+    public void setImages(MultipartFile[] images) {
+        this.images = images;
+    }
 
     public String getName() {
         return name;

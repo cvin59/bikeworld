@@ -1,6 +1,7 @@
 package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
+import com.team17.bikeworld.model.ChangeStatusCrawlModel;
 import com.team17.bikeworld.model.CrawlProductModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.entity.CrawlProduct;
@@ -8,10 +9,7 @@ import com.team17.bikeworld.service.CrawlService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -83,7 +81,7 @@ public class CrawlController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @PostMapping(API_CRAWL + "/create")
+    @PostMapping(API_CRAWL)
     public String createCrawl(@RequestParam String crawlString){
         LOGGER.info("Request Param: " + crawlString);
         //Translate json to CrawlProduct
@@ -92,6 +90,26 @@ public class CrawlController extends AbstractController {
         Response<CrawlProduct> response = crawlService.createCrawlProduct(crawlProductModel);
         return gson.toJson(response);
     }
+
+    @PutMapping(API_CRAWL)
+    public String editCrawl(@RequestParam String objectString){
+        LOGGER.info("Request Param: " + objectString);
+        //Translate json to EditCrawlProductModel
+        CrawlProductModel crawlProductModel = gson.fromJson(objectString, CrawlProductModel.class);
+        //Edit crawl product in database and response
+        Response<CrawlProduct> response = crawlService.editCrawlProduct(crawlProductModel);
+        return gson.toJson(response);
+    }
+
+    @PutMapping(API_CRAWL + "/status")
+    public String changeStatus(@RequestParam String objectString){
+        //Translate json to ChangeStatusCrawlModel
+        ChangeStatusCrawlModel changeStatusCrawlModel = gson.fromJson(objectString, ChangeStatusCrawlModel.class);
+        //Edit crawl product in database and response
+        Response response = crawlService.changeCrawlProductStatus(changeStatusCrawlModel);
+        return gson.toJson(response);
+    }
+
 
     @GetMapping(API_CRAWL)
     public String getAll() {
