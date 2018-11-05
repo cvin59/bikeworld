@@ -68,7 +68,7 @@ public class UserService {
         return accountRepository.save(account);
     }
 
-    public Profile saveProfile(Profile profile){
+    public Profile saveProfile(Profile profile) {
         return profileRepository.save(profile);
     }
 

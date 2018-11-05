@@ -12,9 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -41,11 +39,29 @@ public class AccountController extends AbstractController {
             profile = profileTransformer.ProfileModelToEntity(profileModel, profile);
             profile = userService.saveProfile(profile);
 
-            Account account = accountRepository.findAccountByUsername(profileModel.getAccountUser());
+            Account account = userService.findUserByUsername(profileModel.getAccountUser());
             account.setProfileId(profile);
             accountRepository.save(account);
 
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+    @GetMapping(CoreConstant.API_ACCOUNT + "/profile/{accountUsername}")
+    public String getProfile(@PathVariable String accountUsername) {
+        Response<Profile> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            Account account = userService.findUserByUsername(accountUsername);
+            Profile profile = new Profile();
+            if (account != null) {
+                profile = account.getProfileId();
+            }
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, profile);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
