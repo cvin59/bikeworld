@@ -67,7 +67,7 @@ public class Product implements Serializable {
     @ManyToOne
     private ProductStatus statusId;
     @Expose
-    @ManyToOne(targetEntity = Account.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = Account.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "account_usename")
     private Account accountUsename;
     @Expose

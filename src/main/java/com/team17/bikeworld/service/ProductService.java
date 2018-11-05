@@ -173,8 +173,8 @@ public class ProductService {
         return false;
     }
 
-    public List<Product> searchByName(String searchValue) {
-        List<Product> products = productRepository.searchByName(searchValue);
+    public Page<Product> searchByName(String searchValue, Pageable pageable) {
+        Page<Product> products = productRepository.findByNameIgnoreCaseContaining(searchValue, pageable);
         return products;
     }
 

@@ -31,8 +31,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query(value = "UPDATE `product` SET status = '2' WHERE id = ?1", nativeQuery = true)
     Integer disableProduct(int id);
 
-    @Query("SELECT u FROM Product u WHERE u.name like  %?1%")
-    List<Product> searchByName(String name);
+
+    Page<Product> findByNameIgnoreCaseContaining(String name, Pageable pageable);
 
     @Modifying
     @Query(value = "UPDATE `product` SET status = '1' WHERE id = ?1", nativeQuery = true)
