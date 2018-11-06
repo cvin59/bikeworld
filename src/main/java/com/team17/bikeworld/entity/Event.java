@@ -83,6 +83,9 @@ public class Event implements Serializable {
     @Column(name = "totalSlots", precision = 22)
     private Integer totalSlots;
     @Expose
+    @Column(name = "currentSlot", precision = 22)
+    private Integer currentSlot;
+    @Expose
     @Column(name = "minSlot", precision = 22)
     private Double minSlot;
     @Expose
@@ -209,6 +212,14 @@ public class Event implements Serializable {
 
     public void setTotalSlots(Integer totalSlots) {
         this.totalSlots = totalSlots;
+    }
+
+    public Integer getCurrentSlot() {
+        return currentSlot;
+    }
+
+    public void setCurrentSlot(Integer currentSlot) {
+        this.currentSlot = currentSlot;
     }
 
     public Double getMinSlot() {

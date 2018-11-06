@@ -10,6 +10,7 @@ public class CoreConstant {
     public static final String API_PRODUCT = "/api/product";
     public static final String API_CRAWL = "/api/crawl";
     public static final String API_EVENT_IMAGE = "/api/event-image";
+    public static final String API_PROPOSAL_EVENT_IMAGE = "/api/proposal-event-image";
     public static final String API_COMMON = "/api/common";
     public static final String API_PARTICIPANT = "/api/participant";
     public static final String API_ACCOUNT = "/api/account";
@@ -26,8 +27,8 @@ public class CoreConstant {
     public static final String MESSAGE_NO_RESULT = "No result!";
 
     //Proposal Event Status
-    public static final int STATUS_PROPOSALEVENT_NOT_APPROVED = 2;
-    public static final int STATUS_PROPOSALEVENT_APPRROVED = 1;
+    public static final int STATUS_PROPOSALEVENT_NOT_APPROVED = 3;
+    public static final int STATUS_PROPOSALEVENT_APPRROVED = 2;
     public static final int STATUS_PROPOSALEVENT_PENDING = 1;
 
     //Event Status
@@ -45,4 +46,8 @@ public class CoreConstant {
 
     public static final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
 
+    // Data for search nearby
+    public static final double MIN_RADIUS = 0.0005;
+    public static final double MAX_RADIUS = 0.5;
+    public static final double LIMIT_SHOPS = 10;
 }

@@ -31,7 +31,7 @@ public class ProposalEventController extends AbstractController {
     }
     //Web Service
     @PostMapping(API_PROPOSAL_EVENT)
-    public String proposeEvent(@RequestParam String consumeEventString, @RequestParam MultipartFile image) {
+    public String proposeEvent(@RequestParam String consumeEventString, MultipartFile image) {
         LOGGER.info(consumeEventString);
         ConsumeProposalEvent consumeProposalEvent = gson.fromJson(consumeEventString, ConsumeProposalEvent.class);
         Response<ProposalEvent> response = proposalEventService.proposeEvent(consumeProposalEvent, image);
@@ -63,6 +63,23 @@ public class ProposalEventController extends AbstractController {
             Optional<ProposalEvent> proposalEvent = proposalEventService.findProposalEvent(id);
             if (proposalEvent.isPresent()) {
                 response.setResponse(STATUS_CODE_SUCCESS, MESSAGE_SUCCESS, proposalEvent.get());
+            } else {
+                response.setResponse(STATUS_CODE_NO_RESULT, MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e) {
+            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+    @GetMapping(API_PROPOSAL_EVENT + "/user/{username}")
+    public String getEventByUsername(@PathVariable("username") String username) {
+        Response<List<ProposalEvent>> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
+
+        try {
+            List<ProposalEvent> proposalEvents = proposalEventService.findProposalEvent(username);
+            if (!proposalEvents.isEmpty()) {
+                response.setResponse(STATUS_CODE_SUCCESS, MESSAGE_SUCCESS, proposalEvents);
             } else {
                 response.setResponse(STATUS_CODE_NO_RESULT, MESSAGE_NO_RESULT);
             }

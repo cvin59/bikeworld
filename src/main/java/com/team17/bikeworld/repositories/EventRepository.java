@@ -13,4 +13,6 @@ public interface EventRepository extends JpaRepository<Event, Integer>{
     Page<Event> findByTitleIgnoreCaseContaining(String title, Pageable pageable);
 
     List<Event> findTop3By();
+
+    List<Event> findByLatitudeBetweenAndLongitudeBetween(double latF, double latC, double lngF, double lngC);
 }

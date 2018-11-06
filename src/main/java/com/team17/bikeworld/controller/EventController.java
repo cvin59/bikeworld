@@ -3,8 +3,9 @@ package com.team17.bikeworld.controller;
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.Event;
 import com.team17.bikeworld.model.ConsumeEvent;
+import com.team17.bikeworld.model.LatLng;
 import com.team17.bikeworld.model.Response;
-import com.team17.bikeworld.model.ResponseEventPage;
+import com.team17.bikeworld.model.ResponsePage;
 import com.team17.bikeworld.service.EventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,11 +100,11 @@ public class EventController extends AbstractController {
             , @RequestParam("sort") String sort
             , @RequestParam("direction") int direction) {
         Page<Event> resultPage = eventService.getEventPage(page, 6, sort, direction);
-        ResponseEventPage responseEventPage = new ResponseEventPage();
-        responseEventPage.setContent(resultPage.getContent());
-        responseEventPage.setCurrPage(page);
-        responseEventPage.setTotalPage(resultPage.getTotalPages());
-        return gson.toJson(responseEventPage);
+        ResponsePage responsePage = new ResponsePage();
+        responsePage.setContent(resultPage.getContent());
+        responsePage.setCurrPage(page);
+        responsePage.setTotalPage(resultPage.getTotalPages());
+        return gson.toJson(responsePage);
     }
 
     @GetMapping(API_EVENT + "/search")
@@ -112,22 +113,22 @@ public class EventController extends AbstractController {
             , @RequestParam("sort") String sort
             , @RequestParam("direction") int direction) {
         Page<Event> resultPage = eventService.getEventPage(q, page, 12, sort, direction);
-        ResponseEventPage responseEventPage = new ResponseEventPage();
-        responseEventPage.setContent(resultPage.getContent());
-        responseEventPage.setCurrPage(page);
-        responseEventPage.setTotalPage(resultPage.getTotalPages());
-        return gson.toJson(responseEventPage);
+        ResponsePage responsePage = new ResponsePage();
+        responsePage.setContent(resultPage.getContent());
+        responsePage.setCurrPage(page);
+        responsePage.setTotalPage(resultPage.getTotalPages());
+        return gson.toJson(responsePage);
     }
 
     @GetMapping(API_EVENT + "/result")
     public String searchEventByTitle(@RequestParam("q") String q
             ,@RequestParam("page") int page) {
         Page<Event> resultPage = eventService.getEventPage(q, page, 12);
-        ResponseEventPage responseEventPage = new ResponseEventPage();
-        responseEventPage.setContent(resultPage.getContent());
-        responseEventPage.setCurrPage(page);
-        responseEventPage.setTotalPage(resultPage.getTotalPages());
-        return gson.toJson(responseEventPage);
+        ResponsePage responsePage = new ResponsePage();
+        responsePage.setContent(resultPage.getContent());
+        responsePage.setCurrPage(page);
+        responsePage.setTotalPage(resultPage.getTotalPages());
+        return gson.toJson(responsePage);
     }
 
     @GetMapping(API_EVENT + "/event-home")
@@ -135,6 +136,18 @@ public class EventController extends AbstractController {
         Response<List<Event>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<Event> events = eventService.findEventHome();
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, events);
+        } catch (Exception e) {
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+    @GetMapping(API_EVENT + "/nearby-event")
+    public String viewNearbyEvent(@RequestParam Double lat, @RequestParam Double lng) {
+        Response<List<Event>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<Event> events = eventService.searchNearby(lat, lng);
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, events);
         } catch (Exception e) {
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);

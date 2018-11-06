@@ -3,6 +3,7 @@ package com.team17.bikeworld.service;
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.ProposalEvent;
 import com.team17.bikeworld.entity.ProposalEventImage;
+import com.team17.bikeworld.model.ConsumeEvent;
 import com.team17.bikeworld.model.ConsumeProposalEvent;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.repositories.AccountRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
@@ -49,6 +51,10 @@ public class ProposalEventService {
         return proposalEventRepository.findById(id);
     }
 
+    public List<ProposalEvent> findProposalEvent(String username) {
+        return proposalEventRepository.findByAccountUsename_Username(username);
+    }
+
     public ProposalEvent saveProposalEvent(ProposalEvent proposalEvent) {
         return proposalEventRepository.save(proposalEvent);
     }
@@ -74,30 +80,38 @@ public class ProposalEventService {
         if (consumeProposalEvent != null) {
             try {
                 //xu ly luu hinh anh
-                String sourceName = image.getOriginalFilename();
-                String sourceFileName = FilenameUtils.getBaseName(sourceName);
-                String sourceExt = FilenameUtils.getExtension(sourceName).toLowerCase();
-
-                String fileName = RandomStringUtils.randomAlphabetic(8)
-                        .concat(sourceFileName)
-                        .concat(".")
-                        .concat(sourceExt);
-                Files.createDirectories(rootLocation);
-                Files.copy(image.getInputStream(), rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-
-                consumeProposalEvent.setImageUrl("/images/" + fileName);
+                handleImage(consumeProposalEvent, image);
 
                 ProposalEvent event = proposalEventRepository.save(initProposalEvent(consumeProposalEvent));
 
-                List<ProposalEventImage> proposalEventImages = initProposalEventImages(event, consumeProposalEvent);
-                proposalEventImageRepository.saveAll(proposalEventImages);
-
+                if (image != null) {
+                    List<ProposalEventImage> proposalEventImages = initProposalEventImages(event, consumeProposalEvent);
+                    proposalEventImageRepository.saveAll(proposalEventImages);
+                }
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, event);
             } catch (Exception e) {
                 response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
             }
         }
         return response;
+    }
+
+    private void handleImage(ConsumeProposalEvent consumeProposalEvent, MultipartFile image) throws IOException {
+        if (image != null) {
+            String sourceName = image.getOriginalFilename();
+            String sourceFileName = FilenameUtils.getBaseName(sourceName);
+            String sourceExt = FilenameUtils.getExtension(sourceName).toLowerCase();
+
+            String fileName = RandomStringUtils.randomAlphabetic(8)
+                    .concat(sourceFileName)
+                    .concat(".")
+                    .concat(sourceExt);
+            System.out.println(fileName);
+            Files.createDirectories(rootLocation);
+            Files.copy(image.getInputStream(), rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+
+            consumeProposalEvent.setImageUrl("/images/" + fileName);
+        }
     }
 
     private ProposalEvent initProposalEvent(ConsumeProposalEvent consumeProposalEvent) {
@@ -113,7 +127,7 @@ public class ProposalEventService {
                 event.setStartDate(startDate);
                 Date endDate = format1.parse(consumeProposalEvent.getEndDate());
                 event.setEndDate(endDate);
-                event.setAccountUsename(accountRepository.findAccountByUsername ("user"));
+                event.setAccountUsename(accountRepository.findAccountByUsername (consumeProposalEvent.getUsername()));
                 event.setStatus(CoreConstant.STATUS_PROPOSALEVENT_PENDING);
 
                 return event;
