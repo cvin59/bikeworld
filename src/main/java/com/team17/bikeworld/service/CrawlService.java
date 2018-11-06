@@ -6,29 +6,35 @@ import com.team17.bikeworld.crawl.crawler.YnebikersCrawler;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.entity.CrawlProductImage;
 import com.team17.bikeworld.entity.CrawlSite;
+import com.team17.bikeworld.entity.ProductImage;
 import com.team17.bikeworld.model.*;
 import com.team17.bikeworld.repositories.*;
+import com.team17.bikeworld.transformer.CrawlProductTransformer;
 import com.team17.bikeworld.transformer.ProductTransformer;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-
-import static com.team17.bikeworld.common.CoreConstant.rootLocation;
 
 @Service
 public class CrawlService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CrawlService.class);
+    private final Path rootLocation = Paths.get("src/main/resources/static/images/crawlProduct/").toAbsolutePath().normalize();
+
+    @Autowired
+    private  final CrawlProductTransformer crawlProductTransformer;
 
     private final CrawlRepository crawlRepository;
     private final CrawlProductImageRepository crawlProductImageRepository;
@@ -37,13 +43,14 @@ public class CrawlService {
     private final CrawlStatusRepository crawlStatusRepository;
     private final BrandRepository brandRepository;
 
-    public CrawlService(CrawlRepository crawlRepository, CrawlProductImageRepository crawlProductImageRepository, CategoryRepository categoryRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository, ProductTransformer productTransformer) {
+    public CrawlService(CrawlRepository crawlRepository, CrawlProductImageRepository crawlProductImageRepository, CategoryRepository categoryRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository, ProductTransformer productTransformer, CrawlProductTransformer crawlProductTransformer) {
         this.crawlRepository = crawlRepository;
         this.crawlProductImageRepository = crawlProductImageRepository;
         this.categoryRepository = categoryRepository;
         this.crawlSiteRepository = crawlSiteRepository;
         this.crawlStatusRepository = crawlStatusRepository;
         this.brandRepository = brandRepository;
+        this.crawlProductTransformer = crawlProductTransformer;
     }
 
     public List<CrawlProduct> getAll() {
@@ -123,20 +130,31 @@ public class CrawlService {
         }
     }
 
-    public Response<CrawlProduct> createCrawlProduct(CrawlProductModel crawlProductModel){
+    public Response<CrawlProduct> createCrawlProduct(CrawlProductModel crawlProductModel, MultipartFile[] images){
         Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         //Check if model is null or don't have image
-        if (crawlProductModel != null && crawlProductModel.getImages().length != 0){
+        if (crawlProductModel != null && images.length != 0){
             //Try to save crawl product information to database
             try {
                 //Map Model to entity
-                CrawlProduct crawlProduct = CrawlProductModel_CrawlProductEntity(crawlProductModel);
+                CrawlProduct crawlProduct = crawlProductTransformer.CrawlProductModel_CrawlProductEntity(crawlProductModel);
                 CrawlProduct result = crawlRepository.save(crawlProduct);
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
 
-                //Save images information to disk and  database
-                saveMultipleImagesToDatabase(saveMultipleImagesToDisk(crawlProductModel.getImages(), result.getId()), result);
+                if (images != null) {
+                    List<String> imageList = new ArrayList<>();
+                    crawlProductModel.setImage(imageList);
 
+                    for (MultipartFile image : images) {
+                        handleImage(crawlProductModel, image);
+                    }
+
+                    List<CrawlProductImage> savedImage = crawlProductTransformer.ImageModelToEntity(result, crawlProductModel);
+                    for (CrawlProductImage image : savedImage) {
+                        crawlProductImageRepository.save(image);
+                    }
+
+                }
             }
             catch (Exception e){
                 response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
@@ -146,54 +164,18 @@ public class CrawlService {
         return response;
     }
 
-    //Save image files to disk
-    public ArrayList<String> saveMultipleImagesToDisk(MultipartFile[] images, int crawlItemId) throws IOException {
-        //Prefix path
-        String fileName = "/images/"
-                .concat("crawlItem/")
-                .concat(Integer.toString(crawlItemId));
+    private void handleImage(CrawlProductModel model, MultipartFile image) throws IOException {
+        if (image != null) {
+            String fileName = image.getOriginalFilename();
+            Files.createDirectories(rootLocation);
+            Files.copy(image.getInputStream(), rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 
-        //List of saved files' path, used later to insert image information to database
-        ArrayList<String> result = new ArrayList<>();
-
-        if (images.length != 0) {
-            for (MultipartFile image:images){
-                    String sourceName = image.getOriginalFilename();
-                    String sourceFileName = FilenameUtils.getBaseName(sourceName);
-                    String sourceExt = FilenameUtils.getExtension(sourceName).toLowerCase();
-
-                    //Path: ../images/crawlItem/crawlItemId/filename_RandomString.sourceExt
-                    fileName.concat(sourceFileName)
-                            .concat("_")
-                            .concat(RandomStringUtils.randomAlphabetic(8))
-                            .concat(".")
-                            .concat(sourceExt);
-
-                    System.out.println(fileName);
-                    Files.createDirectories(rootLocation);
-                    Files.copy(image.getInputStream(), rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-                    result.add(fileName);
-            }
-        }
-
-        return result;
-    }
-
-    //Save image information to database
-    public void saveMultipleImagesToDatabase(ArrayList<String> imagePaths, CrawlProduct crawlProductId){
-        ArrayList<CrawlProductImage> result = new ArrayList<>();
-        if (!imagePaths.isEmpty()) {
-            for (String imagePath:imagePaths) {
-                result.add(new CrawlProductImage(imagePath, crawlProductId));
-            }
-
-            //Delete all previous images
-            crawlProductImageRepository.deleteAllByCrawlProductId(crawlProductId);
-
-            //Save new ones
-            crawlProductImageRepository.saveAll(result);
+            model.getImage().add("/images/crawlProduct/" + fileName);
+            LOGGER.info("file name:" + fileName);
         }
     }
+
+
 
     public Response<CrawlProduct> editCrawlProduct(CrawlProductModel crawlProductModel) {
         Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
@@ -202,7 +184,7 @@ public class CrawlService {
             if (crawlProductFromDatabase.isPresent()){
                 try {
                         CrawlProduct result = crawlProductFromDatabase.get();
-                        crawlRepository.save(UpdateEditCrawlProductModelCrawlProductEntity(crawlProductModel, result));
+                        //crawlRepository.save(UpdateEditCrawlProductModelCrawlProductEntity(crawlProductModel, result));
                         response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
 
                 }catch (Exception e){
@@ -238,39 +220,6 @@ public class CrawlService {
         }
         return response;
     }
-
-    //Used to map from CrawlProductModel to CrawlProduct
-    public CrawlProduct CrawlProductModel_CrawlProductEntity(CrawlProductModel model){
-        CrawlProduct result = new CrawlProduct();
-        result.setId(0);
-        result.setName(model.getName());
-        //Find Category by Id,
-        result.setCategoryId(categoryRepository.findById(model.getCatergoryId()).orElse(null));
-        //Convert price from float to string
-        result.setPrice(Float.toString(model.getPrice()));
-        result.setBrandId(brandRepository.findById(model.getBranId()).orElse(null));
-        result.setStatus(crawlStatusRepository.findById(model.getStatus()).orElse(null));
-        result.setDescription(model.getDescription());
-        result.setUrl(null);
-        result.setSiteId(null);
-        result.setHash(null);
-        return result;
-    }
-
-    public CrawlProduct UpdateEditCrawlProductModelCrawlProductEntity(CrawlProductModel model , CrawlProduct etity){
-        etity.setId(model.getId());
-        etity.setName(model.getName());
-        etity.setCategoryId(categoryRepository.findById(model.getCatergoryId()).orElse(null));
-        etity.setPrice(Float.toString(model.getPrice()));
-        etity.setBrandId(brandRepository.findById(model.getBranId()).orElse(null));
-        etity.setStatus(crawlStatusRepository.findById(model.getStatus()).orElse(null));
-        etity.setDescription(model.getDescription());
-        etity.setUrl(null);
-        etity.setSiteId(null);
-        etity.setHash(null);
-        return etity;
-    }
-
 //    public void DeleteBySite(String site) {
 //        List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(site);
 //        crawlProductImageRepository.deleteAll(imgBySite);

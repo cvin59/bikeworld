@@ -32,7 +32,15 @@ public class CrawlProductModel {
     private String description;
 
     @Expose
-    private MultipartFile[] images;
+    private List<String> image;
+
+    public List<String> getImage() {
+        return image;
+    }
+
+    public void setImage(List<String> image) {
+        this.image = image;
+    }
 
     public int getId() {
         return id;
@@ -40,14 +48,6 @@ public class CrawlProductModel {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public MultipartFile[] getImages() {
-        return images;
-    }
-
-    public void setImages(MultipartFile[] images) {
-        this.images = images;
     }
 
     public String getName() {

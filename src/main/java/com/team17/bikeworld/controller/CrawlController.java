@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -82,12 +83,12 @@ public class CrawlController extends AbstractController {
     }
 
     @PostMapping(API_CRAWL)
-    public String createCrawl(@RequestParam String crawlString){
+    public String createCrawl(@RequestParam String crawlString, MultipartFile[] images){
         LOGGER.info("Request Param: " + crawlString);
         //Translate json to CrawlProduct
         CrawlProductModel crawlProductModel = gson.fromJson(crawlString, CrawlProductModel.class);
         //Add crawl product to database and response
-        Response<CrawlProduct> response = crawlService.createCrawlProduct(crawlProductModel);
+        Response<CrawlProduct> response = crawlService.createCrawlProduct(crawlProductModel, images);
         return gson.toJson(response);
     }
 
