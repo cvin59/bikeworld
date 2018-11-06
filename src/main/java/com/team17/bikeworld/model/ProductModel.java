@@ -40,39 +40,30 @@ public class ProductModel {
     private int totalRater;
 
     @Expose
+    List<Integer> ProductImgId;
+    @Expose
     private List<String> images;
     @Expose
-    private int status;
+    private int statusId;
     @Expose
-    private int category;
+    private String status;
     @Expose
-    private int brand;
+    private int categoryId;
+    @Expose
+    private String category;
+    @Expose
+    private int brandId;
+    @Expose
+    private String brand;
 
     public ProductModel() {
     }
 
-    public ProductModel(int id, String name, String description, double price, Double longtitude, Double latitude, String seller, String address, Date postDate, double totalRatePoint, int totalRater, int status, int category, int brand) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.longtitude = longtitude;
-        this.latitude = latitude;
-        this.seller = seller;
-        this.address = address;
-        this.postDate = postDate;
-        this.totalRatePoint = totalRatePoint;
-        this.totalRater = totalRater;
-        this.status = status;
-        this.category = category;
-        this.brand = brand;
-    }
-
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -98,6 +89,14 @@ public class ProductModel {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public Double getLongtitude() {
@@ -156,28 +155,12 @@ public class ProductModel {
         this.totalRater = totalRater;
     }
 
-    public int getStatus() {
-        return status;
+    public List<Integer> getProductImgId() {
+        return ProductImgId;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public int getCategory() {
-        return category;
-    }
-
-    public void setCategory(int category) {
-        this.category = category;
-    }
-
-    public int getBrand() {
-        return brand;
-    }
-
-    public void setBrand(int brand) {
-        this.brand = brand;
+    public void setProductImgId(List<Integer> productImgId) {
+        ProductImgId = productImgId;
     }
 
     public List<String> getImages() {
@@ -188,12 +171,51 @@ public class ProductModel {
         this.images = images;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public int getStatusId() {
+        return statusId;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setStatusId(int statusId) {
+        this.statusId = statusId;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public int getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(int brandId) {
+        this.brandId = brandId;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
 }

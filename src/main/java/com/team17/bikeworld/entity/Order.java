@@ -53,7 +53,7 @@ public class Order implements Serializable {
     private String addressDelivery;
     @Expose
     @Column(name = "phoneContact")
-    private BigInteger phoneContact;
+    private String phoneContact;
     @Expose
     @Column(name = "orderDate")
     @Temporal(TemporalType.TIMESTAMP)
@@ -62,9 +62,13 @@ public class Order implements Serializable {
     @Column(name = "receiverName", length = 255)
     private String receiverName;
     @Expose
-    @JoinColumn(name = "account_usename", referencedColumnName = "username", nullable = false)
+    @JoinColumn(name = "buyer_username", referencedColumnName = "username", nullable = false)
     @ManyToOne(optional = false)
-    private Account accountUsename;
+    private Account buyerUsername;
+    @Expose
+    @JoinColumn(name = "seller_username", referencedColumnName = "username", nullable = false)
+    @ManyToOne(optional = false)
+    private Account sellerUsername;
     @Expose
     @JoinColumn(name = "orderStatus_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
@@ -113,11 +117,11 @@ public class Order implements Serializable {
         this.addressDelivery = addressDelivery;
     }
 
-    public BigInteger getPhoneContact() {
+    public String getPhoneContact() {
         return phoneContact;
     }
 
-    public void setPhoneContact(BigInteger phoneContact) {
+    public void setPhoneContact(String phoneContact) {
         this.phoneContact = phoneContact;
     }
 
@@ -137,12 +141,20 @@ public class Order implements Serializable {
         this.receiverName = receiverName;
     }
 
-    public Account getAccountUsename() {
-        return accountUsename;
+    public Account getBuyerUsername() {
+        return buyerUsername;
     }
 
-    public void setAccountUsename(Account accountUsename) {
-        this.accountUsename = accountUsename;
+    public void setBuyerUsername(Account buyerUsername) {
+        this.buyerUsername = buyerUsername;
+    }
+
+    public Account getSellerUsername() {
+        return sellerUsername;
+    }
+
+    public void setSellerUsername(Account sellerUsername) {
+        this.sellerUsername = sellerUsername;
     }
 
     public OrderStatus getOrderStatusid() {

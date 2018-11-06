@@ -1,13 +1,13 @@
 package com.team17.bikeworld.viewModel;
 
 import com.google.gson.annotations.Expose;
-import com.team17.bikeworld.model.ProductModel;
+import com.team17.bikeworld.model.OrderModel;
 
 import java.util.List;
 
-public class MultiProductModel {
+public class MultiOrderModel {
     @Expose
-    List<ProductModel> productInfo;
+    List<OrderModel> orders;
     @Expose
     int totalPage;
     @Expose
@@ -15,23 +15,15 @@ public class MultiProductModel {
     @Expose
     int currentPage;
 
-    public MultiProductModel() {
+    public MultiOrderModel() {
     }
 
-    public List<ProductModel> getProductInfo() {
-        return productInfo;
+    public List<OrderModel> getOrders() {
+        return orders;
     }
 
-    public void setProductInfo(List<ProductModel> productInfo) {
-        this.productInfo = productInfo;
-    }
-
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
+    public void setOrders(List<OrderModel> orders) {
+        this.orders = orders;
     }
 
     public int getTotalPage() {
@@ -48,5 +40,13 @@ public class MultiProductModel {
 
     public void setTotalRecord(long totalRecord) {
         this.totalRecord = totalRecord;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
     }
 }

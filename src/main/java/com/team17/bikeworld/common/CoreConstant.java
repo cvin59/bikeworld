@@ -14,6 +14,7 @@ public class CoreConstant {
     public static final String API_COMMON = "/api/common";
     public static final String API_PARTICIPANT = "/api/participant";
     public static final String API_ACCOUNT = "/api/account";
+    public static final String API_ORDER = "/api/order";
 
     //API Response code
     public static final int STATUS_CODE_SERVER_ERROR = -1;
@@ -32,13 +33,22 @@ public class CoreConstant {
     public static final int STATUS_PROPOSALEVENT_PENDING = 1;
 
     //Event Status
-    public static final int STATUS_EVENT_INACTIVE =  1;
-    public static final int STATUS_EVENT_ACTIVE =  2;
+    public static final int STATUS_EVENT_INACTIVE = 1;
+    public static final int STATUS_EVENT_ACTIVE = 2;
     public static final int STATUS_EVENT_FINISH = 3;
     public static final int STATUS_EVENT_CANCELED = 4;
 
     //Product Status
     public static final int STATUS_PRODUCT_AVAILABLE = 1;
+    public static final int STATUS_PRODUCT_SOLDOUT = 2;
+    public static final int STATUS_PRODUCT_HIDDEN = 3;
+    public static final int STATUS_PRODUCT_BANNED = 4;
+
+    //Order Status
+    public static final int STATUS_ORDER_PENDING = 1;
+    public static final int STATUS_ORDER_SUCCESS = 2;
+    public static final int STATUS_ORDER_CANCEL = 3;
+    public static final int STATUS_ORDER_REJECT = 4;
 
     //Role
     public static final String MEMBER = "MEMBER";
