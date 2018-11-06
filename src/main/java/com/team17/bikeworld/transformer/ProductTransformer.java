@@ -3,7 +3,6 @@ package com.team17.bikeworld.transformer;
 import com.team17.bikeworld.entity.*;
 import com.team17.bikeworld.model.ProductModel;
 import com.team17.bikeworld.repositories.AccountRepository;
-import com.team17.bikeworld.viewModel.ProductViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +19,28 @@ public class ProductTransformer {
     public ProductTransformer() {
     }
 
-    public ProductViewModel ProductEntityToView(Product entity, ProductViewModel view, List<ProductImage> images) {
+    public ProductModel ProductEntityToView(Product entity, ProductModel model, List<ProductImage> images) {
         if (entity != null) {
-            view.setProductInfo(entity);
+            model.setId(entity.getId());
+            model.setName(entity.getName());
+            model.setAddress(entity.getAddress());
+            model.setDescription(entity.getDescription());
+            model.setSeller(entity.getAccountUsename().getUsername());
+            model.setPrice(entity.getPrice());
+            model.setQuantity(entity.getQuantity());
+            model.setLatitude(entity.getLatitude());
+            model.setLongtitude(entity.getLongitude());
+            model.setPostDate(entity.getPostDate());
+            model.setTotalRatePoint(entity.getTotalRatePoint());
+            model.setTotalRater(entity.getTotalRates());
+            model.setBrand(entity.getBrandId().getName());
+            model.setBrandId(entity.getBrandId().getId());
+            model.setCategoryId(entity.getCategoryId().getId());
+            model.setCategory(entity.getCategoryId().getName());
+            model.setStatusId(entity.getStatusId().getId());
+            model.setStatus(entity.getStatusId().getName());
+
+
             if (images != null) {
                 List<String> imageList = new ArrayList<>();
                 List<Integer> imageIdList = new ArrayList<>();
@@ -30,22 +48,17 @@ public class ProductTransformer {
                     imageList.add(image.getImageLink());
                     imageIdList.add(image.getId());
                 }
-                view.setProductImg(imageList);
-                view.setProductImgId(imageIdList);
+                model.setImages(imageList);
+                model.setProductImgId(imageIdList);
             }
-            return view;
+            return model;
         }
         return null;
     }
 
     public Product ProductModelToEntity(ProductModel model, Product entity) {
         if (model != null) {
-            if (model.getId() == null) {
-                entity.setId(0);
-            } else {
-                entity.setId(model.getId());
-            }
-
+            entity.setId(model.getId());
             entity.setPrice(model.getPrice());
             entity.setQuantity(model.getQuantity());
             entity.setDescription(model.getDescription());
@@ -79,21 +92,21 @@ public class ProductTransformer {
             if (entity.getCategoryId() == null) {
                 // Set Category
                 Category category = new Category();
-                category.setId(model.getCategory());
+                category.setId(model.getCategoryId());
                 entity.setCategoryId(category);
             }
 
             if (entity.getBrandId() == null) {
                 //Set Brand
                 Brand brand = new Brand();
-                brand.setId(model.getBrand());
+                brand.setId(model.getBrandId());
                 entity.setBrandId(brand);
             }
 
 
             if (entity.getStatusId() == null) {
                 ProductStatus status = new ProductStatus();
-                status.setId(model.getStatus());
+                status.setId(model.getStatusId());
                 entity.setStatusId(status);
             }
 

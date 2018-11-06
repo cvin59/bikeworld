@@ -5,7 +5,6 @@ import com.team17.bikeworld.model.ProductModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.service.*;
 import com.team17.bikeworld.transformer.ProductTransformer;
-import com.team17.bikeworld.viewModel.ProductViewModel;
 import com.team17.bikeworld.viewModel.MultiProductModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +51,12 @@ public class ProductController extends AbstractController {
         try {
             MultiProductModel data = new MultiProductModel();
 
-            List<ProductViewModel> views = new ArrayList<>();
+            List<ProductModel> views = new ArrayList<>();
             Page<Product> products = productService.findAll(pageable);
 
             for (Product product : products
             ) {
-                ProductViewModel view = new ProductViewModel();
+                ProductModel view = new ProductModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
 
                 view = productTransformer.ProductEntityToView(product, view, imgs);
@@ -66,7 +65,7 @@ public class ProductController extends AbstractController {
 
             data.setTotalPage(products.getTotalPages());
             data.setTotalRecord(products.getTotalElements());
-            data.setViewModels(views);
+            data.setProductInfo(views);
 
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, data);
         } catch (Exception e) {
@@ -109,12 +108,12 @@ public class ProductController extends AbstractController {
 
     @GetMapping(CoreConstant.API_PRODUCT + "/{id}")
     public String getProductById(@PathVariable int id) {
-        Response<ProductViewModel> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        Response<ProductModel> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             Product product = productService.getProductById(id);
             List<ProductImage> images = productService.getImagesByProduct(product);
 
-            ProductViewModel view = new ProductViewModel();
+            ProductModel view = new ProductModel();
             view = productTransformer.ProductEntityToView(product, view, images);
 
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, view);
@@ -142,12 +141,12 @@ public class ProductController extends AbstractController {
         Response<MultiProductModel> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         MultiProductModel data = new MultiProductModel();
 
-        List<ProductViewModel> views = new ArrayList<>();
+        List<ProductModel> views = new ArrayList<>();
         Page<Product> products = productService.searchByName(searchValue, pageable);
 
         for (Product product : products
         ) {
-            ProductViewModel view = new ProductViewModel();
+            ProductModel view = new ProductModel();
             List<ProductImage> imgs = productService.getImagesByProduct(product);
 
             view = productTransformer.ProductEntityToView(product, view, imgs);
@@ -157,7 +156,7 @@ public class ProductController extends AbstractController {
         data.setTotalPage(products.getTotalPages());
         data.setTotalRecord(products.getTotalElements());
         data.setCurrentPage(page);
-        data.setViewModels(views);
+        data.setProductInfo(views);
 
         response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, data);
         return gson.toJson(response);
@@ -179,15 +178,15 @@ public class ProductController extends AbstractController {
         Pageable pageable = PageRequest.of(page - 1, size, sortable);
 
 
-        Response<List<ProductViewModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        Response<List<ProductModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
-            List<ProductViewModel> views = new ArrayList<>();
+            List<ProductModel> views = new ArrayList<>();
 
 
             List<Product> products = productService.getProductByCate(id, pageable);
             for (Product product : products
             ) {
-                ProductViewModel view = new ProductViewModel();
+                ProductModel view = new ProductModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
                 view = productTransformer.ProductEntityToView(product, view, imgs);
                 views.add(view);
@@ -217,15 +216,15 @@ public class ProductController extends AbstractController {
         Pageable pageable = PageRequest.of(page - 1, size, sortable);
 
 
-        Response<List<ProductViewModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        Response<List<ProductModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
-            List<ProductViewModel> views = new ArrayList<>();
+            List<ProductModel> views = new ArrayList<>();
 
 
             List<Product> products = productService.getProductByBrand(id, pageable);
             for (Product product : products
             ) {
-                ProductViewModel view = new ProductViewModel();
+                ProductModel view = new ProductModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
                 view = productTransformer.ProductEntityToView(product, view, imgs);
                 views.add(view);
@@ -257,12 +256,12 @@ public class ProductController extends AbstractController {
         try {
             MultiProductModel data = new MultiProductModel();
 
-            List<ProductViewModel> views = new ArrayList<>();
+            List<ProductModel> views = new ArrayList<>();
             Page<Product> products = productService.getProductBySeller(seller, pageable);
 
             for (Product product : products
             ) {
-                ProductViewModel view = new ProductViewModel();
+                ProductModel view = new ProductModel();
                 List<ProductImage> imgs = productService.getImagesByProduct(product);
 
                 view = productTransformer.ProductEntityToView(product, view, imgs);
@@ -272,10 +271,11 @@ public class ProductController extends AbstractController {
             data.setTotalPage(products.getTotalPages());
             data.setTotalRecord(products.getTotalElements());
             data.setCurrentPage(page);
-            data.setViewModels(views);
+            data.setProductInfo(views);
 
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, data);
         } catch (Exception e) {
+            e.printStackTrace();
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
         }
         return gson.toJson(response);
