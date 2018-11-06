@@ -33,7 +33,7 @@ public class ScheduledTasks {
         this.eventStatusRepository = eventStatusRepository;
     }
 
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(cron = "0 0 */6 * * *")
     public void updateStatusEvent() {
         List<Event> events = eventRepository.findAll();
         for (Event event : events) {

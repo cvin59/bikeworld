@@ -5,13 +5,13 @@ import com.team17.bikeworld.entity.Event;
 
 import java.util.List;
 
-public class ResponseEventPage{
+public class ResponsePage<E>{
     @Expose
     private int totalPage;
     @Expose
     private int currPage;
     @Expose
-    private List<Event> content;
+    private List<E> content;
 
 
         public int getTotalPage() {
@@ -30,11 +30,11 @@ public class ResponseEventPage{
             this.currPage = currPage;
         }
 
-        public List<Event> getContent() {
+        public List<E> getContent() {
             return content;
         }
 
-        public void setContent(List<Event> content) {
+        public void setContent(List<E> content) {
             this.content = content;
         }
 }
