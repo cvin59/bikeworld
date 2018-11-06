@@ -6,6 +6,8 @@ import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.entity.CrawlSite;
 import com.team17.bikeworld.entity.CrawlStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -43,4 +45,7 @@ public interface CrawlRepository extends JpaRepository<CrawlProduct, Integer> {
 
     @Query(value = "SELECT COUNT(*) FROM `crawlproduct` WHERE `status`='1'", nativeQuery = true)
     Integer countPending();
+
+    Page<CrawlProduct> findAllByStatus(CrawlStatus status, Pageable pageable);
+//    Page<Product> findByNameIgnoreCaseContaining(String name, Pageable pageable);
 }

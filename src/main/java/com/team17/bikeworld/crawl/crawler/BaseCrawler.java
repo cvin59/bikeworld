@@ -25,7 +25,6 @@ public class BaseCrawler {
     protected final CategoryRepository categoryRepository;
     protected final CrawlProductImageRepository crawlProductImageRepository;
     protected final CrawlSiteRepository crawlSiteRepository;
-    protected final CrawlStatusRepository crawlStatusRepository;
     protected final BrandRepository brandRepository;
     protected CrawlStatus statPending;
     protected CrawlSite site;
@@ -34,16 +33,15 @@ public class BaseCrawler {
 
     protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCrawler.class);
 
-    public BaseCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository, String siteName) {
+    public BaseCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, BrandRepository brandRepository, String siteName, CrawlStatus crawlStatus) {
         this.crawlRepository = crawlRepository;
         this.categoryRepository = categoryRepository;
         this.crawlProductImageRepository = crawlProductImageRepository;
         this.crawlSiteRepository = crawlSiteRepository;
-        this.crawlStatusRepository = crawlStatusRepository;
-        this.statPending = crawlStatusRepository.findByName("NEW").get();
         this.brandRepository = brandRepository;
         this.site = getSite(siteName);
         this.brandDefault = brandRepository.findById(1).get();
+        this.statPending = crawlStatus;
     }
 
 
