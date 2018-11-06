@@ -86,7 +86,7 @@ public class EventService {
         return response;
     }
 
-    public Response<Event>  updateEvent(ConsumeEvent consumeEvent, MultipartFile image) {
+    public Response<Event> updateEvent(ConsumeEvent consumeEvent, MultipartFile image) {
         Response<Event> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         if (consumeEvent != null) {
             try {
@@ -189,19 +189,19 @@ public class EventService {
         return null;
     }
 
-//    private void setEventStatus(Event event, int checkStartRegister, int checkEndRegister, int checkStart, int checkEnd) {
-//        if (checkStartRegister < 0) {
-//            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_COMING_SOON).get());
-//        } else if (checkStartRegister >= 0 && checkEndRegister <= 0){
-//            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_REGISTERING).get());
-//        } else if (checkEndRegister > 0 && checkStart < 0) {
-//            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_UPCOMING).get());
-//        } else if (checkStart >= 0 && checkEnd <= 0) {
-//            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_ONGOING).get());
-//        } else {
-//            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_FINISH).get());
-//        }
-//    }
+    private void setEventStatus(Event event, int checkStartRegister, int checkEndRegister, int checkStart, int checkEnd) {
+        if (checkStartRegister < 0) {
+            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_INACTIVE).get());
+        } else if (checkStartRegister >= 0 && checkEndRegister <= 0) {
+            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_INACTIVE).get());
+        } else if (checkEndRegister > 0 && checkStart < 0) {
+            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_INACTIVE).get());
+        } else if (checkStart >= 0 && checkEnd <= 0) {
+            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_ACTIVE).get());
+        } else {
+            event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_FINISH).get());
+        }
+    }
 
     private Event updateEvent(Event event, ConsumeEvent consumeEvent) {
         if (consumeEvent != null) {
@@ -234,7 +234,12 @@ public class EventService {
                 Date endRegiDate = format1.parse(consumeEvent.getEndRegisterDate());
                 event.setEndRegisterDate(endRegiDate);
 
+                int checkStartRegister = Calendar.getInstance().getTime().compareTo(event.getStartRegisterDate());
+                int checkEndRegister = Calendar.getInstance().getTime().compareTo(event.getEndRegisterDate());
+                int checkStart = Calendar.getInstance().getTime().compareTo(event.getStartDate());
+                int checkEnd = Calendar.getInstance().getTime().compareTo(event.getEndDate());
 
+                setEventStatus(event, checkStartRegister, checkEndRegister, checkStart, checkEnd);
                 return event;
             } catch (Exception e) {
                 LOGGER.error(e.getMessage());
@@ -258,7 +263,7 @@ public class EventService {
             } else {
                 response.setResponse(STATUS_CODE_NO_RESULT, MESSAGE_NO_RESULT);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
         }
         return response;
@@ -287,7 +292,7 @@ public class EventService {
             } else {
                 response.setResponse(STATUS_CODE_NO_RESULT, MESSAGE_NO_RESULT);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
         }
     }
@@ -313,5 +318,24 @@ public class EventService {
     public Page<Event> getEventPage(String search, int pageNumber, int itemsPerPage) {
         Pageable pageable = PageRequest.of(pageNumber - 1, itemsPerPage);
         return eventRepository.findByTitleIgnoreCaseContaining(search, pageable);
+    }
+
+    public List<Event> searchNearby(double lat, double lng) {
+
+        List<Event> result;
+
+        double radius = MIN_RADIUS;
+        double latC, latF, lngC, lngF;
+
+        do {
+            latC = lat + radius;
+            latF = lat - radius;
+            lngC = lng + radius;
+            lngF = lng - radius;
+            LOGGER.info("Search event with radius: " + radius);
+            result = eventRepository.findByLatitudeBetweenAndLongitudeBetween(latF, latC, lngF, lngC);
+            radius = radius * 10;
+        } while (radius < CoreConstant.MAX_RADIUS);
+        return result;
     }
 }

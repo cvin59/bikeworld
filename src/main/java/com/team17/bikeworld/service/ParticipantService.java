@@ -12,7 +12,13 @@ import com.team17.bikeworld.repositories.EventRepository;
 import com.team17.bikeworld.repositories.ParticipantRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ParticipantService {
@@ -34,10 +40,11 @@ public class ParticipantService {
             try {
                 Event event = eventRepository.findById(consumeParticipant.getEventId()).get();
                 int totalSlots = event.getTotalSlots();
+                int currentSlot = event.getCurrentSlot();
                 int quantity = consumeParticipant.getQuantity();
-                if (totalSlots >= quantity) {
-                    totalSlots = totalSlots - quantity;
-                    event.setTotalSlots(totalSlots);
+                if (totalSlots >= (currentSlot + quantity)) {
+                    currentSlot = currentSlot + quantity;
+                    event.setCurrentSlot(currentSlot);
                     eventRepository.save(event);
 
                     Participant participant = participantRepository.save(initParticipant(consumeParticipant));
@@ -70,5 +77,19 @@ public class ParticipantService {
             }
         }
         return null;
+    }
+
+
+    public List<Participant> findPartcipantsByUsername(String username) {
+        return participantRepository.findByAccountUsename_Username(username);
+    }
+
+    public Page<Participant> getParticipantPage(String username, int pageNumber, int itemsPerPage, String sortBy, int direction) {
+        if (direction == 1) {
+            Pageable pageable = PageRequest.of(pageNumber - 1, itemsPerPage, Sort.Direction.ASC, sortBy);
+            return participantRepository.findByAccountUsename_Username(username, pageable);
+        }
+        Pageable pageable = PageRequest.of(pageNumber - 1, itemsPerPage, Sort.Direction.DESC, sortBy);
+        return participantRepository.findByAccountUsename_Username(username, pageable);
     }
 }
