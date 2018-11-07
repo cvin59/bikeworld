@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class CrawlProductImage implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -46,6 +47,11 @@ public class CrawlProductImage implements Serializable {
     private CrawlProduct crawlProductid;
 
     public CrawlProductImage() {
+    }
+
+    public CrawlProductImage(String imageLink, CrawlProduct crawlProductid) {
+        this.imageLink = imageLink;
+        this.crawlProductid = crawlProductid;
     }
 
     public CrawlProductImage(Integer id) {
