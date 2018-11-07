@@ -5,6 +5,7 @@ import com.team17.bikeworld.crawl.dict.CateObj;
 import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.entity.CrawlSite;
+import com.team17.bikeworld.entity.CrawlStatus;
 import com.team17.bikeworld.repositories.*;
 import org.w3c.dom.NodeList;
 
@@ -15,8 +16,8 @@ import java.util.logging.Logger;
 
 public class YnebikersCrawler extends BaseCrawler implements Runnable {
 
-    public YnebikersCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository) {
-        super(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository, "ynebikers");
+    public YnebikersCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, BrandRepository brandRepository, CrawlStatus crawlStatus) {
+        super(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, brandRepository, "ynebikers", crawlStatus);
     }
 
     public static final String baseLink = "https://ynebikers.com.my";

@@ -25,27 +25,25 @@ public class BaseCrawler {
     protected final CategoryRepository categoryRepository;
     protected final CrawlProductImageRepository crawlProductImageRepository;
     protected final CrawlSiteRepository crawlSiteRepository;
-    protected final CrawlStatusRepository crawlStatusRepository;
     protected final BrandRepository brandRepository;
     protected CrawlStatus statPending;
     protected CrawlSite site;
     protected Brand brandDefault;
-    protected PrintWriter outCrw;
-    protected PrintWriter outImg;
+
 
     protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCrawler.class);
 
-    public BaseCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository, String siteName) {
+    public BaseCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, BrandRepository brandRepository, String siteName, CrawlStatus crawlStatus) {
         this.crawlRepository = crawlRepository;
         this.categoryRepository = categoryRepository;
         this.crawlProductImageRepository = crawlProductImageRepository;
         this.crawlSiteRepository = crawlSiteRepository;
-        this.crawlStatusRepository = crawlStatusRepository;
-        this.statPending = crawlStatusRepository.findByName("NEW").get();
         this.brandRepository = brandRepository;
         this.site = getSite(siteName);
         this.brandDefault = brandRepository.findById(1).get();
+        this.statPending = crawlStatus;
     }
+
 
     protected BufferedReader getBufferedReaderForURL(String urlString) throws MalformedURLException, IOException {
         URL url = new URL(urlString);
@@ -188,52 +186,67 @@ public class BaseCrawler {
         return category;
     }
 
+    protected CrawlProduct saveNewCrawlProduct(String name, String site, String link, String price, Category category, String img) {
+        CrawlProduct crawlProduct = new CrawlProduct();
+        crawlProduct.setName(name);
+//        crawlProduct.setSite(site);
+        crawlProduct.setUrl(link);
+        crawlProduct.setPrice(price);
+        crawlProduct.setCategoryId(category);
+        crawlProduct = crawlRepository.save(crawlProduct);
 
-    protected CrawlSite getSite(String name) {
-        Optional<CrawlSite> crawlSite = crawlSiteRepository.findByName(name);
-        if (crawlSite.isPresent()) {
-            return crawlSite.get();
-        } else {
-            return null;
-        }
+        CrawlProductImage crawlProductImage = new CrawlProductImage();
+        crawlProductImage.setImageLink(img);
+        crawlProductImage.setCrawlProductid(crawlProduct);
+        crawlProductImageRepository.save(crawlProductImage);
+        return crawlProduct;
     }
 
-    protected CrawlProduct saveNewCrawlProduct(String name, CrawlSite siteId, String link, String price, Category category, String img) {
+        protected CrawlSite getSite(String name) {
+            Optional<CrawlSite> crawlSite = crawlSiteRepository.findByName(name);
+            if (crawlSite.isPresent()) {
+                return crawlSite.get();
+            } else {
+                return null;
+            }
+        }
 
-        String hash = getHash(name, link, price);
+        protected CrawlProduct saveNewCrawlProduct(String name, CrawlSite siteId, String link, String price, Category category, String img) {
 
-        Optional<CrawlProduct> hashedProduct = crawlRepository.findByHash(hash);
-        if (hashedProduct.isPresent()) {
-            return hashedProduct.get();
-        } else {
-            CrawlProduct crawlProduct = new CrawlProduct();
-            crawlProduct.setStatus(statPending);
-            crawlProduct.setHash(hash);
-            crawlProduct.setSiteId(siteId);
-            crawlProduct.setCategoryId(category);
-            crawlProduct.setPrice(price);
-            crawlProduct.setUrl(link);
-            crawlProduct.setName(name);
-            crawlProduct.setDescription("New Product");
-            crawlProduct.setBrandId(brandDefault);
-            crawlProduct = crawlRepository.save(crawlProduct);
+            String hash = getHash(name, link, price);
+
+            Optional<CrawlProduct> hashedProduct = crawlRepository.findByHash(hash);
+            if (hashedProduct.isPresent()) {
+                return hashedProduct.get();
+            } else {
+                CrawlProduct crawlProduct = new CrawlProduct();
+                crawlProduct.setStatus(statPending);
+                crawlProduct.setHash(hash);
+                crawlProduct.setSiteId(siteId);
+                crawlProduct.setCategoryId(category);
+                crawlProduct.setPrice(price);
+                crawlProduct.setUrl(link);
+                crawlProduct.setName(name);
+                crawlProduct.setDescription("New Product");
+                crawlProduct.setBrandId(brandDefault);
+                crawlProduct = crawlRepository.save(crawlProduct);
 
 
-            System.out.println("INSERT INTO `bikeworld`.`crawlproduct` (`name`, `url`, `category_id`, `brand_id`, `site_id`, `price`, `status`, `desc`, `hash`) VALUES ('" + name + "', '" + link + "', '" + category.getId() + "', null, '" + siteId.getId() + "', '" + price + "', '1', null, '" + hash + "');");
+                System.out.println("INSERT INTO `bikeworld`.`crawlproduct` (`name`, `url`, `category_id`, `brand_id`, `site_id`, `price`, `status`, `desc`, `hash`) VALUES ('" + name + "', '" + link + "', '" + category.getId() + "', null, '" + siteId.getId() + "', '" + price + "', '1', null, '" + hash + "');");
 
 
 //            crawlRepository.addCrawlProduct(name,link,category,site,price,statPending,"NEW PRODUCT", hash);
 //            CrawlProduct crawlProduct =  crawlRepository.findByHash(hash).get();
 
 
-            CrawlProductImage crawlProductImage = new CrawlProductImage();
-            crawlProductImage.setImageLink(img);
-            crawlProductImage.setCrawlProductid(crawlProduct);
-            crawlProductImageRepository.save(crawlProductImage);
-            return crawlProduct;
-        }
+                CrawlProductImage crawlProductImage = new CrawlProductImage();
+                crawlProductImage.setImageLink(img);
+                crawlProductImage.setCrawlProductid(crawlProduct);
+                crawlProductImageRepository.save(crawlProductImage);
+                return crawlProduct;
+            }
 
-    }
+        }
 
 
 //    protected CrawlProduct saveNewCrawlProductOld(String name, CrawlSite site, String link, String price, Category category, String img) {
@@ -255,21 +268,20 @@ public class BaseCrawler {
 //    }
 
 
-    protected String getHash(String name, String link, String price) {
-        String fullStr = name + link + price;
+        protected String getHash(String name, String link, String price) {
+            String fullStr = name + link + price;
 //        String encode = bCryptPasswordEncoder.encode(fullStr);
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        md.update(fullStr.getBytes());
-        byte[] digest = md.digest();
-        String encode = DatatypeConverter.printHexBinary(digest).toUpperCase();
+            MessageDigest md = null;
+            try {
+                md = MessageDigest.getInstance("MD5");
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+            md.update(fullStr.getBytes());
+            byte[] digest = md.digest();
+            String encode = DatatypeConverter.printHexBinary(digest).toUpperCase();
 //        assertThat(myHash.equals(hash)).isTrue();
-        return encode;
+            return encode;
+        }
+
     }
-
-
-}

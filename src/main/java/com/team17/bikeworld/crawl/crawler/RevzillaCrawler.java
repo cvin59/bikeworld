@@ -11,14 +11,15 @@ import com.team17.bikeworld.crawl.dict.CateDictObj;
 import com.team17.bikeworld.crawl.dict.CateObj;
 import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.CrawlProduct;
+import com.team17.bikeworld.entity.CrawlStatus;
 import com.team17.bikeworld.repositories.*;
 import org.w3c.dom.NodeList;
 
 public class RevzillaCrawler extends BaseCrawler implements Runnable {
 
 
-    public RevzillaCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository) {
-        super(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository, "revzilla");
+    public RevzillaCrawler(CrawlRepository crawlRepository, CategoryRepository categoryRepository, CrawlProductImageRepository crawlProductImageRepository, CrawlSiteRepository crawlSiteRepository , BrandRepository brandRepository, CrawlStatus crawlStatus) {
+        super(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, brandRepository, "revzilla", crawlStatus);
 
     }
 
@@ -470,27 +471,27 @@ public class RevzillaCrawler extends BaseCrawler implements Runnable {
             System.out.println();
             System.out.println(statPending.getId());
             System.out.println();
-
-            outCrw = new PrintWriter("D:\\crw.txt");
-            outImg = new PrintWriter("D:\\img.txt");
+//
+//            outCrw = new PrintWriter("D:\\crw.txt");
+//            outImg = new PrintWriter("D:\\img.txt");
 
 //            List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(baseLink);
 //            crawlProductImageRepository.deleteAll(imgBySite);
 //            List<CrawlProduct> allBySite = crawlRepository.findAllBySite(baseLink);
 //            crawlRepository.deleteAll(allBySite);
             getCates();
-
+            System.out.println("done");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (XPathExpressionException e) {
             e.printStackTrace();
-        } finally {
-            if (outCrw != null) {
-                outCrw.close();
-            }
-            if (outImg != null) {
-                outImg.close();
-            }
+//        } finally {
+//            if (outCrw != null) {
+//                outCrw.close();
+//            }
+//            if (outImg != null) {
+//                outImg.close();
+//            }
         }
     }
 }

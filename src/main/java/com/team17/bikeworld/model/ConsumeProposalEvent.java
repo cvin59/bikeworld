@@ -20,6 +20,8 @@ public class ConsumeProposalEvent {
     private int status;
     @Expose
     private String imageUrl;
+    @Expose
+    private String username;
 
     public ConsumeProposalEvent() {
     }
@@ -94,6 +96,14 @@ public class ConsumeProposalEvent {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override

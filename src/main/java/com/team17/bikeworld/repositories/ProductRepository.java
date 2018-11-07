@@ -5,6 +5,7 @@ import com.team17.bikeworld.entity.Account;
 import com.team17.bikeworld.entity.Brand;
 import com.team17.bikeworld.entity.Category;
 import com.team17.bikeworld.entity.Product;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -24,14 +25,14 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> findByBrandId(Brand brand, Pageable pageable);
 
-    List<Product> findByAccountUsename(Account account, Pageable pageable);
+    Page<Product> findByAccountUsename(Account account, Pageable pageable);
 
     @Modifying
     @Query(value = "UPDATE `product` SET status = '2' WHERE id = ?1", nativeQuery = true)
     Integer disableProduct(int id);
 
-    @Query("SELECT u FROM Product u WHERE u.name like  %?1%")
-    List<Product> searchByName(String name);
+
+    Page<Product> findByNameIgnoreCaseContaining(String name, Pageable pageable);
 
     @Modifying
     @Query(value = "UPDATE `product` SET status = '1' WHERE id = ?1", nativeQuery = true)

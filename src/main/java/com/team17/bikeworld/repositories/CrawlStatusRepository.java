@@ -1,12 +1,12 @@
 package com.team17.bikeworld.repositories;
 
-
-import com.team17.bikeworld.entity.CrawlSite;
 import com.team17.bikeworld.entity.CrawlStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+
+
 
 @Repository
 public interface CrawlStatusRepository extends JpaRepository<CrawlStatus, Integer> {

@@ -25,3 +25,4 @@
 /.nb-gradle/
 *.jpg
 src/main/resources/application.properties
+src/main/resources/application.properties
