@@ -85,7 +85,7 @@ public class ProductService {
             newProduct.setTotalRater(0);
 
             // Add Status;
-            newProduct.setStatus(CoreConstant.STATUS_PRODUCT_AVAILABLE);
+            newProduct.setStatusId(CoreConstant.STATUS_PRODUCT_AVAILABLE);
             try {
                 // Transform Model to Entity
                 Product productEntity = new Product();
@@ -160,6 +160,31 @@ public class ProductService {
         return response;
     }
 
+    public boolean editQuantity(int productId, int orderQuantity) {
+
+        Product product = productRepository.getOne(productId);
+        if (product.getQuantity() < orderQuantity) {
+            return false;
+        } else {
+            int newQuantity = product.getQuantity() - orderQuantity;
+            product.setQuantity(newQuantity);
+            if (newQuantity == 0) {
+                product = changeStatus(product, CoreConstant.STATUS_PRODUCT_SOLDOUT);
+                return true;
+            } else {
+                productRepository.save(product);
+                return true;
+            }
+        }
+    }
+
+    public Product changeStatus(Product product, int statusId) {
+        ProductStatus productStatus = new ProductStatus();
+        productStatus.setId(statusId);
+        product.setStatusId(productStatus);
+        return productRepository.save(product);
+    }
+
     public Product getProductById(int id) {
         Optional<Product> entity = productRepository.findById(id);
         return entity.orElse(null);
@@ -173,8 +198,8 @@ public class ProductService {
         return false;
     }
 
-    public List<Product> searchByName(String searchValue) {
-        List<Product> products = productRepository.searchByName(searchValue);
+    public Page<Product> searchByName(String searchValue, Pageable pageable) {
+        Page<Product> products = productRepository.findByNameIgnoreCaseContaining(searchValue, pageable);
         return products;
     }
 

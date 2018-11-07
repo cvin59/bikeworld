@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
  * @author asus
  */
 @Entity
@@ -60,8 +59,10 @@ public class Account implements Serializable {
     @JoinColumn(name = "profileId", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Profile profileId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "accountUsename")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "buyerUsername")
     private Collection<Order> order1Collection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sellerUsername")
+    private Collection<Order> order2Collection;
 
     public Account() {
     }
@@ -167,6 +168,15 @@ public class Account implements Serializable {
 
     public void setOrder1Collection(Collection<Order> order1Collection) {
         this.order1Collection = order1Collection;
+    }
+
+    @XmlTransient
+    public Collection<Order> getOrder2Collection() {
+        return order2Collection;
+    }
+
+    public void setOrder2Collection(Collection<Order> order2Collection) {
+        this.order2Collection = order2Collection;
     }
 
     @Override

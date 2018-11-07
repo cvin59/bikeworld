@@ -4,19 +4,19 @@ import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.controller.ProductController;
 import com.team17.bikeworld.crawl.crawler.RevzillaCrawler;
 import com.team17.bikeworld.crawl.crawler.YnebikersCrawler;
-import com.team17.bikeworld.entity.CrawlProduct;
-import com.team17.bikeworld.entity.CrawlProductImage;
+import com.team17.bikeworld.entity.*;
 import com.team17.bikeworld.model.CrawlProductModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.team17.bikeworld.entity.CrawlSite;
 import com.team17.bikeworld.model.CrawlProductModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +33,7 @@ public class CrawlService {
     private final BrandRepository brandRepository;
     private final CrawlStatusRepository crawlStatusRepository;
     private final CrawlSiteRepository crawlSiteRepository;
+    private final CrawlStatus statPending;
 
 
     public CrawlService(CrawlRepository crawlRepository, CrawlProductImageRepository crawlProductImageRepository, CategoryRepository categoryRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository) {
@@ -42,6 +43,7 @@ public class CrawlService {
         this.crawlSiteRepository = crawlSiteRepository;
         this.crawlStatusRepository = crawlStatusRepository;
         this.brandRepository = brandRepository;
+        this.statPending = crawlStatusRepository.findByName("NEW").get();
     }
 
     public List<CrawlProduct> getAll() {
@@ -75,10 +77,10 @@ public class CrawlService {
     }
 
 
-    public List<CrawlProduct> getNewByPage(int page, int pageSize) {
-        int from = (page - 1) * pageSize;
-        return crawlRepository.getNewByPage(from, pageSize);
-    }
+//    public List<CrawlProduct> getNewByPage(int page, int pageSize) {
+//        int from = (page - 1) * pageSize;
+//        return crawlRepository.getNewByPage(from, pageSize);
+//    }
 
 //    public Integer deleteAllBySite(String site) {
 //        int i = crawlRepository.deleteAllBySite(site);
@@ -90,14 +92,14 @@ public class CrawlService {
         try {
             if (site.equals("revzilla")) {
                 if (!RevzillaCrawler.isLock()) {
-                    RevzillaCrawler.instance = new Thread(new RevzillaCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
+                    RevzillaCrawler.instance = new Thread(new RevzillaCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, brandRepository, statPending));
                     RevzillaCrawler.instance.start();
                     RevzillaCrawler.instance.join();
                     count = RevzillaCrawler.getCount();
                 }
             } else if (site.equals("ynebikers")) {
                 if (!YnebikersCrawler.isLock()) {
-                    YnebikersCrawler.instance = new Thread(new YnebikersCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
+                    YnebikersCrawler.instance = new Thread(new YnebikersCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, brandRepository, statPending));
                     YnebikersCrawler.instance.start();
                     YnebikersCrawler.instance.join();
                     count = YnebikersCrawler.getCount();
@@ -121,16 +123,15 @@ public class CrawlService {
         }
     }
 
-    public Response<CrawlProduct> createCrawlProduct(CrawlProductModel crawlProductModel){
+    public Response<CrawlProduct> createCrawlProduct(CrawlProductModel crawlProductModel) {
         Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
-        if (crawlProductModel != null){
+        if (crawlProductModel != null) {
             try {
                 CrawlProduct crawlProduct = mapCrawlProduct(crawlProductModel);
 
                 CrawlProduct result = crawlRepository.save(crawlProduct);
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
                 LOGGER.error(e.getMessage());
             }
@@ -139,28 +140,38 @@ public class CrawlService {
     }
 
     //Used to map from CrawlProductModel to CrawlProduct
-    private CrawlProduct mapCrawlProduct(CrawlProductModel model){
+    private CrawlProduct mapCrawlProduct(CrawlProductModel model) {
         CrawlProduct result = new CrawlProduct();
         result.setId(0);
         result.setName(model.getName());
-        LOGGER.info("Mapped crawl product name:" + result.getName());
+//        LOGGER.info("Mapped crawl product name:" + result.getName());
         //Find Category by Id,
         result.setCategoryId(categoryRepository.findById(model.getCatergoryId()).orElse(null));
-        LOGGER.info("Mapped crawl product category:" + result.getCategoryId().getName());
+//        LOGGER.info("Mapped crawl product category:" + result.getCategoryId().getName());
         //Convert price from float to string
         result.setPrice(Float.toString(model.getPrice()));
-        LOGGER.info("Mapped crawl product price:" + result.getPrice());
+//        LOGGER.info("Mapped crawl product price:" + result.getPrice());
         result.setBrandId(brandRepository.findById(model.getBranId()).orElse(null));
-        LOGGER.info("Mapped crawl product brand:" + result.getBrandId().getName());
+//        LOGGER.info("Mapped crawl product brand:" + result.getBrandId().getName());
         result.setStatus(crawlStatusRepository.findById(model.getStatus()).orElse(null));
-        LOGGER.info("Mapped crawl product status:" + result.getStatus());
+//        LOGGER.info("Mapped crawl product status:" + result.getStatus());
         result.setDescription(model.getDescription());
-        LOGGER.info("Mapped crawl product description:" + result.getDescription());
+//        LOGGER.info("Mapped crawl product description:" + result.getDescription());
         result.setUrl(null);
         result.setSiteId(null);
-        LOGGER.info("Mapped crawl product:" + result);
+//        LOGGER.info("Mapped crawl product:" + result);
         result.setHash(null);
         return result;
+    }
+
+    public Integer countPending() {
+        Integer integer = crawlRepository.countPending();
+        return integer;
+    }
+
+    public Page<CrawlProduct> getNewByPageable(Pageable pageable) {
+        Page<CrawlProduct> products = crawlRepository.findAllByStatus(statPending, pageable);
+        return products;
     }
 
 
