@@ -17,6 +17,7 @@ import java.util.List;
 import static com.team17.bikeworld.common.CoreConstant.API_CRAWL;
 
 @Controller
+@CrossOrigin
 public class CrawlController extends AbstractController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(CrawlController.class);
@@ -93,12 +94,12 @@ public class CrawlController extends AbstractController {
     }
 
     @PutMapping(API_CRAWL)
-    public String editCrawl(@RequestParam String objectString){
+    public String editCrawl(@RequestParam String objectString, MultipartFile[] addedImages){
         LOGGER.info("Request Param: " + objectString);
         //Translate json to EditCrawlProductModel
         CrawlProductModel crawlProductModel = gson.fromJson(objectString, CrawlProductModel.class);
         //Edit crawl product in database and response
-        Response<CrawlProduct> response = crawlService.editCrawlProduct(crawlProductModel);
+        Response<CrawlProduct> response = crawlService.editCrawlProduct(crawlProductModel, addedImages);
         return gson.toJson(response);
     }
 

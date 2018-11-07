@@ -2,10 +2,7 @@ package com.team17.bikeworld.transformer;
 
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.entity.CrawlProductImage;
-import com.team17.bikeworld.entity.Product;
-import com.team17.bikeworld.entity.ProductImage;
 import com.team17.bikeworld.model.CrawlProductModel;
-import com.team17.bikeworld.model.ProductModel;
 import com.team17.bikeworld.repositories.BrandRepository;
 import com.team17.bikeworld.repositories.CategoryRepository;
 import com.team17.bikeworld.repositories.CrawlStatusRepository;
@@ -46,7 +43,6 @@ public class CrawlProductTransformer {
     }
 
     public CrawlProduct UpdateEditCrawlProductModelCrawlProductEntity(CrawlProductModel model , CrawlProduct etity){
-        etity.setId(model.getId());
         etity.setName(model.getName());
         etity.setCategoryId(categoryRepository.findById(model.getCatergoryId()).orElse(null));
         etity.setPrice(Float.toString(model.getPrice()));
@@ -61,9 +57,7 @@ public class CrawlProductTransformer {
 
     public List<CrawlProductImage> ImageModelToEntity(CrawlProduct entity, CrawlProductModel model) {
         List<CrawlProductImage> imagesEntities = new LinkedList<>();
-
-
-        List<String> imageUrl = model.getImage();
+        List<String> imageUrl = model.getImages();
         for (String url : imageUrl) {
             CrawlProductImage imageEntity = new CrawlProductImage();
             imageEntity.setImageLink(url);

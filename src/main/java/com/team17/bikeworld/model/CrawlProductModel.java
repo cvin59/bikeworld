@@ -32,14 +32,27 @@ public class CrawlProductModel {
     private String description;
 
     @Expose
-    private List<String> image;
+    @JsonAdapter(EmptyStringTypeAdapter.class)
+    private List<String> images;
 
-    public List<String> getImage() {
-        return image;
+    @Expose
+    @JsonAdapter(EmptyStringTypeAdapter.class)
+    private List<Integer> deleteImages;
+
+
+    public List<Integer> getDeleteImages() {
+        return deleteImages;
     }
 
-    public void setImage(List<String> image) {
-        this.image = image;
+    public void setDeleteImages(List<Integer> deleteImages) {
+        this.deleteImages = deleteImages;
+    }
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(List<String> image) {
+        this.images = image;
     }
 
     public int getId() {

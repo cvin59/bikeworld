@@ -6,26 +6,27 @@ import com.team17.bikeworld.crawl.crawler.YnebikersCrawler;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.entity.CrawlProductImage;
 import com.team17.bikeworld.entity.CrawlSite;
-import com.team17.bikeworld.entity.ProductImage;
 import com.team17.bikeworld.model.*;
 import com.team17.bikeworld.repositories.*;
 import com.team17.bikeworld.transformer.CrawlProductTransformer;
 import com.team17.bikeworld.transformer.ProductTransformer;
+import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CrawlService {
@@ -139,22 +140,10 @@ public class CrawlService {
                 //Map Model to entity
                 CrawlProduct crawlProduct = crawlProductTransformer.CrawlProductModel_CrawlProductEntity(crawlProductModel);
                 CrawlProduct result = crawlRepository.save(crawlProduct);
-                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
-
                 if (images != null) {
-                    List<String> imageList = new ArrayList<>();
-                    crawlProductModel.setImage(imageList);
-
-                    for (MultipartFile image : images) {
-                        handleImage(crawlProductModel, image);
-                    }
-
-                    List<CrawlProductImage> savedImage = crawlProductTransformer.ImageModelToEntity(result, crawlProductModel);
-                    for (CrawlProductImage image : savedImage) {
-                        crawlProductImageRepository.save(image);
-                    }
-
+                    addImagesToDatabase(result, crawlProductModel, images);
                 }
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
             }
             catch (Exception e){
                 response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
@@ -164,28 +153,78 @@ public class CrawlService {
         return response;
     }
 
+    public void addImagesToDatabase(CrawlProduct entity,CrawlProductModel crawlProductModel, MultipartFile[] images ) throws IOException {
+        List<String> imageList = new ArrayList<>();
+        crawlProductModel.setImages(imageList);
+
+        for (MultipartFile image : images) {
+            handleImage(crawlProductModel, image);
+        }
+
+        List<CrawlProductImage> saveImage = crawlProductTransformer.ImageModelToEntity(entity, crawlProductModel);
+        for (CrawlProductImage image : saveImage) {
+            crawlProductImageRepository.save(image);
+        }
+
+    }
+
     private void handleImage(CrawlProductModel model, MultipartFile image) throws IOException {
         if (image != null) {
-            String fileName = image.getOriginalFilename();
+            String fileName = RandomStringUtils.randomAlphabetic(8) + image.getOriginalFilename();
             Files.createDirectories(rootLocation);
             Files.copy(image.getInputStream(), rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-
-            model.getImage().add("/images/crawlProduct/" + fileName);
+            LOGGER.info(rootLocation.resolve(fileName).toString());
+            model.getImages().add(fileName);
             LOGGER.info("file name:" + fileName);
         }
     }
 
 
 
-    public Response<CrawlProduct> editCrawlProduct(CrawlProductModel crawlProductModel) {
+    public Response<CrawlProduct> editCrawlProduct(CrawlProductModel crawlProductModel, MultipartFile[] addedImages) {
         Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         if (crawlProductModel!=null){
+            //Find CrawlProduct in database
             Optional<CrawlProduct> crawlProductFromDatabase = crawlRepository.findById(crawlProductModel.getId());
             if (crawlProductFromDatabase.isPresent()){
                 try {
                         CrawlProduct result = crawlProductFromDatabase.get();
                         //crawlRepository.save(UpdateEditCrawlProductModelCrawlProductEntity(crawlProductModel, result));
                         response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
+
+                        //Add Images
+                        if (addedImages.length > 0){
+                            addImagesToDatabase(result, crawlProductModel, addedImages);
+                        }
+
+                        //Delete Images
+                        if (!crawlProductModel.getDeleteImages().isEmpty()){
+                            ArrayList<CrawlProductImage> deleteImagesFromDatabase = new ArrayList<>();
+
+                            for (int i : crawlProductModel.getDeleteImages()){
+                                CrawlProductImage tempDeleteImage = crawlProductImageRepository.findById(i).orElse(null);
+
+                                if (tempDeleteImage != null){
+                                    deleteImagesFromDatabase.add(tempDeleteImage);
+                                }
+                            }
+
+                            if (!deleteImagesFromDatabase.isEmpty()){
+                                //Delete from database
+                                crawlProductImageRepository.deleteAll(deleteImagesFromDatabase);
+
+                                //Delete from Disk
+                                for (CrawlProductImage i : deleteImagesFromDatabase){
+                                    LOGGER.info("Root path : " + rootLocation);
+                                    LOGGER.info("ImageLink path : " +  i.getImageLink());
+                                    LOGGER.info("File path : " + rootLocation + i.getImageLink());
+                                    File file = new File(rootLocation + "\\" + i.getImageLink());
+                                    file.delete();
+                                }
+                            }
+
+
+                        }
 
                 }catch (Exception e){
                     response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
