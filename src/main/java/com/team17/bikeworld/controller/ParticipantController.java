@@ -34,17 +34,14 @@ public class ParticipantController extends AbstractController{
 
     @GetMapping(API_PARTICIPANT + "/user/{username}")
     public String getParticipant(@PathVariable("username") String username) {
-        Response<List<Participant>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
-        try {
-            List<Participant> participants = participantService.findPartcipantsByUsername(username);
-            if (!participants.isEmpty()) {
-                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, participants);
-            } else {
-                response.setResponse(CoreConstant.STATUS_CODE_NO_RESULT, CoreConstant.MESSAGE_NO_RESULT);
-            }
-        } catch (Exception e) {
-            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
-        }
+        Response<List<Participant>> response = participantService.findPartcipantsByUsername(username);
+        return gson.toJson(response);
+    }
+
+    @GetMapping(API_PARTICIPANT)
+    public String checkParticipant(@RequestParam("eventId") Integer eventId,
+                                   @RequestParam("username") String username) {
+        Response response = participantService.checkParticipant(eventId, username);
         return gson.toJson(response);
     }
 

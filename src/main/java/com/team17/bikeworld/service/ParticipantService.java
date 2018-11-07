@@ -2,6 +2,7 @@ package com.team17.bikeworld.service;
 
 import static com.team17.bikeworld.common.CoreConstant.*;
 
+import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.Account;
 import com.team17.bikeworld.entity.Event;
 import com.team17.bikeworld.entity.Participant;
@@ -80,8 +81,19 @@ public class ParticipantService {
     }
 
 
-    public List<Participant> findPartcipantsByUsername(String username) {
-        return participantRepository.findByAccountUsename_Username(username);
+    public Response<List<Participant>> findPartcipantsByUsername(String username) {
+        Response<List<Participant>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<Participant> participants = participantRepository.findByAccountUsename_Username(username);
+            if (!participants.isEmpty()) {
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, participants);
+            } else {
+                response.setResponse(CoreConstant.STATUS_CODE_NO_RESULT, CoreConstant.MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e) {
+            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
+        }
+        return response;
     }
 
     public Page<Participant> getParticipantPage(String username, int pageNumber, int itemsPerPage, String sortBy, int direction) {
@@ -91,5 +103,21 @@ public class ParticipantService {
         }
         Pageable pageable = PageRequest.of(pageNumber - 1, itemsPerPage, Sort.Direction.DESC, sortBy);
         return participantRepository.findByAccountUsename_Username(username, pageable);
+    }
+
+    public Response checkParticipant(int eventId, String username) {
+        Response response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
+        try {
+            List<Participant> participants = participantRepository
+                    .findByEventId_IdAndAccountUsename_Username(eventId, username);
+            if (!participants.isEmpty()) {
+                response.setResponse(STATUS_CODE_SUCCESS, MESSAGE_SUCCESS);
+            } else {
+                response.setResponse(STATUS_CODE_NO_RESULT, MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e) {
+            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
+        }
+        return response;
     }
 }

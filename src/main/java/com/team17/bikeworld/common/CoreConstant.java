@@ -13,6 +13,7 @@ public class CoreConstant {
     public static final String API_PROPOSAL_EVENT_IMAGE = "/api/proposal-event-image";
     public static final String API_COMMON = "/api/common";
     public static final String API_PARTICIPANT = "/api/participant";
+    public static final String API_EVENT_RATING = "/api/event-rating";
     public static final String API_ACCOUNT = "/api/account";
     public static final String API_ORDER = "/api/order";
 
