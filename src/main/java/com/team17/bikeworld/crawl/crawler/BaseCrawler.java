@@ -232,7 +232,7 @@ public class BaseCrawler {
                 crawlProduct = crawlRepository.save(crawlProduct);
 
 
-                System.out.println("INSERT INTO `bikeworld`.`crawlproduct` (`name`, `url`, `category_id`, `brand_id`, `site_id`, `price`, `status`, `desc`, `hash`) VALUES ('" + name + "', '" + link + "', '" + category.getId() + "', null, '" + siteId.getId() + "', '" + price + "', '1', null, '" + hash + "');");
+//                System.out.println("INSERT INTO `bikeworld`.`crawlproduct` (`name`, `url`, `category_id`, `brand_id`, `site_id`, `price`, `status`, `desc`, `hash`) VALUES ('" + name + "', '" + link + "', '" + category.getId() + "', null, '" + siteId.getId() + "', '" + price + "', '1', null, '" + hash + "');");
 
 
 //            crawlRepository.addCrawlProduct(name,link,category,site,price,statPending,"NEW PRODUCT", hash);
