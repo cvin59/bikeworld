@@ -6,6 +6,7 @@ import com.team17.bikeworld.crawl.crawler.YnebikersCrawler;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.entity.CrawlProductImage;
 import com.team17.bikeworld.entity.CrawlSite;
+import com.team17.bikeworld.entity.CrawlStatus;
 import com.team17.bikeworld.model.*;
 import com.team17.bikeworld.repositories.*;
 import com.team17.bikeworld.transformer.CrawlProductTransformer;
@@ -35,7 +36,7 @@ public class CrawlService {
     private final Path rootLocation = Paths.get("src/main/resources/static/images/crawlProduct/").toAbsolutePath().normalize();
 
     @Autowired
-    private  final CrawlProductTransformer crawlProductTransformer;
+    private final CrawlProductTransformer crawlProductTransformer;
 
     private final CrawlRepository crawlRepository;
     private final CrawlProductImageRepository crawlProductImageRepository;
@@ -43,6 +44,7 @@ public class CrawlService {
     private final CrawlSiteRepository crawlSiteRepository;
     private final CrawlStatusRepository crawlStatusRepository;
     private final BrandRepository brandRepository;
+    protected CrawlStatus statPending;
 
     public CrawlService(CrawlRepository crawlRepository, CrawlProductImageRepository crawlProductImageRepository, CategoryRepository categoryRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository, ProductTransformer productTransformer, CrawlProductTransformer crawlProductTransformer) {
         this.crawlRepository = crawlRepository;
@@ -52,6 +54,7 @@ public class CrawlService {
         this.crawlStatusRepository = crawlStatusRepository;
         this.brandRepository = brandRepository;
         this.crawlProductTransformer = crawlProductTransformer;
+        this.statPending = crawlStatusRepository.findByName("NEW").get();
     }
 
     public List<CrawlProduct> getAll() {
@@ -100,14 +103,14 @@ public class CrawlService {
         try {
             if (site.equals("revzilla")) {
                 if (!RevzillaCrawler.isLock()) {
-                    RevzillaCrawler.instance = new Thread(new RevzillaCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
+                    RevzillaCrawler.instance = new Thread(new RevzillaCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, brandRepository, statPending));
                     RevzillaCrawler.instance.start();
                     RevzillaCrawler.instance.join();
                     count = RevzillaCrawler.getCount();
                 }
             } else if (site.equals("ynebikers")) {
                 if (!YnebikersCrawler.isLock()) {
-                    YnebikersCrawler.instance = new Thread(new YnebikersCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
+                    YnebikersCrawler.instance = new Thread(new YnebikersCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, brandRepository, statPending));
                     YnebikersCrawler.instance.start();
                     YnebikersCrawler.instance.join();
                     count = YnebikersCrawler.getCount();
@@ -131,10 +134,10 @@ public class CrawlService {
         }
     }
 
-    public Response<CrawlProduct> createCrawlProduct(CrawlProductModel crawlProductModel, MultipartFile[] images){
+    public Response<CrawlProduct> createCrawlProduct(CrawlProductModel crawlProductModel, MultipartFile[] images) {
         Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         //Check if model is null or don't have image
-        if (crawlProductModel != null && images.length != 0){
+        if (crawlProductModel != null && images.length != 0) {
             //Try to save crawl product information to database
             try {
                 //Map Model to entity
@@ -144,8 +147,7 @@ public class CrawlService {
                     addImagesToDatabase(result, crawlProductModel, images);
                 }
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
                 LOGGER.error(e.getMessage());
             }
@@ -153,7 +155,7 @@ public class CrawlService {
         return response;
     }
 
-    public void addImagesToDatabase(CrawlProduct entity,CrawlProductModel crawlProductModel, MultipartFile[] images ) throws IOException {
+    public void addImagesToDatabase(CrawlProduct entity, CrawlProductModel crawlProductModel, MultipartFile[] images) throws IOException {
         List<String> imageList = new ArrayList<>();
         crawlProductModel.setImages(imageList);
 
@@ -180,53 +182,52 @@ public class CrawlService {
     }
 
 
-
     public Response<CrawlProduct> editCrawlProduct(CrawlProductModel crawlProductModel, MultipartFile[] addedImages) {
         Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
-        if (crawlProductModel!=null){
+        if (crawlProductModel != null) {
             //Find CrawlProduct in database
             Optional<CrawlProduct> crawlProductFromDatabase = crawlRepository.findById(crawlProductModel.getId());
-            if (crawlProductFromDatabase.isPresent()){
+            if (crawlProductFromDatabase.isPresent()) {
                 try {
-                        CrawlProduct result = crawlProductFromDatabase.get();
-                        //crawlRepository.save(UpdateEditCrawlProductModelCrawlProductEntity(crawlProductModel, result));
-                        response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
+                    CrawlProduct result = crawlProductFromDatabase.get();
+                    //crawlRepository.save(UpdateEditCrawlProductModelCrawlProductEntity(crawlProductModel, result));
+                    response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
 
-                        //Add Images
-                        if (addedImages.length > 0){
-                            addImagesToDatabase(result, crawlProductModel, addedImages);
+                    //Add Images
+                    if (addedImages.length > 0) {
+                        addImagesToDatabase(result, crawlProductModel, addedImages);
+                    }
+
+                    //Delete Images
+                    if (!crawlProductModel.getDeleteImages().isEmpty()) {
+                        ArrayList<CrawlProductImage> deleteImagesFromDatabase = new ArrayList<>();
+
+                        for (int i : crawlProductModel.getDeleteImages()) {
+                            CrawlProductImage tempDeleteImage = crawlProductImageRepository.findById(i).orElse(null);
+
+                            if (tempDeleteImage != null) {
+                                deleteImagesFromDatabase.add(tempDeleteImage);
+                            }
                         }
 
-                        //Delete Images
-                        if (!crawlProductModel.getDeleteImages().isEmpty()){
-                            ArrayList<CrawlProductImage> deleteImagesFromDatabase = new ArrayList<>();
+                        if (!deleteImagesFromDatabase.isEmpty()) {
+                            //Delete from database
+                            crawlProductImageRepository.deleteAll(deleteImagesFromDatabase);
 
-                            for (int i : crawlProductModel.getDeleteImages()){
-                                CrawlProductImage tempDeleteImage = crawlProductImageRepository.findById(i).orElse(null);
-
-                                if (tempDeleteImage != null){
-                                    deleteImagesFromDatabase.add(tempDeleteImage);
-                                }
+                            //Delete from Disk
+                            for (CrawlProductImage i : deleteImagesFromDatabase) {
+                                LOGGER.info("Root path : " + rootLocation);
+                                LOGGER.info("ImageLink path : " + i.getImageLink());
+                                LOGGER.info("File path : " + rootLocation + i.getImageLink());
+                                File file = new File(rootLocation + "\\" + i.getImageLink());
+                                file.delete();
                             }
-
-                            if (!deleteImagesFromDatabase.isEmpty()){
-                                //Delete from database
-                                crawlProductImageRepository.deleteAll(deleteImagesFromDatabase);
-
-                                //Delete from Disk
-                                for (CrawlProductImage i : deleteImagesFromDatabase){
-                                    LOGGER.info("Root path : " + rootLocation);
-                                    LOGGER.info("ImageLink path : " +  i.getImageLink());
-                                    LOGGER.info("File path : " + rootLocation + i.getImageLink());
-                                    File file = new File(rootLocation + "\\" + i.getImageLink());
-                                    file.delete();
-                                }
-                            }
-
-
                         }
 
-                }catch (Exception e){
+
+                    }
+
+                } catch (Exception e) {
                     response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
                     LOGGER.error(e.getMessage());
                 }
@@ -235,22 +236,22 @@ public class CrawlService {
         return response;
     }
 
-    public Response changeCrawlProductStatus(ChangeStatusCrawlModel changeStatusCrawlModel){
-        Response response =  new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
-        if (changeStatusCrawlModel != null){
+    public Response changeCrawlProductStatus(ChangeStatusCrawlModel changeStatusCrawlModel) {
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        if (changeStatusCrawlModel != null) {
             Optional<CrawlProduct> crawlProductFromDatabase = crawlRepository.findById(changeStatusCrawlModel.getCrawlProductId());
             //Check if there's a crawl product with the id in the database
-            if (crawlProductFromDatabase.isPresent()){
+            if (crawlProductFromDatabase.isPresent()) {
                 //Change from Optional to CrawlProduct
                 CrawlProduct result = crawlProductFromDatabase.get();
                 //Check if the status already existed
-                if (result.getStatus().getId() != changeStatusCrawlModel.getCrawlProductStatus()){
+                if (result.getStatus().getId() != changeStatusCrawlModel.getCrawlProductStatus()) {
                     //try to update status
                     try {
                         result.getStatus().setId(changeStatusCrawlModel.getCrawlProductStatus());
                         crawlRepository.save(result);
                         response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
                         LOGGER.error(e.getMessage());
                     }
