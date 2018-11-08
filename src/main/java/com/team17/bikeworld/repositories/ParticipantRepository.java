@@ -11,4 +11,5 @@ import java.util.List;
 public interface ParticipantRepository extends JpaRepository<Participant, Integer> {
     List<Participant> findByAccountUsename_Username(String username);
     Page<Participant> findByAccountUsename_Username(String username, Pageable pageable);
+    List<Participant> findByEventId_IdAndAccountUsename_Username(Integer eventId, String username);
 }

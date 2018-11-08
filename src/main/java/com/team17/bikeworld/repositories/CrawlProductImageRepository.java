@@ -17,6 +17,10 @@ public interface CrawlProductImageRepository extends JpaRepository<CrawlProductI
 //    CrawlProductImage addCrawlProductImg(int crawlProId, String imgLink);
 
     @Modifying
+    @Query(value = "DELETE FROM `crawlproductimage` WHERE crawlProductid = ?1", nativeQuery = true)
+    int deleteAllByCrawlProductId(CrawlProduct crawlProductId);
+
+    @Modifying
     @Query(value = "DELETE FROM `crawlproductimage` WHERE site = ?1", nativeQuery = true)
     int deleteAllBySite(String site);
 
