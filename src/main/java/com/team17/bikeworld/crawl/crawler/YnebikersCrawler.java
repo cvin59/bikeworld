@@ -293,15 +293,22 @@ public class YnebikersCrawler extends BaseCrawler implements Runnable {
     @Override
     public void run() {
         try {
-//            if(site==null){
-//                site = getSite("ynebikers");
-//            }
+
+            if (site == null) {
+                site = getSite("ynebikers");
+            }
+            System.out.println(site.getLink());
+            System.out.println();
+            System.out.println(statPending.getId());
+            System.out.println();
+
 
 //            List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(baseLink);
 //            crawlProductImageRepository.deleteAll(imgBySite);
 //            List<CrawlProduct> allBySite = crawlRepository.findAllBySite(baseLink);
 //            crawlRepository.deleteAll(allBySite);
             getCates();
+            System.out.println("done");
         } catch (IOException e) {
             e.printStackTrace();
         }

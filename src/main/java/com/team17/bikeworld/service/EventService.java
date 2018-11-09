@@ -159,6 +159,7 @@ public class EventService {
                 event.setTotalSlots(consumeEvent.getTotalSlots());
                 event.setMaxSlot(consumeEvent.getMaxSlot());
                 event.setMinSlot(consumeEvent.getMinSlot());
+                event.setCurrentSlot(0);
 
                 //start date - end date
                 SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
