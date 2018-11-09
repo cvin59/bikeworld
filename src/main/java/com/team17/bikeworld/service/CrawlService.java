@@ -36,7 +36,6 @@ public class CrawlService {
 
     @Autowired
     private  final CrawlProductTransformer crawlProductTransformer;
-
     private final CrawlRepository crawlRepository;
     private final CrawlProductImageRepository crawlProductImageRepository;
     private final CategoryRepository categoryRepository;
@@ -100,14 +99,14 @@ public class CrawlService {
         try {
             if (site.equals("revzilla")) {
                 if (!RevzillaCrawler.isLock()) {
-                    RevzillaCrawler.instance = new Thread(new RevzillaCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
+//                    RevzillaCrawler.instance = new Thread(new RevzillaCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
                     RevzillaCrawler.instance.start();
                     RevzillaCrawler.instance.join();
                     count = RevzillaCrawler.getCount();
                 }
             } else if (site.equals("ynebikers")) {
                 if (!YnebikersCrawler.isLock()) {
-                    YnebikersCrawler.instance = new Thread(new YnebikersCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
+//                    YnebikersCrawler.instance = new Thread(new YnebikersCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
                     YnebikersCrawler.instance.start();
                     YnebikersCrawler.instance.join();
                     count = YnebikersCrawler.getCount();

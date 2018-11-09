@@ -3,9 +3,7 @@ package com.team17.bikeworld.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.JsonAdapter;
 import com.team17.bikeworld.adapter.EmptyStringTypeAdapter;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CrawlProductModel {
@@ -17,7 +15,7 @@ public class CrawlProductModel {
     String name;
 
     @Expose
-    private int catergoryId;
+    private int categoryId;
 
     @Expose
     private int branId;
@@ -71,12 +69,12 @@ public class CrawlProductModel {
         this.name = name;
     }
 
-    public int getCatergoryId() {
-        return catergoryId;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setCatergoryId(int catergoryId) {
-        this.catergoryId = catergoryId;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public int getBranId() {

@@ -9,6 +9,7 @@ public class CoreConstant {
     public static final String API_PROPOSAL_EVENT = "/api/proposal-event";
     public static final String API_PRODUCT = "/api/product";
     public static final String API_CRAWL = "/api/crawl";
+    public static final String API_CRAWL_IMAGE = "/api/crawl-image";
     public static final String API_EVENT_IMAGE = "/api/event-image";
     public static final String API_PROPOSAL_EVENT_IMAGE = "/api/proposal-event-image";
     public static final String API_COMMON = "/api/common";

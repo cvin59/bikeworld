@@ -26,11 +26,12 @@ public class CrawlProductTransformer {
 
     //Used to map from CrawlProductModel to CrawlProduct
     public CrawlProduct CrawlProductModel_CrawlProductEntity(CrawlProductModel model){
+        System.out.println("CategoryId: " + model.getCategoryId());
         CrawlProduct result = new CrawlProduct();
         result.setId(0);
         result.setName(model.getName());
         //Find Category by Id,
-        result.setCategoryId(categoryRepository.findById(model.getCatergoryId()).orElse(null));
+        result.setCategoryId(categoryRepository.findById(model.getCategoryId()).orElse(null));
         //Convert price from float to string
         result.setPrice(Float.toString(model.getPrice()));
         result.setBrandId(brandRepository.findById(model.getBranId()).orElse(null));
@@ -42,17 +43,17 @@ public class CrawlProductTransformer {
         return result;
     }
 
-    public CrawlProduct UpdateEditCrawlProductModelCrawlProductEntity(CrawlProductModel model , CrawlProduct etity){
-        etity.setName(model.getName());
-        etity.setCategoryId(categoryRepository.findById(model.getCatergoryId()).orElse(null));
-        etity.setPrice(Float.toString(model.getPrice()));
-        etity.setBrandId(brandRepository.findById(model.getBranId()).orElse(null));
-        etity.setStatus(crawlStatusRepository.findById(model.getStatus()).orElse(null));
-        etity.setDescription(model.getDescription());
-        etity.setUrl(null);
-        etity.setSiteId(null);
-        etity.setHash(null);
-        return etity;
+    public CrawlProduct UpdateEditCrawlProductModelCrawlProductEntity(CrawlProductModel model , CrawlProduct entity){
+        entity.setName(model.getName());
+        entity.setCategoryId(categoryRepository.findById(model.getCategoryId()).orElse(null));
+        entity.setPrice(Float.toString(model.getPrice()));
+        entity.setBrandId(brandRepository.findById(model.getBranId()).orElse(null));
+        entity.setStatus(crawlStatusRepository.findById(model.getStatus()).orElse(null));
+        entity.setDescription(model.getDescription());
+        entity.setUrl(null);
+        entity.setSiteId(null);
+        entity.setHash(null);
+        return entity;
     }
 
     public List<CrawlProductImage> ImageModelToEntity(CrawlProduct entity, CrawlProductModel model) {
