@@ -1,6 +1,7 @@
 package com.team17.bikeworld.service;
 
 import com.team17.bikeworld.common.CoreConstant;
+import com.team17.bikeworld.entity.Event;
 import com.team17.bikeworld.entity.EventRating;
 import com.team17.bikeworld.model.ConsumeEventRating;
 import com.team17.bikeworld.model.Response;
@@ -36,7 +37,20 @@ public class EventRatingService {
             try {
                 EventRating eventRating = eventRatingRepository.save(initEventRating(consumeEventRating));
 
-                //save event iamge
+                Event event = eventRepository.getOne(consumeEventRating.getEventId());
+
+                double eventTotalRatingPoint = event.getTotalRatesPoint();
+                int eventTotalRates = event.getTotalRates();
+
+                int newEventTotalRates = eventTotalRates + 1;
+                double newEventTotalRatingPoint = ((
+                        (eventTotalRatingPoint * eventTotalRates) + consumeEventRating.getRatePoint())
+                        / newEventTotalRates);
+
+                event.setTotalRates(newEventTotalRates);
+                event.setTotalRatesPoint(newEventTotalRatingPoint);
+
+                eventRepository.save(event);
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, eventRating);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e.getCause());
@@ -86,5 +100,21 @@ public class EventRatingService {
             response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
         }
         return response;
+    }
+
+    public Response<List<EventRating>> getEventRatingByEventId(Integer eventId) {
+        Response<List<EventRating>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<EventRating> eventRatings = eventRatingRepository.findByEventId_Id(eventId);
+            if (!eventRatings.isEmpty()) {
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, eventRatings);
+            } else {
+                response.setResponse(CoreConstant.STATUS_CODE_NO_RESULT, CoreConstant.MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e) {
+            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
+        }
+        return response;
+
     }
 }

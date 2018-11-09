@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface  EventRatingRepository extends JpaRepository<EventRating, Integer> {
     List<EventRating> findByEventId_IdAndAccountUsename_Username(int eventId, String username);
+    List<EventRating> findByEventId_Id(int eventId);
 }
