@@ -70,6 +70,7 @@ public class CrawlProduct implements Serializable {
     @ManyToOne
     @Expose
     private CrawlStatus status;
+
     @OneToMany(mappedBy = "crawlProductid")
     private Collection<CrawlProductImage> crawlProductImageCollection;
     @Column(length = 255)

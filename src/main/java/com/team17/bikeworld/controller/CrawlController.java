@@ -112,6 +112,14 @@ public class CrawlController extends AbstractController {
         return gson.toJson(response);
     }
 
+    @GetMapping(API_CRAWL + "/countpending")
+    public String getCountPending() {
+        Integer countPending = crawlService.countPending();
+        return countPending.toString();
+    }
+
+
+
 
     @GetMapping(API_CRAWL)
     public String getAll() {
@@ -133,13 +141,14 @@ public class CrawlController extends AbstractController {
     public String findByid(@PathVariable int id) {
         Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
-            List<CrawlProduct> crawlPros = crawlService.();
+            List<CrawlProduct> crawlPros = crawlService.findWithGuess(id);
             if (crawlPros != null) {
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, crawlPros);
             } else {
                 response.setResponse(CoreConstant.STATUS_CODE_NO_RESULT, CoreConstant.MESSAGE_NO_RESULT);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
         }
         return gson.toJson(response);

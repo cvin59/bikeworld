@@ -1,6 +1,7 @@
 package com.team17.bikeworld.service;
 
 import com.team17.bikeworld.common.CoreConstant;
+import com.team17.bikeworld.common.Damerau;
 import com.team17.bikeworld.crawl.crawler.RevzillaCrawler;
 import com.team17.bikeworld.crawl.crawler.YnebikersCrawler;
 import com.team17.bikeworld.entity.CrawlProduct;
@@ -15,6 +16,8 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,10 +27,32 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+
+
+class CrawlSimilar {
+    double similar;
+    int proId;
+
+    public CrawlSimilar(double similar, int proId) {
+        this.similar = similar;
+        this.proId = proId;
+    }
+}
+
+class SimilarComparator implements Comparator {
+    public int compare(Object o1, Object o2) {
+        CrawlSimilar s1 = (CrawlSimilar) o1;
+        CrawlSimilar s2 = (CrawlSimilar) o2;
+
+        if (s1.similar == s2.similar)
+            return 0;
+        else if (s1.similar > s2.similar)
+            return -1;
+        else
+            return 1;
+    }
+}
 
 @Service
 public class CrawlService {
@@ -87,6 +112,36 @@ public class CrawlService {
         }
     }
 
+    public List<CrawlProduct> findWithGuess(int id) {
+        Optional<CrawlProduct> optional = crawlRepository.findById(id);
+        if (optional != null) {
+            CrawlProduct mainProduct = optional.get();
+//            System.out.println(1);
+            Damerau damerau = new Damerau();
+            String proName = mainProduct.getName();
+            List<CrawlProduct> products = crawlRepository.findAll();
+            List<CrawlSimilar> similarList = new ArrayList<>();
+//            System.out.println(2);
+            for (int i = 0; i < products.size(); i++) {
+                CrawlProduct crawlProduct = products.get(i);
+                CrawlSimilar crawlSimilar = new CrawlSimilar(damerau.distancePercentage(crawlProduct.getName(), proName), crawlProduct.getId());
+
+                    similarList.add(crawlSimilar);
+
+            }
+            Collections.sort(similarList, new SimilarComparator());
+            List<CrawlProduct> crawlList = new ArrayList<>();
+//            crawlList.add(mainProduct);
+//            System.out.println(3);
+            for (int i = 0; i < 6 && i < similarList.size(); i++) {
+                int proId =  similarList.get(i).proId;
+                crawlList.add((crawlRepository.findById(proId)).get());
+            }
+            return crawlList;
+        } else {
+            return null;
+        }
+    }
 
     public List<CrawlProduct> getNewByPage(int page, int pageSize) {
         int from = (page - 1) * pageSize;
@@ -259,6 +314,16 @@ public class CrawlService {
             }
         }
         return response;
+    }
+
+    public Integer countPending() {
+        Integer integer = crawlRepository.countPending();
+        return integer;
+    }
+
+    public Page<CrawlProduct> getNewByPageable(Pageable pageable) {
+        Page<CrawlProduct> products = crawlRepository.findAllByStatus(statPending, pageable);
+        return products;
     }
 //    public void DeleteBySite(String site) {
 //        List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(site);
