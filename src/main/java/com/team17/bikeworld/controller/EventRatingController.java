@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.team17.bikeworld.common.CoreConstant.*;
 @RestController
 @CrossOrigin
@@ -38,5 +40,9 @@ public class EventRatingController extends AbstractController{
     public String getEventRatingByEventId(@RequestParam("eventId") Integer eventId) {
 //        Response response = eventRatingService.checkEventRating(eventId);
         return "hihi";
+    @GetMapping(API_EVENT_RATING + "/event")
+    public String getEventRatingByEventId(@RequestParam("eventId") Integer eventId) {
+        Response<List<EventRating>> response = eventRatingService.getEventRatingByEventId(eventId);
+        return gson.toJson(response);
     }
 }

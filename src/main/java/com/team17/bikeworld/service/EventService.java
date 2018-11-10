@@ -161,6 +161,10 @@ public class EventService {
                 event.setMinSlot(consumeEvent.getMinSlot());
                 event.setCurrentSlot(0);
 
+                //rating
+                event.setTotalRates(0);
+                event.setTotalRatesPoint(Double.valueOf(0));
+
                 //start date - end date
                 SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                 Date startDate = format1.parse(consumeEvent.getStartDate());
