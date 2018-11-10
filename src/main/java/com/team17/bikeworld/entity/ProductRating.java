@@ -51,6 +51,9 @@ public class ProductRating implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date rateDate;
     @Expose
+    @Column(name = "point")
+    private Integer point;
+    @Expose
     @JoinColumn(name = "account_usename", referencedColumnName = "username", nullable = false)
     @ManyToOne(optional = false)
     private Account accountUsename;
@@ -88,6 +91,14 @@ public class ProductRating implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Integer getPoint() {
+        return point;
+    }
+
+    public void setPoint(Integer point) {
+        this.point = point;
     }
 
     public Date getRateDate() {

@@ -62,20 +62,20 @@ public class Order implements Serializable {
     @Column(name = "receiverName", length = 255)
     private String receiverName;
     @Expose
-    @JoinColumn(name = "buyer_username", referencedColumnName = "username", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "buyer_username", referencedColumnName = "username")
+    @ManyToOne()
     private Account buyerUsername;
     @Expose
-    @JoinColumn(name = "seller_username", referencedColumnName = "username", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "seller_username", referencedColumnName = "username")
+    @ManyToOne()
     private Account sellerUsername;
     @Expose
-    @JoinColumn(name = "orderStatus_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "orderStatus_id", referencedColumnName = "id")
+    @ManyToOne()
     private OrderStatus orderStatusid;
     @Expose
-    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @ManyToOne()
     private Product productId;
 
     public Order() {

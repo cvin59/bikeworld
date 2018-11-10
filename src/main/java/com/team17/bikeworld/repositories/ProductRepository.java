@@ -27,6 +27,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Page<Product> findByAccountUsename(Account account, Pageable pageable);
 
+    Page<Product> findByNameIgnoreCaseContainingAndAccountUsename(String name, Account account, Pageable pageable);
+
+
     @Modifying
     @Query(value = "UPDATE `product` SET status = '2' WHERE id = ?1", nativeQuery = true)
     Integer disableProduct(int id);

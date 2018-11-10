@@ -3,12 +3,16 @@ package com.team17.bikeworld.service;
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.*;
 import com.team17.bikeworld.model.ProductModel;
+import com.team17.bikeworld.model.ProductRatingModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.repositories.ProductImageRepository;
+import com.team17.bikeworld.repositories.ProductRatingRepository;
 import com.team17.bikeworld.repositories.ProductRepository;
+import com.team17.bikeworld.transformer.ProductRatingTransformer;
 import com.team17.bikeworld.transformer.ProductTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +33,12 @@ import java.util.Optional;
 
 @Service
 public class ProductService {
+
+    @Autowired
+    ProductRatingRepository productRatingRepository;
+
+    @Autowired
+    ProductRatingTransformer productRatingTransformer;
 
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
@@ -160,8 +170,7 @@ public class ProductService {
         return response;
     }
 
-    public boolean editQuantity(int productId, int orderQuantity) {
-
+    public boolean subtractQuantity(int productId, int orderQuantity) {
         Product product = productRepository.getOne(productId);
         if (product.getQuantity() < orderQuantity) {
             return false;
@@ -176,6 +185,12 @@ public class ProductService {
                 return true;
             }
         }
+    }
+
+    public void addQuantity(Product product, int orderQuantity) {
+        int newQuantity = product.getQuantity() + orderQuantity;
+        product.setQuantity(newQuantity);
+        productRepository.save(product);
     }
 
     public Product changeStatus(Product product, int statusId) {
@@ -203,6 +218,12 @@ public class ProductService {
         return products;
     }
 
+    public Page<Product> searchByNameAndSeller(String searchValue, String seller, Pageable pageable) {
+        Account account = new Account();
+        account.setUsername(seller);
+        return productRepository.findByNameIgnoreCaseContainingAndAccountUsename(searchValue, account, pageable);
+    }
+
     private void handleImage(ProductModel model, MultipartFile image) throws IOException {
         if (image != null) {
             String fileName = image.getOriginalFilename();
@@ -224,5 +245,43 @@ public class ProductService {
             Integer deleteId = deleteList.get(i);
             productImageRepository.deleteById(deleteId);
         }
+    }
+
+    public ProductRating rateProduct(ProductRatingModel model) {
+        model.setId(0);
+
+        Date date = new Date();
+        date.getTime();
+        model.setRateDate(date);
+
+        Product product = productRepository.getOne(model.getProductId());
+        int rate = product.getTotalRates() + 1;
+        double ratePoint = product.getTotalRatePoint() + model.getPoint();
+
+        product.setTotalRates(rate);
+        product.setTotalRatePoint(ratePoint);
+        productRepository.save(product);
+
+        ProductRating rating = new ProductRating();
+        rating = productRatingTransformer.RatingModelToEntity(rating, model);
+        return productRatingRepository.save(rating);
+    }
+
+
+    public Page<ProductRating> getRates(int productId, Pageable pageable) {
+        Product product = new Product();
+        product.setId(productId);
+        Page<ProductRating> ratings = productRatingRepository.getByProductId(product, pageable);
+        return ratings;
+    }
+
+    public ProductRating getRate(int productId, String rater) {
+        Product product = new Product();
+        product.setId(productId);
+
+        Account account = new Account();
+        account.setUsername(rater);
+
+        return productRatingRepository.getByProductIdAndAccountUsename(product, account);
     }
 }

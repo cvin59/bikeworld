@@ -2,10 +2,13 @@ package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.model.ProductModel;
+import com.team17.bikeworld.model.ProductRatingModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.service.*;
+import com.team17.bikeworld.transformer.ProductRatingTransformer;
 import com.team17.bikeworld.transformer.ProductTransformer;
 import com.team17.bikeworld.viewModel.MultiProductModel;
+import com.team17.bikeworld.viewModel.MultiRatingModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,11 @@ public class ProductController extends AbstractController {
     ProductService productService;
     @Autowired
     ProductTransformer productTransformer;
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    ProductRatingTransformer productRatingTransformer;
 
     @GetMapping(CoreConstant.API_PRODUCT + "/viewall")
     public String viewAllProduct(@RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
@@ -143,6 +151,46 @@ public class ProductController extends AbstractController {
 
         List<ProductModel> views = new ArrayList<>();
         Page<Product> products = productService.searchByName(searchValue, pageable);
+
+        for (Product product : products
+        ) {
+            ProductModel view = new ProductModel();
+            List<ProductImage> imgs = productService.getImagesByProduct(product);
+
+            view = productTransformer.ProductEntityToView(product, view, imgs);
+            views.add(view);
+        }
+
+        data.setTotalPage(products.getTotalPages());
+        data.setTotalRecord(products.getTotalElements());
+        data.setCurrentPage(page);
+        data.setProductInfo(views);
+
+        response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, data);
+        return gson.toJson(response);
+    }
+
+    @GetMapping(CoreConstant.API_PRODUCT + "/{seller}/search")
+    public String searchTradeItemBySeller(@PathVariable(name = "seller") String seller,
+                                          @RequestParam(name = "searchValue") String searchValue,
+                                          @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+                                          @RequestParam(name = "size", required = false, defaultValue = "5 ") Integer size,
+                                          @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
+                                          @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy) {
+        Sort sortable = null;
+        if (sort.equals("ASC")) {
+            sortable = Sort.by(sortBy).ascending();
+        }
+        if (sort.equals("DESC")) {
+            sortable = Sort.by(sortBy).descending();
+        }
+        Pageable pageable = PageRequest.of(page - 1, size, sortable);
+
+        Response<MultiProductModel> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        MultiProductModel data = new MultiProductModel();
+
+        List<ProductModel> views = new ArrayList<>();
+        Page<Product> products = productService.searchByNameAndSeller(searchValue, seller, pageable);
 
         for (Product product : products
         ) {
@@ -276,6 +324,87 @@ public class ProductController extends AbstractController {
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, data);
         } catch (Exception e) {
             e.printStackTrace();
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+    @PostMapping(CoreConstant.API_PRODUCT + "/rate")
+    public String rateProduct(@RequestParam String rateModelString) {
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            ProductRatingModel newRate = gson.fromJson(rateModelString, ProductRatingModel.class);
+
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
+
+            productService.rateProduct(newRate);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+    @GetMapping(CoreConstant.API_PRODUCT + "/rate/{productId}")
+    public String showRates(@PathVariable int productId,
+                            @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+                            @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
+                            @RequestParam(name = "sort", required = false, defaultValue = "DESC") String sort,
+                            @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy) {
+
+        Sort sortable = null;
+        if (sort.equals("ASC")) {
+            sortable = Sort.by(sortBy).ascending();
+        }
+        if (sort.equals("DESC")) {
+            sortable = Sort.by(sortBy).descending();
+        }
+        Pageable pageable = PageRequest.of(page - 1, size, sortable);
+
+        Response<MultiRatingModel> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            MultiRatingModel data = new MultiRatingModel();
+            List<ProductRatingModel> views = new ArrayList<>();
+            Page<ProductRating> ratings = productService.getRates(productId, pageable);
+
+            for (ProductRating rating : ratings
+            ) {
+                ProductRatingModel view = new ProductRatingModel();
+
+                view = productRatingTransformer.RatingEntityToModel(view, rating);
+                String avatar = userService.findUserByUsername(view.getRater()).getProfileId().getAvatarLink();
+                view.setAvatar(avatar);
+                views.add(view);
+            }
+
+            data.setTotalPage(ratings.getTotalPages());
+            data.setTotalRecord(ratings.getTotalElements());
+            data.setCurrentPage(page);
+            data.setProductRatings(views);
+
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, data);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+    @GetMapping(CoreConstant.API_PRODUCT + "/rate")
+    public String showRate(@RequestParam int productId,
+                           @RequestParam String rater) {
+
+        Response<ProductRatingModel> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            ProductRating rating = productService.getRate(productId, rater);
+            if (rating != null) {
+                ProductRatingModel ratingModel = new ProductRatingModel();
+                ratingModel = productRatingTransformer.RatingEntityToModel(ratingModel, rating);
+
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, ratingModel);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
         }
         return gson.toJson(response);

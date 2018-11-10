@@ -2,12 +2,15 @@ package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.Order;
+import com.team17.bikeworld.entity.Product;
 import com.team17.bikeworld.model.OrderModel;
+import com.team17.bikeworld.model.ProductRatingModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.service.OrderService;
 import com.team17.bikeworld.service.ProductService;
 import com.team17.bikeworld.transformer.OrderTransformer;
 import com.team17.bikeworld.viewModel.MultiOrderModel;
+import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +43,8 @@ public class OrderController extends AbstractController {
         LOGGER.info(orderModelString);
         try {
             OrderModel newOrder = gson.fromJson(orderModelString, OrderModel.class);
-            if (productService.editQuantity(newOrder.getProductId(), newOrder.getQuantity())) {
-                orderService.CreateOrder(newOrder);
+            if (productService.subtractQuantity(newOrder.getProductId(), newOrder.getQuantity())) {
+                orderService.createOrder(newOrder);
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
             }
         } catch (Exception e) {
@@ -89,10 +92,10 @@ public class OrderController extends AbstractController {
 
     @GetMapping(CoreConstant.API_ACCOUNT + "/sales/{buyer}")
     public String loadOrderByBuyer(@PathVariable String buyer,
-                                    @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-                                    @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
-                                    @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
-                                    @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy) {
+                                   @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+                                   @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
+                                   @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
+                                   @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy) {
         Sort sortable = null;
         if (sort.equals("ASC")) {
             sortable = Sort.by(sortBy).ascending();
@@ -119,6 +122,57 @@ public class OrderController extends AbstractController {
             data.setOrders(orderModelList);
 
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, data);
+        }
+        return gson.toJson(response);
+    }
+
+
+    @GetMapping(CoreConstant.API_PRODUCT + "/order")
+    public String loadOrderByProduct(@RequestParam int productId) {
+
+        Response<List<OrderModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<Order> orderList = orderService.getByProduct(productId);
+            if (orderList != null) {
+                List<OrderModel> orderModelList = new ArrayList<>();
+                for (Order order : orderList) {
+                    OrderModel model = new OrderModel();
+                    model = orderTransformer.OrderEntityToModel(model, order);
+                    orderModelList.add(model);
+                }
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, orderModelList);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+
+        return gson.toJson(response);
+    }
+
+    @PutMapping(CoreConstant.API_ORDER + "/reject")
+    public String rejectOrder(@RequestParam("orderId") int orderId) {
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            Order order = orderService.changeStatus(orderId, CoreConstant.STATUS_ORDER_REJECT);
+            productService.addQuantity(order.getProductId(), order.getQuantity());
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+    @PutMapping(CoreConstant.API_ORDER + "/confirm")
+    public String confirmOrder(@RequestParam("orderId") int orderId) {
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            Order order = orderService.changeStatus(orderId, CoreConstant.STATUS_ORDER_SUCCESS);
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
         }
         return gson.toJson(response);
     }

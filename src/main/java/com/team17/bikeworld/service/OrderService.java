@@ -2,11 +2,13 @@ package com.team17.bikeworld.service;
 
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.controller.AbstractController;
-import com.team17.bikeworld.entity.Account;
-import com.team17.bikeworld.entity.Order;
+import com.team17.bikeworld.entity.*;
 import com.team17.bikeworld.model.OrderModel;
+import com.team17.bikeworld.model.ProductRatingModel;
 import com.team17.bikeworld.repositories.OrderRepository;
+import com.team17.bikeworld.repositories.ProductRatingRepository;
 import com.team17.bikeworld.transformer.OrderTransformer;
+import com.team17.bikeworld.transformer.ProductRatingTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class OrderService {
@@ -26,7 +29,7 @@ public class OrderService {
     @Autowired
     OrderTransformer orderTransformer;
 
-    public Order CreateOrder(OrderModel orderModel) {
+    public Order createOrder(OrderModel orderModel) {
         Order order = new Order();
         orderModel.setId(0);
         orderModel.setStatusId(CoreConstant.STATUS_ORDER_PENDING);
@@ -51,4 +54,26 @@ public class OrderService {
         Page<Order> orders = orderRepository.findByBuyerUsername(buyer, pageable);
         return orders;
     }
+
+    public List<Order> getByProduct(int productId) {
+        Product product = new Product();
+        product.setId(productId);
+        return orderRepository.findByProductId(product);
+    }
+
+    public Order changeStatus(int orderId, int statusId) {
+
+        Order order = orderRepository.getOne(orderId);
+
+        OrderStatus status = new OrderStatus();
+        status.setId(statusId);
+        order.setOrderStatusid(status);
+
+        order = orderRepository.save(order);
+        return order;
+    }
+
+
+
+
 }
