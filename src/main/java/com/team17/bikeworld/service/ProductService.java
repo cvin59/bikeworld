@@ -346,3 +346,7 @@ public class ProductService {
         changeStatus(product, statusId);
     }
 }
+    public List<Product> findProductHome() {
+        return productRepository.findTop12By();
+    }
+}
