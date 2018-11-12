@@ -2,6 +2,7 @@ package com.team17.bikeworld.transformer;
 
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.entity.CrawlProductImage;
+import com.team17.bikeworld.model.CrawlProductImageModel;
 import com.team17.bikeworld.model.CrawlProductModel;
 import com.team17.bikeworld.repositories.BrandRepository;
 import com.team17.bikeworld.repositories.CategoryRepository;
@@ -9,6 +10,8 @@ import com.team17.bikeworld.repositories.CrawlStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,6 +26,8 @@ public class CrawlProductTransformer {
 
     @Autowired
     CrawlStatusRepository crawlStatusRepository;
+
+    private final Path rootLocation = Paths.get("src/main/resources/static/images/crawlProduct/").toAbsolutePath().normalize();
 
     //Used to map from CrawlProductModel to CrawlProduct
     public CrawlProduct CrawlProductModel_CrawlProductEntity(CrawlProductModel model){
@@ -66,5 +71,13 @@ public class CrawlProductTransformer {
             imagesEntities.add(imageEntity);
         }
         return imagesEntities;
+    }
+
+    public CrawlProductImageModel ImageEntityToImageModel(CrawlProductImage entity){
+        CrawlProductImageModel result = new CrawlProductImageModel();
+        result.setId(entity.getId());
+        result.setImageLink(entity.getImageLink());
+        result.setCrawlProduct_id(entity.getCrawlProductid().getId());
+        return result;
     }
 }

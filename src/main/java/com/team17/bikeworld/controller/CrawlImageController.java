@@ -3,6 +3,7 @@ package com.team17.bikeworld.controller;
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.entity.CrawlProductImage;
 import com.team17.bikeworld.entity.EventImage;
+import com.team17.bikeworld.model.CrawlProductImageModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.service.CrawlImageService;
 import org.slf4j.Logger;
@@ -25,12 +26,13 @@ public class CrawlImageController extends AbstractController{
     @Autowired
     CrawlImageService crawlImageService;
 
+    //Get all images of a crawl product based on its id
     @GetMapping(API_CRAWL_IMAGE + "/crawl/{id}")
     public String getImagesByCrawlId(@PathVariable("id") Integer id){
-        Response<List<CrawlProductImage>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        Response<List<CrawlProductImageModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
-            List<CrawlProductImage> result = crawlImageService.getImageOfCrawlProduct(id);
-
+            List<CrawlProductImageModel> result = crawlImageService.getImageOfCrawlProduct(id);
+            LOGGER.info("result list:" + result);
             if (result != null) {
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
             } else {
