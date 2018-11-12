@@ -340,6 +340,6 @@ public class ProductService {
     }
 
     public List<Product> findProductHome() {
-        return productRepository.findTop12By();
+        return productRepository.randomProduct();
     }
 }

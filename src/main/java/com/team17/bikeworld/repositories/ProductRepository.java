@@ -33,5 +33,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Page<Product> findByNameIgnoreCaseContaining(String name, Pageable pageable);
 
-    List<Product> findTop12By();
+    @Query(nativeQuery=true, value="SELECT *  FROM product ORDER BY rand() LIMIT 12")
+    List<Product> randomProduct();
+
+
 }

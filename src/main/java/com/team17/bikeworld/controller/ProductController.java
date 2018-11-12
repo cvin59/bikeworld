@@ -466,10 +466,18 @@ public class ProductController extends AbstractController {
 
     @GetMapping(API_PRODUCT + "/product-home")
     public String viewProductHome() {
-        Response<List<Product>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        Response<List<ProductModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<Product> products = productService.findProductHome();
-            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, products);
+            List<ProductModel> modelList=new ArrayList<>();
+
+            for (Product entity : products) {
+                ProductModel productModel = new ProductModel();
+                List<ProductImage> imgs = productService.getImagesByProduct(entity);
+                productModel = productTransformer.ProductEntityToView(entity, productModel, imgs);
+                modelList.add(productModel);
+            }
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, modelList);
         } catch (Exception e) {
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
         }
