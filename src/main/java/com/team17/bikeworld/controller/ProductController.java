@@ -337,7 +337,7 @@ public class ProductController extends AbstractController {
 
         Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
-            if(orderService.checkRatingRight(productId,rater)){
+            if (orderService.checkRatingRight(productId, rater)) {
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
             }
         } catch (Exception e) {
@@ -425,4 +425,41 @@ public class ProductController extends AbstractController {
         }
         return gson.toJson(response);
     }
+
+    @GetMapping(CoreConstant.API_PRODUCT + "/relevant")
+    public String getRelevantProduct(@RequestParam String productName,
+                                     @RequestParam Integer categoryId) {
+        Response<List<ProductModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<Product> entityList = productService.findRelevant(productName, categoryId);
+            List<ProductModel> modelList = new ArrayList<>();
+            for (Product entity : entityList) {
+                ProductModel productModel = new ProductModel();
+                List<ProductImage> imgs = productService.getImagesByProduct(entity);
+                productModel = productTransformer.ProductEntityToView(entity, productModel, imgs);
+                modelList.add(productModel);
+            }
+
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, modelList);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+    @PutMapping(CoreConstant.API_PRODUCT + "/changeStatus")
+    public String changeStatus(@RequestParam Integer productId) {
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+          productService.editStatus(productId);
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+
 }

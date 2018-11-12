@@ -23,6 +23,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> findByCategoryId(Category category, Pageable pageable);
 
+    List<Product> findByCategoryId(Category category);
+
     List<Product> findByBrandId(Brand brand, Pageable pageable);
 
     Page<Product> findByAccountUsename(Account account, Pageable pageable);
