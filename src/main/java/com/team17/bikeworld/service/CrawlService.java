@@ -321,6 +321,10 @@ public class CrawlService {
         int from = (page - 1) * pageSize;
         return crawlRepository.getShowByPage(from, pageSize);
     }
+
+    public List<CrawlProduct> getShowFrom(long time) {
+        return crawlRepository.getShowFrom(time);
+    }
 //    public void DeleteBySite(String site) {
 //        List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(site);
 //        crawlProductImageRepository.deleteAll(imgBySite);

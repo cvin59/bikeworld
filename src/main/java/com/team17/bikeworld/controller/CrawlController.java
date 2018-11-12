@@ -49,7 +49,7 @@ public class CrawlController extends AbstractController {
     }
 
 
-    @GetMapping(API_CRAWL+ "/view/{site:.+}")
+    @GetMapping(API_CRAWL + "/view/{site:.+}")
     public String viewCrawl(@PathVariable String site) {
         Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
@@ -66,7 +66,7 @@ public class CrawlController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(API_CRAWL+ "/pending/{page:.+}")
+    @GetMapping(API_CRAWL + "/pending/{page:.+}")
     public String getPending(@PathVariable int page) {
         Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
@@ -84,7 +84,7 @@ public class CrawlController extends AbstractController {
     }
 
 
-    @GetMapping(API_CRAWL+ "/approve/{page:.+}")
+    @GetMapping(API_CRAWL + "/approve/{page:.+}")
     public String getApprove(@PathVariable int page) {
         Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
@@ -101,9 +101,27 @@ public class CrawlController extends AbstractController {
         return gson.toJson(response);
     }
 
+    @GetMapping(API_CRAWL + "/showfrom/{date:.+}")
+    public String getShowFrom(@PathVariable long date) {
+        Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+//            LOGGER.info("seen");
+            LOGGER.info("Date " + date);
+            List<CrawlProduct> crawlPros = crawlService.getShowFrom(date);
+            if (crawlPros != null) {
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, crawlPros);
+            } else {
+                response.setResponse(CoreConstant.STATUS_CODE_NO_RESULT, CoreConstant.MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e) {
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
 
     @PostMapping(API_CRAWL)
-    public String createCrawl(@RequestParam String crawlString, MultipartFile[] images){
+    public String createCrawl(@RequestParam String crawlString, MultipartFile[] images) {
         LOGGER.info("Request Param: " + crawlString);
         //Translate json to CrawlProduct
         CrawlProductModel crawlProductModel = gson.fromJson(crawlString, CrawlProductModel.class);
@@ -113,7 +131,7 @@ public class CrawlController extends AbstractController {
     }
 
     @PutMapping(API_CRAWL)
-    public String editCrawl(@RequestParam String objectString, MultipartFile[] addedImages){
+    public String editCrawl(@RequestParam String objectString, MultipartFile[] addedImages) {
         LOGGER.info("Request Param: " + objectString);
         //Translate json to EditCrawlProductModel
         CrawlProductModel crawlProductModel = gson.fromJson(objectString, CrawlProductModel.class);
@@ -123,7 +141,7 @@ public class CrawlController extends AbstractController {
     }
 
     @PutMapping(API_CRAWL + "/status")
-    public String changeStatus(@RequestParam String objectString){
+    public String changeStatus(@RequestParam String objectString) {
         //Translate json to ChangeStatusCrawlModel
         ChangeStatusCrawlModel changeStatusCrawlModel = gson.fromJson(objectString, ChangeStatusCrawlModel.class);
         //Edit crawl product in database and response
@@ -138,16 +156,16 @@ public class CrawlController extends AbstractController {
     }
 
     @GetMapping(API_CRAWL + "/{id}")
-    public String getById(@PathVariable("id") Integer id){
+    public String getById(@PathVariable("id") Integer id) {
         Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             CrawlProduct result = crawlService.getById(id);
-            if (result != null){
+            if (result != null) {
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
             } else {
                 response.setResponse(CoreConstant.STATUS_CODE_NO_RESULT, CoreConstant.MESSAGE_NO_RESULT);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
         }
         return gson.toJson(response);
@@ -170,7 +188,7 @@ public class CrawlController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(API_CRAWL+ "/detail/{id:.+}")
+    @GetMapping(API_CRAWL + "/detail/{id:.+}")
     public String findByid(@PathVariable int id) {
         Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {

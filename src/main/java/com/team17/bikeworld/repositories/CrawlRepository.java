@@ -43,6 +43,10 @@ public interface CrawlRepository extends JpaRepository<CrawlProduct, Integer> {
     List<CrawlProduct> getShowByPage(int from, int pageSize);
 
 
+    @Query(value = "SELECT * FROM `crawlproduct` WHERE `status`='2' AND `lastEdit`>?1 ", nativeQuery = true)
+    List<CrawlProduct> getShowFrom(long lastEdit);
+
+
     Optional<CrawlProduct> findByHash(String hash);
 
     List<CrawlProduct> findAllBySiteId(CrawlSite crawlSite);
