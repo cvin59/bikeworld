@@ -284,4 +284,8 @@ public class ProductService {
 
         return productRatingRepository.getByProductIdAndAccountUsename(product, account);
     }
+
+    public List<Product> findProductHome() {
+        return productRepository.findTop12By();
+    }
 }

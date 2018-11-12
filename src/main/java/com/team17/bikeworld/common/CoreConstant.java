@@ -17,6 +17,7 @@ public class CoreConstant {
     public static final String API_EVENT_RATING = "/api/event-rating";
     public static final String API_ACCOUNT = "/api/account";
     public static final String API_ORDER = "/api/order";
+    public static final String API_PRODUCT_IMAGE = "/api/product-image";
 
     //API Response code
     public static final int STATUS_CODE_SERVER_ERROR = -1;

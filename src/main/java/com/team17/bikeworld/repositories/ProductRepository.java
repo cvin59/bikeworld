@@ -41,4 +41,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query(value = "UPDATE `product` SET status = '1' WHERE id = ?1", nativeQuery = true)
     Integer activateTradeItem(int id);
 
+    List<Product> findTop12By();
 }

@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.team17.bikeworld.common.CoreConstant.API_PRODUCT;
+
 @RestController
 @CrossOrigin
 public class ProductController extends AbstractController {
@@ -41,7 +43,7 @@ public class ProductController extends AbstractController {
     @Autowired
     ProductRatingTransformer productRatingTransformer;
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/viewall")
+    @GetMapping(API_PRODUCT + "/viewall")
     public String viewAllProduct(@RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                  @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
                                  @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
@@ -83,7 +85,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @PostMapping(CoreConstant.API_PRODUCT)
+    @PostMapping(API_PRODUCT)
     public String createProduct(@RequestParam String productModelString, MultipartFile[] images) {
         Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
@@ -98,7 +100,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @PutMapping(CoreConstant.API_PRODUCT)
+    @PutMapping(API_PRODUCT)
     public String updateProduct(@RequestParam String productModelString, @RequestParam List<Integer> deleteImgList, MultipartFile[] images) {
         Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
@@ -116,7 +118,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/{id}")
+    @GetMapping(API_PRODUCT + "/{id}")
     public String getProductById(@PathVariable int id) {
         Response<ProductModel> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
@@ -133,7 +135,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/search")
+    @GetMapping(API_PRODUCT + "/search")
     public String searchTradeItem(@RequestParam(name = "searchValue") String searchValue,
                                   @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                   @RequestParam(name = "size", required = false, defaultValue = "12 ") Integer size,
@@ -172,7 +174,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/{seller}/search")
+    @GetMapping(API_PRODUCT + "/{seller}/search")
     public String searchTradeItemBySeller(@PathVariable(name = "seller") String seller,
                                           @RequestParam(name = "searchValue") String searchValue,
                                           @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
@@ -212,7 +214,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/category/{id}")
+    @GetMapping(API_PRODUCT + "/category/{id}")
     public String getByCategory(@PathVariable int id,
                                 @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                 @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
@@ -249,7 +251,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/brand/{id}")
+    @GetMapping(API_PRODUCT + "/brand/{id}")
     public String getByBrand(@PathVariable int id,
                              @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                              @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
@@ -287,7 +289,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/seller/{seller}")
+    @GetMapping(API_PRODUCT + "/seller/{seller}")
     public String getBySeller(@PathVariable String seller,
                               @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                               @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
@@ -331,7 +333,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/rate/right")
+    @GetMapping(API_PRODUCT + "/rate/right")
     public String checkRateRight(@RequestParam int productId,
                                  @RequestParam String rater) {
 
@@ -347,7 +349,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @PostMapping(CoreConstant.API_PRODUCT + "/rate")
+    @PostMapping(API_PRODUCT + "/rate")
     public String rateProduct(@RequestParam String rateModelString) {
         Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
@@ -361,7 +363,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/rate/{productId}")
+    @GetMapping(API_PRODUCT + "/rate/{productId}")
     public String showRates(@PathVariable int productId,
                             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                             @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
@@ -406,7 +408,7 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
-    @GetMapping(CoreConstant.API_PRODUCT + "/rate")
+    @GetMapping(API_PRODUCT + "/rate")
     public String showRate(@RequestParam int productId,
                            @RequestParam String rater) {
 
@@ -421,6 +423,18 @@ public class ProductController extends AbstractController {
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+    @GetMapping(API_PRODUCT + "/product-home")
+    public String viewProductHome() {
+        Response<List<Product>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            List<Product> products = productService.findProductHome();
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, products);
+        } catch (Exception e) {
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
         }
         return gson.toJson(response);

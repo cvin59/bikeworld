@@ -100,7 +100,7 @@ public class EventService {
                     //save event iamge
                     if (image != null) {
                         List<EventImage> eventImages = initEventImages(event, consumeEvent);
-                        eventImageRepository.deleteByEventId(event);
+                        eventImageRepository.deleteByEventId_Id(event.getId());
                         eventImageRepository.saveAll(eventImages);
                     }
                     response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, event);
