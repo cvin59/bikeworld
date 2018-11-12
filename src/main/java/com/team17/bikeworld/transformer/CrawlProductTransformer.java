@@ -27,7 +27,7 @@ public class CrawlProductTransformer {
     @Autowired
     CrawlStatusRepository crawlStatusRepository;
 
-    private final Path rootLocation = Paths.get("src/main/resources/static/images/crawlProduct/").toAbsolutePath().normalize();
+    private final Path rootLocation = Paths.get("src/main/resources/static/images/").toAbsolutePath().normalize();
 
     //Used to map from CrawlProductModel to CrawlProduct
     public CrawlProduct CrawlProductModel_CrawlProductEntity(CrawlProductModel model){

@@ -1,6 +1,7 @@
 package com.team17.bikeworld.service;
 
 import com.team17.bikeworld.common.CoreConstant;
+import com.team17.bikeworld.common.CrawlDistance;
 import com.team17.bikeworld.common.Damerau;
 import com.team17.bikeworld.crawl.crawler.RevzillaCrawler;
 import com.team17.bikeworld.crawl.crawler.YnebikersCrawler;
@@ -30,38 +31,14 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 
-class CrawlSimilar {
-    double similar;
-    int proId;
-
-    public CrawlSimilar(double similar, int proId) {
-        this.similar = similar;
-        this.proId = proId;
-    }
-}
-
-class SimilarComparator implements Comparator {
-    public int compare(Object o1, Object o2) {
-        CrawlSimilar s1 = (CrawlSimilar) o1;
-        CrawlSimilar s2 = (CrawlSimilar) o2;
-
-        if (s1.similar == s2.similar)
-            return 0;
-        else if (s1.similar > s2.similar)
-            return -1;
-        else
-            return 1;
-    }
-}
-
 @Service
 public class CrawlService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CrawlService.class);
-    private final Path rootLocation = Paths.get("src/main/resources/static/images/crawlProduct/").toAbsolutePath().normalize();
+    private final Path rootLocation = Paths.get("src/main/resources/static/images/").toAbsolutePath().normalize();
 
     @Autowired
-    private  final CrawlProductTransformer crawlProductTransformer;
+    private final CrawlProductTransformer crawlProductTransformer;
 
     private final CrawlRepository crawlRepository;
     private final CrawlProductImageRepository crawlProductImageRepository;
@@ -69,7 +46,8 @@ public class CrawlService {
     private final CrawlSiteRepository crawlSiteRepository;
     private final CrawlStatusRepository crawlStatusRepository;
     private final BrandRepository brandRepository;
-    protected CrawlStatus statPending;
+    private CrawlStatus statPending;
+    private CrawlStatus statShow;
 
     public CrawlService(CrawlRepository crawlRepository, CrawlProductImageRepository crawlProductImageRepository, CategoryRepository categoryRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository, ProductTransformer productTransformer, CrawlProductTransformer crawlProductTransformer) {
         this.crawlRepository = crawlRepository;
@@ -80,9 +58,10 @@ public class CrawlService {
         this.brandRepository = brandRepository;
         this.crawlProductTransformer = crawlProductTransformer;
         this.statPending = crawlStatusRepository.findByName("NEW").get();
+        this.statShow = crawlStatusRepository.findByName("SHOW").get();
     }
 
-    public CrawlProduct getById(Integer id){
+    public CrawlProduct getById(Integer id) {
         return crawlRepository.findById(id).orElse(null);
     }
 
@@ -120,26 +99,30 @@ public class CrawlService {
         Optional<CrawlProduct> optional = crawlRepository.findById(id);
         if (optional != null) {
             CrawlProduct mainProduct = optional.get();
-//            System.out.println(1);
             Damerau damerau = new Damerau();
             String proName = mainProduct.getName();
             List<CrawlProduct> products = crawlRepository.findAll();
-            List<CrawlSimilar> similarList = new ArrayList<>();
-//            System.out.println(2);
+            List<CrawlDistance> distanceList = new ArrayList<>();
             for (int i = 0; i < products.size(); i++) {
                 CrawlProduct crawlProduct = products.get(i);
-                CrawlSimilar crawlSimilar = new CrawlSimilar(damerau.distancePercentage(crawlProduct.getName(), proName), crawlProduct.getId());
-
-                    similarList.add(crawlSimilar);
-
+                distanceList.add(new CrawlDistance(damerau.distance(crawlProduct.getName(), proName), crawlProduct));
             }
-            Collections.sort(similarList, new SimilarComparator());
+            Collections.sort(distanceList, new Comparator<CrawlDistance>() {
+                @Override
+                public int compare(CrawlDistance o1, CrawlDistance o2) {
+                    int d1 = o1.getDistance();
+                    int d2 = o2.getDistance();
+                    if (d1 == d2)
+                        return 0;
+                    else if (d1 < d2)
+                        return -1;
+                    else
+                        return 1;
+                }
+            });
             List<CrawlProduct> crawlList = new ArrayList<>();
-//            crawlList.add(mainProduct);
-//            System.out.println(3);
-            for (int i = 0; i < 6 && i < similarList.size(); i++) {
-                int proId =  similarList.get(i).proId;
-                crawlList.add((crawlRepository.findById(proId)).get());
+            for (int i = 0; i < 6 && i < distanceList.size(); i++) {
+                crawlList.add(distanceList.get(i).getCrawlProduct());
             }
             return crawlList;
         } else {
@@ -332,6 +315,11 @@ public class CrawlService {
     public Page<CrawlProduct> getNewByPageable(Pageable pageable) {
         Page<CrawlProduct> products = crawlRepository.findAllByStatus(statPending, pageable);
         return products;
+    }
+
+    public List<CrawlProduct> getShowByPage(int page, int pageSize) {
+        int from = (page - 1) * pageSize;
+        return crawlRepository.getShowByPage(from, pageSize);
     }
 //    public void DeleteBySite(String site) {
 //        List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(site);
