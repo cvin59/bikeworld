@@ -212,13 +212,6 @@ public class ProductService {
         return entity.orElse(null);
     }
 
-    public boolean activateTradeItem(int id) {
-        Integer count = productRepository.activateTradeItem(id);
-        if (count > 0) {
-            return true;
-        }
-        return false;
-    }
 
     public Page<Product> searchByName(String searchValue, Pageable pageable) {
         Page<Product> products = productRepository.findByNameIgnoreCaseContaining(searchValue, pageable);
@@ -345,7 +338,7 @@ public class ProductService {
 
         changeStatus(product, statusId);
     }
-}
+
     public List<Product> findProductHome() {
         return productRepository.findTop12By();
     }
