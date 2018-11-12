@@ -26,4 +26,8 @@ public interface CrawlProductImageRepository extends JpaRepository<CrawlProductI
 
     @Query(value = "SELECT * FROM `crawlproduct` WHERE site = ?1", nativeQuery = true)
     List<CrawlProductImage> findAllBySite(String site);
+
+    //Find all images of a crawl product based on crawlProduct ID, used in editing crawlProduct information
+    @Query(value = "SELECT * FROM `crawlproductimage` WHERE crawlProduct_id = ?1", nativeQuery = true)
+    List<CrawlProductImage> findAllByCrawlProductId(CrawlProduct crawlProductId);
 }

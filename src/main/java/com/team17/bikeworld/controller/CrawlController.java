@@ -118,7 +118,21 @@ public class CrawlController extends AbstractController {
         return countPending.toString();
     }
 
-
+    @GetMapping(API_CRAWL + "/{id}")
+    public String getById(@PathVariable("id") Integer id){
+        Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            CrawlProduct result = crawlService.getById(id);
+            if (result != null){
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
+            } else {
+                response.setResponse(CoreConstant.STATUS_CODE_NO_RESULT, CoreConstant.MESSAGE_NO_RESULT);
+            }
+        }catch (Exception e){
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
 
 
     @GetMapping(API_CRAWL)

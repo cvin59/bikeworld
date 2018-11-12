@@ -37,6 +37,7 @@ public class EventRatingService {
             try {
                 EventRating eventRating = eventRatingRepository.save(initEventRating(consumeEventRating));
 
+                //save event iamge
                 Event event = eventRepository.getOne(consumeEventRating.getEventId());
 
                 double eventTotalRatingPoint = event.getTotalRatesPoint();

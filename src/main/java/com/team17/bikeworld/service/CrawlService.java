@@ -61,7 +61,7 @@ public class CrawlService {
     private final Path rootLocation = Paths.get("src/main/resources/static/images/crawlProduct/").toAbsolutePath().normalize();
 
     @Autowired
-    private final CrawlProductTransformer crawlProductTransformer;
+    private  final CrawlProductTransformer crawlProductTransformer;
 
     private final CrawlRepository crawlRepository;
     private final CrawlProductImageRepository crawlProductImageRepository;
@@ -80,6 +80,10 @@ public class CrawlService {
         this.brandRepository = brandRepository;
         this.crawlProductTransformer = crawlProductTransformer;
         this.statPending = crawlStatusRepository.findByName("NEW").get();
+    }
+
+    public CrawlProduct getById(Integer id){
+        return crawlRepository.findById(id).orElse(null);
     }
 
     public List<CrawlProduct> getAll() {
@@ -153,11 +157,13 @@ public class CrawlService {
 //        return i;
 //    }
 
+
     public int runCrawl(String site) {
         int count = 0;
         try {
             if (site.equals("revzilla")) {
                 if (!RevzillaCrawler.isLock()) {
+//                    RevzillaCrawler.instance = new Thread(new RevzillaCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
                     RevzillaCrawler.instance = new Thread(new RevzillaCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, brandRepository, statPending));
                     RevzillaCrawler.instance.start();
                     RevzillaCrawler.instance.join();
@@ -165,6 +171,7 @@ public class CrawlService {
                 }
             } else if (site.equals("ynebikers")) {
                 if (!YnebikersCrawler.isLock()) {
+//                    YnebikersCrawler.instance = new Thread(new YnebikersCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, crawlStatusRepository, brandRepository));
                     YnebikersCrawler.instance = new Thread(new YnebikersCrawler(crawlRepository, categoryRepository, crawlProductImageRepository, crawlSiteRepository, brandRepository, statPending));
                     YnebikersCrawler.instance.start();
                     YnebikersCrawler.instance.join();
@@ -189,6 +196,7 @@ public class CrawlService {
         }
     }
 
+    //Tri, add new crawl
     public Response<CrawlProduct> createCrawlProduct(CrawlProductModel crawlProductModel, MultipartFile[] images) {
         Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         //Check if model is null or don't have image
@@ -245,7 +253,7 @@ public class CrawlService {
             if (crawlProductFromDatabase.isPresent()) {
                 try {
                     CrawlProduct result = crawlProductFromDatabase.get();
-                    //crawlRepository.save(UpdateEditCrawlProductModelCrawlProductEntity(crawlProductModel, result));
+                    crawlRepository.save(crawlProductTransformer.UpdateEditCrawlProductModelCrawlProductEntity(crawlProductModel, result));
                     response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
 
                     //Add Images

@@ -36,6 +36,10 @@ public class EventRatingController extends AbstractController{
         return gson.toJson(response);
     }
 
+//    @GetMapping(API_PARTICIPANT + "/event")
+//    public String getEventRatingByEventId(@RequestParam("eventId") Integer eventId) {
+////        Response response = eventRatingService.checkEventRating(eventId);
+//        return "hihi";
     @GetMapping(API_EVENT_RATING + "/event")
     public String getEventRatingByEventId(@RequestParam("eventId") Integer eventId) {
         Response<List<EventRating>> response = eventRatingService.getEventRatingByEventId(eventId);
