@@ -36,7 +36,8 @@ public class ProductController extends AbstractController {
     ProductTransformer productTransformer;
     @Autowired
     UserService userService;
-
+    @Autowired
+    OrderService orderService;
     @Autowired
     ProductRatingTransformer productRatingTransformer;
 
@@ -86,6 +87,7 @@ public class ProductController extends AbstractController {
     public String createProduct(@RequestParam String productModelString, MultipartFile[] images) {
         Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
+            LOGGER.info(productModelString);
             ProductModel newProduct = gson.fromJson(productModelString, ProductModel.class);
             productService.createProduct(newProduct, images);
             response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
@@ -329,15 +331,29 @@ public class ProductController extends AbstractController {
         return gson.toJson(response);
     }
 
+    @GetMapping(CoreConstant.API_PRODUCT + "/rate/right")
+    public String checkRateRight(@RequestParam int productId,
+                                 @RequestParam String rater) {
+
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            if(orderService.checkRatingRight(productId,rater)){
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
     @PostMapping(CoreConstant.API_PRODUCT + "/rate")
     public String rateProduct(@RequestParam String rateModelString) {
         Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             ProductRatingModel newRate = gson.fromJson(rateModelString, ProductRatingModel.class);
-
-            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
-
             productService.rateProduct(newRate);
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);

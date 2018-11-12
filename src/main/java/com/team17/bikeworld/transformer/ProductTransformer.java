@@ -64,8 +64,8 @@ public class ProductTransformer {
             entity.setDescription(model.getDescription());
             entity.setAddress(model.getAddress());
 
-//            entity.setLatitude();
-//            entity.setLongitude();
+            entity.setLatitude(model.getLatitude());
+            entity.setLongitude(model.getLongtitude());
             if (entity.getName() == null) {
                 entity.setName(model.getName());
             }
