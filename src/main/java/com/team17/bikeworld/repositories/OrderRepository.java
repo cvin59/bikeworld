@@ -18,4 +18,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     Page<Order> findByBuyerUsername(Account buyer, Pageable pageable);
 
     List<Order> findByProductId(Product product);
+
+    List<Order> getByProductIdAndBuyerUsername(Product product, Account account);
 }

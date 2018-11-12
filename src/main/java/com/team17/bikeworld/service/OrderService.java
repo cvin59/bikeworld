@@ -73,7 +73,18 @@ public class OrderService {
         return order;
     }
 
+    public boolean checkRatingRight(int productId, String rater) {
+        Product product = new Product();
+        product.setId(productId);
 
+        Account account = new Account();
+        account.setUsername(rater);
+
+        if (orderRepository.getByProductIdAndBuyerUsername(product, account).size()>0) {
+            return true;
+        }
+        return false;
+    }
 
 
 }
