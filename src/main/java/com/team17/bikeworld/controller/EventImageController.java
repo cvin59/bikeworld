@@ -44,7 +44,7 @@ public class EventImageController extends AbstractController {
     public String getEvent(@PathVariable("id") Integer id) {
         Response<EventImage> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
-            EventImage eventImages = eventImageService.getEventImageByEventId(eventService.findEvent(id));
+            EventImage eventImages = eventImageService.getEventImageByEventId(id);
 
             if (eventImages != null) {
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, eventImages);
