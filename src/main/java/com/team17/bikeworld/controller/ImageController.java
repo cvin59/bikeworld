@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import static com.team17.bikeworld.common.CoreConstant.rootLocation;
+import static com.team17.bikeworld.common.CoreConstant.rootLocationAvatar;
 
 @RestController
 public class ImageController extends AbstractController{
@@ -78,8 +79,36 @@ public class ImageController extends AbstractController{
                 .body(resource);
     }
 
+    @GetMapping("/images/avatar/{fileName:.+}")
+    public ResponseEntity<Resource> loadAvatar(@PathVariable String fileName, HttpServletRequest request) throws Exception {
+        // Load file as Resource
+        Resource resource = loadFileAsResourceAvatar(fileName);
+
+        // Try to determine file's content type
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException ex) {
+            LOGGER.info("Could not determine file type.");
+        }
+
+        // Fallback to the default content type if type could not be determined
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
     //load hinh
     public Resource loadFileAsResource(String fileName) throws Exception {
+        return getResource(fileName, rootLocation);
+    }
+
+    private Resource getResource(String fileName, Path rootLocation) throws Exception {
         try {
             Path filePath = rootLocation.resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
@@ -91,5 +120,9 @@ public class ImageController extends AbstractController{
         } catch (MalformedURLException ex) {
             throw new Exception("File not found " + fileName, ex);
         }
+    }
+
+    public Resource loadFileAsResourceAvatar(String fileName) throws Exception {
+        return getResource(fileName, rootLocationAvatar);
     }
 }
