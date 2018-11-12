@@ -58,6 +58,7 @@ public class CoreConstant {
     public static final String ADMIN = "ADMIN";
 
     public static final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
+    public static final Path rootLocationAvatar = Paths.get("src/main/resources/static/images/avatar").toAbsolutePath().normalize();
 
     // Data for search nearby
     public static final double MIN_RADIUS = 0.0005;
