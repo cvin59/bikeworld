@@ -2,6 +2,7 @@ package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
 import com.team17.bikeworld.model.ChangeStatusCrawlModel;
+import com.team17.bikeworld.model.ClientCrawlModel;
 import com.team17.bikeworld.model.CrawlProductModel;
 import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.entity.CrawlProduct;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.team17.bikeworld.common.CoreConstant.API_CRAWL;
@@ -103,11 +105,13 @@ public class CrawlController extends AbstractController {
 
     @GetMapping(API_CRAWL + "/showfrom/{date:.+}")
     public String getShowFrom(@PathVariable long date) {
-        Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        Response<List<ClientCrawlModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
 //            LOGGER.info("seen");
-            LOGGER.info("Date " + date);
-            List<CrawlProduct> crawlPros = crawlService.getShowFrom(date);
+//            LOGGER.info("Date " + date);
+            List<ClientCrawlModel> crawlPros = crawlService.getShowFrom(date);
+
+
             if (crawlPros != null) {
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, crawlPros);
             } else {
@@ -189,10 +193,11 @@ public class CrawlController extends AbstractController {
     }
 
     @GetMapping(API_CRAWL + "/detail/{id:.+}")
-    public String findByid(@PathVariable int id) {
+    public String findById(@PathVariable int id) {
         Response<List<CrawlProduct>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             List<CrawlProduct> crawlPros = crawlService.findWithGuess(id);
+
             if (crawlPros != null) {
                 response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, crawlPros);
             } else {
