@@ -2,6 +2,7 @@ package com.team17.bikeworld.repositories;
 
 import com.team17.bikeworld.entity.Account;
 import com.team17.bikeworld.entity.Order;
+import com.team17.bikeworld.entity.OrderStatus;
 import com.team17.bikeworld.entity.Product;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
@@ -19,5 +20,8 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     List<Order> findByProductId(Product product);
 
+    List<Order> findByOrderStatusid(OrderStatus orderStatus);
+
     List<Order> getByProductIdAndBuyerUsername(Product product, Account account);
+
 }

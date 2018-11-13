@@ -44,7 +44,6 @@ public class ProductService {
     private final ProductImageRepository productImageRepository;
     private final ProductTransformer productTransformer;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
-
     private final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
 
 
@@ -214,7 +213,10 @@ public class ProductService {
 
 
     public Page<Product> searchByName(String searchValue, Pageable pageable) {
-        Page<Product> products = productRepository.findByNameIgnoreCaseContaining(searchValue, pageable);
+        ProductStatus status = new ProductStatus();
+        status.setId(CoreConstant.STATUS_PRODUCT_AVAILABLE);
+
+        Page<Product> products = productRepository.findByNameIgnoreCaseContainingAndStatusId(searchValue, pageable, status);
         return products;
     }
 
