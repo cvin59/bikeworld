@@ -56,8 +56,10 @@ public class Account implements Serializable {
     @JoinColumn(name = "roleId", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Role roleId;
-    @JoinColumn(name = "profileId", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "accountUsername")
+    private Collection<Profile> profileCollection;
+    @JoinColumn(name = "profileId", referencedColumnName = "id")
+    @ManyToOne
     private Profile profileId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "buyerUsername")
     private Collection<Order> order1Collection;

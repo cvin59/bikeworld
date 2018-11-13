@@ -42,18 +42,6 @@ public class EventImageController extends AbstractController {
 
     @GetMapping(API_EVENT_IMAGE + "/event/{id}")
     public String getEvent(@PathVariable("id") Integer id) {
-        Response<EventImage> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
-        try {
-            EventImage eventImages = eventImageService.getEventImageByEventId(id);
-
-            if (eventImages != null) {
-                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, eventImages);
-            } else {
-                response.setResponse(CoreConstant.STATUS_CODE_NO_RESULT, CoreConstant.MESSAGE_NO_RESULT);
-            }
-        } catch (Exception e) {
-            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
-        }
-        return gson.toJson(response);
+        return gson.toJson(eventImageService.getEventImageByEventId(id));
     }
 }

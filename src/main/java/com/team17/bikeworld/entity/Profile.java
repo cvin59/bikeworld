@@ -47,7 +47,10 @@ public class Profile implements Serializable {
     @Expose
     @Column(name = "avatarLink", length = 255)
     private String avatarLink;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "profileId")
+    @JoinColumn(name = "account_username", referencedColumnName = "username", nullable = false)
+    @ManyToOne(optional = false)
+    private Account accountUsername;
+    @OneToMany(mappedBy = "profileId")
     private Collection<Account> accountCollection;
 
     public Profile() {
