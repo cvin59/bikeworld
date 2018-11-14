@@ -164,6 +164,20 @@ public class OrderController extends AbstractController {
         return gson.toJson(response);
     }
 
+    @PutMapping(CoreConstant.API_ORDER + "/cancel")
+    public String cancelOrder(@RequestParam("orderId") int orderId) {
+        Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            Order order = orderService.changeStatus(orderId, CoreConstant.STATUS_ORDER_CANCEL);
+            productService.addQuantity(order.getProductId(), order.getQuantity());
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
     @PutMapping(CoreConstant.API_ORDER + "/confirm")
     public String confirmOrder(@RequestParam("orderId") int orderId) {
         Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);

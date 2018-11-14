@@ -1,10 +1,7 @@
 package com.team17.bikeworld.repositories;
 
 
-import com.team17.bikeworld.entity.Account;
-import com.team17.bikeworld.entity.Brand;
-import com.team17.bikeworld.entity.Category;
-import com.team17.bikeworld.entity.Product;
+import com.team17.bikeworld.entity.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,9 +28,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Page<Product> findByNameIgnoreCaseContainingAndAccountUsename(String name, Account account, Pageable pageable);
 
-    Page<Product> findByNameIgnoreCaseContaining(String name, Pageable pageable);
+    Page<Product> findByNameIgnoreCaseContainingAndStatusId(String name, Pageable pageable, ProductStatus status);
 
-    @Query(nativeQuery=true, value="SELECT *  FROM product ORDER BY rand() LIMIT 12")
+    @Query(nativeQuery = true, value = "SELECT *  FROM product p WHERE p.status_id=1 ORDER BY rand() LIMIT 12")
     List<Product> randomProduct();
 
 
