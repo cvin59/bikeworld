@@ -65,4 +65,7 @@ public class CoreConstant {
     public static final double MIN_RADIUS = 0.0005;
     public static final double MAX_RADIUS = 0.5;
     public static final double LIMIT_SHOPS = 10;
+
+    //Relevant Data
+    public static final int MAX_RELEVANT_PRODUCT = 4;
 }

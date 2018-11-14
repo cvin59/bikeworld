@@ -76,7 +76,8 @@ public class CrawlProduct implements Serializable {
     @Column(length = 255)
     @Expose
     private String hash;
-
+    @Expose
+    private Long lastEdit;
 
 
     public CrawlProduct() {
@@ -164,6 +165,14 @@ public class CrawlProduct implements Serializable {
 
     public void setStatus(CrawlStatus status) {
         this.status = status;
+    }
+
+    public Long getLastEdit() {
+        return lastEdit;
+    }
+
+    public void setLastEdit(Long lastEdit) {
+        this.lastEdit = lastEdit;
     }
 
     @XmlTransient

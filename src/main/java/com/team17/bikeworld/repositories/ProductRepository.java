@@ -1,10 +1,7 @@
 package com.team17.bikeworld.repositories;
 
 
-import com.team17.bikeworld.entity.Account;
-import com.team17.bikeworld.entity.Brand;
-import com.team17.bikeworld.entity.Category;
-import com.team17.bikeworld.entity.Product;
+import com.team17.bikeworld.entity.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,23 +20,18 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> findByCategoryId(Category category, Pageable pageable);
 
+    List<Product> findByCategoryId(Category category);
+
     List<Product> findByBrandId(Brand brand, Pageable pageable);
 
     Page<Product> findByAccountUsename(Account account, Pageable pageable);
 
     Page<Product> findByNameIgnoreCaseContainingAndAccountUsename(String name, Account account, Pageable pageable);
 
+    Page<Product> findByNameIgnoreCaseContainingAndStatusId(String name, Pageable pageable, ProductStatus status);
 
-    @Modifying
-    @Query(value = "UPDATE `product` SET status = '2' WHERE id = ?1", nativeQuery = true)
-    Integer disableProduct(int id);
+    @Query(nativeQuery = true, value = "SELECT *  FROM product p WHERE p.status_id=1 ORDER BY rand() LIMIT 12")
+    List<Product> randomProduct();
 
 
-    Page<Product> findByNameIgnoreCaseContaining(String name, Pageable pageable);
-
-    @Modifying
-    @Query(value = "UPDATE `product` SET status = '1' WHERE id = ?1", nativeQuery = true)
-    Integer activateTradeItem(int id);
-
-    List<Product> findTop12By();
 }

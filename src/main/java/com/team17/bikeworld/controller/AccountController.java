@@ -33,7 +33,11 @@ public class AccountController extends AbstractController {
         Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
             ProfileModel profileModel = gson.fromJson(profileModelString, ProfileModel.class);
-            Profile profile = new Profile();
+            Profile profile = userService.findUserByUsername(profileModel.getAccountUser()).getProfileId();
+            if (profile==null){
+                profile = new Profile();
+            }
+
             userService.handleImage(profileModel, avatar);
             LOGGER.info(profileModel.getAvatar());
             profile = profileTransformer.ProfileModelToEntity(profileModel, profile);

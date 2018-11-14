@@ -321,6 +321,28 @@ public class CrawlService {
         int from = (page - 1) * pageSize;
         return crawlRepository.getShowByPage(from, pageSize);
     }
+
+    public List<ClientCrawlModel> getShowFrom(long time) {
+        List<CrawlProduct> crawlProducts = crawlRepository.getShowFrom(time);
+        List<ClientCrawlModel> clientCrawlModelList = new ArrayList<>();
+        for (CrawlProduct crawl : crawlProducts) {
+            ClientCrawlModel clientCrawlModel = new ClientCrawlModel();
+            clientCrawlModel.setBranId(1);
+            clientCrawlModel.setCategoryId(crawl.getSiteId().getId());
+            clientCrawlModel.setId(crawl.getId());
+            clientCrawlModel.setName(crawl.getName());
+            clientCrawlModel.setPrice(crawl.getPrice());
+            clientCrawlModel.setLastEdit(crawl.getLastEdit());
+            List<CrawlProductImage> allByCrawlProductId = crawlProductImageRepository.findAllByCrawlProductId(crawl);
+            String imgStr = "";
+            for (int j = 0; j < allByCrawlProductId.size(); j++) {
+                imgStr += allByCrawlProductId.get(j).getImageLink() + " ";
+            }
+            clientCrawlModel.setImages(imgStr);
+            clientCrawlModelList.add(clientCrawlModel);
+        }
+        return clientCrawlModelList;
+    }
 //    public void DeleteBySite(String site) {
 //        List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(site);
 //        crawlProductImageRepository.deleteAll(imgBySite);

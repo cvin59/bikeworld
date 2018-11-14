@@ -1,6 +1,9 @@
 package com.team17.bikeworld.service;
 
 import com.team17.bikeworld.common.CoreConstant;
+import com.team17.bikeworld.common.CrawlDistance;
+import com.team17.bikeworld.common.Damerau;
+import com.team17.bikeworld.common.RelevantProduct;
 import com.team17.bikeworld.entity.*;
 import com.team17.bikeworld.model.ProductModel;
 import com.team17.bikeworld.model.ProductRatingModel;
@@ -26,10 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ProductService {
@@ -44,7 +44,6 @@ public class ProductService {
     private final ProductImageRepository productImageRepository;
     private final ProductTransformer productTransformer;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
-
     private final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
 
 
@@ -189,6 +188,13 @@ public class ProductService {
 
     public void addQuantity(Product product, int orderQuantity) {
         int newQuantity = product.getQuantity() + orderQuantity;
+
+        if (product.getStatusId().getId() == CoreConstant.STATUS_PRODUCT_SOLDOUT) {
+            ProductStatus status = new ProductStatus();
+            status.setId(CoreConstant.STATUS_PRODUCT_AVAILABLE);
+            product.setStatusId(status);
+        }
+
         product.setQuantity(newQuantity);
         productRepository.save(product);
     }
@@ -205,16 +211,12 @@ public class ProductService {
         return entity.orElse(null);
     }
 
-    public boolean activateTradeItem(int id) {
-        Integer count = productRepository.activateTradeItem(id);
-        if (count > 0) {
-            return true;
-        }
-        return false;
-    }
 
     public Page<Product> searchByName(String searchValue, Pageable pageable) {
-        Page<Product> products = productRepository.findByNameIgnoreCaseContaining(searchValue, pageable);
+        ProductStatus status = new ProductStatus();
+        status.setId(CoreConstant.STATUS_PRODUCT_AVAILABLE);
+
+        Page<Product> products = productRepository.findByNameIgnoreCaseContainingAndStatusId(searchValue, pageable, status);
         return products;
     }
 
@@ -285,7 +287,61 @@ public class ProductService {
         return productRatingRepository.getByProductIdAndAccountUsename(product, account);
     }
 
+    public List<Product> findRelevant(String productName, int categoryId) {
+        Category category = new Category();
+        category.setId(categoryId);
+        List<Product> categorizedProducts = productRepository.findByCategoryId(category);
+
+        if (categorizedProducts.size() <= CoreConstant.MAX_RELEVANT_PRODUCT) {
+            return categorizedProducts;
+        } else {
+            Damerau damerau = new Damerau();
+            List<RelevantProduct> distanceList = new ArrayList<>();
+            for (int i = 0; i < categorizedProducts.size(); i++) {
+                Product product = categorizedProducts.get(i);
+                distanceList.add(new RelevantProduct(damerau.distance(product.getName(), productName), product));
+            }
+
+            Collections.sort(distanceList, new Comparator<RelevantProduct>() {
+                @Override
+                public int compare(RelevantProduct o1, RelevantProduct o2) {
+                    int d1 = o1.getDistance();
+                    int d2 = o2.getDistance();
+                    if (d1 == d2)
+                        return 0;
+                    else if (d1 < d2)
+                        return -1;
+                    else
+                        return 1;
+                }
+            });
+            List<Product> productList = new ArrayList<>();
+            for (int i = 0; i < CoreConstant.MAX_RELEVANT_PRODUCT && i < distanceList.size(); i++) {
+                productList.add(distanceList.get(i).getProduct());
+            }
+            return productList;
+        }
+    }
+
+    public void editStatus(int productId) {
+        Product product = productRepository.getOne(productId);
+        int statusId = product.getStatusId().getId();
+
+        if (statusId == CoreConstant.STATUS_PRODUCT_AVAILABLE || statusId == CoreConstant.STATUS_PRODUCT_SOLDOUT) {
+            statusId = CoreConstant.STATUS_PRODUCT_HIDDEN;
+        } else if (statusId == CoreConstant.STATUS_PRODUCT_HIDDEN) {
+            int quantity = product.getQuantity();
+            if (quantity > 0) {
+                statusId = CoreConstant.STATUS_PRODUCT_AVAILABLE;
+            } else {
+                statusId = CoreConstant.STATUS_PRODUCT_SOLDOUT;
+            }
+        }
+
+        changeStatus(product, statusId);
+    }
+
     public List<Product> findProductHome() {
-        return productRepository.findTop12By();
+        return productRepository.randomProduct();
     }
 }

@@ -73,6 +73,12 @@ public class OrderService {
         return order;
     }
 
+    public List<Order> getByStatus(int statusId) {
+        OrderStatus status = new OrderStatus();
+        status.setId(statusId);
+        return orderRepository.findByOrderStatusid(status);
+    }
+
     public boolean checkRatingRight(int productId, String rater) {
         Product product = new Product();
         product.setId(productId);
@@ -80,7 +86,7 @@ public class OrderService {
         Account account = new Account();
         account.setUsername(rater);
 
-        if (orderRepository.getByProductIdAndBuyerUsername(product, account).size()>0) {
+        if (orderRepository.getByProductIdAndBuyerUsername(product, account).size() > 0) {
             return true;
         }
         return false;
