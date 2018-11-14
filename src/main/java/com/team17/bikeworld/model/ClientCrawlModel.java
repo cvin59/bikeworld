@@ -21,6 +21,8 @@ public class ClientCrawlModel {
     @Expose
     private String description;
     @Expose
+    private Long lastEdit;
+    @Expose
     private String images;
 
     public ClientCrawlModel() {
@@ -72,6 +74,14 @@ public class ClientCrawlModel {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getLastEdit() {
+        return lastEdit;
+    }
+
+    public void setLastEdit(Long lastEdit) {
+        this.lastEdit = lastEdit;
     }
 
     public String getImages() {

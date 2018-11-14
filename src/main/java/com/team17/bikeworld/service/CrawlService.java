@@ -332,6 +332,7 @@ public class CrawlService {
             clientCrawlModel.setId(crawl.getId());
             clientCrawlModel.setName(crawl.getName());
             clientCrawlModel.setPrice(crawl.getPrice());
+            clientCrawlModel.setLastEdit(crawl.getLastEdit());
             List<CrawlProductImage> allByCrawlProductId = crawlProductImageRepository.findAllByCrawlProductId(crawl);
             String imgStr = "";
             for (int j = 0; j < allByCrawlProductId.size(); j++) {
