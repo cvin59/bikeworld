@@ -60,6 +60,7 @@ public class Account implements Serializable {
     private Collection<Profile> profileCollection;
     @JoinColumn(name = "profileId", referencedColumnName = "id")
     @ManyToOne
+    @Expose
     private Profile profileId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "buyerUsername")
     private Collection<Order> order1Collection;

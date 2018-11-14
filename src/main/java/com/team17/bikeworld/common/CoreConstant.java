@@ -19,6 +19,7 @@ public class CoreConstant {
     public static final String API_ORDER = "/api/order";
     public static final String API_PRODUCT_IMAGE = "/api/product-image";
     public static final String API_PROFILE = "/api/profile";
+    public static final String API_USER = "/api/user";
 
     //API Response code
     public static final int STATUS_CODE_SERVER_ERROR = -1;
@@ -57,6 +58,7 @@ public class CoreConstant {
     //Role
     public static final String MEMBER = "MEMBER";
     public static final String ADMIN = "ADMIN";
+    public static final int MEMBER_ID = 2;
 
     public static final Path rootLocation = Paths.get("src/main/resources/static/images").toAbsolutePath().normalize();
     public static final Path rootLocationAvatar = Paths.get("src/main/resources/static/images/avatar").toAbsolutePath().normalize();

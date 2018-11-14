@@ -274,6 +274,34 @@ public class EventService {
         return response;
     }
 
+    public Response<Event> activateEvent(Integer id) {
+        Response<Event> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
+        try {
+            Optional<Event> optionalEvent = eventRepository.findById(id);
+            if (optionalEvent.isPresent()) {
+                Event event = optionalEvent.get();
+                int checkStart = Calendar.getInstance().getTime().compareTo(event.getStartDate());
+                int checkEnd = Calendar.getInstance().getTime().compareTo(event.getEndDate());
+                if (checkStart >= 0 && checkEnd <= 0) {
+                    event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_ACTIVE).get());
+                    eventRepository.save(event);
+                } else if (checkEnd > 0) {
+                    event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_FINISH).get());
+                    eventRepository.save(event);
+                }  else {
+                    event.setEventStautsid(eventStatusRepository.findEventStatusById(STATUS_EVENT_INACTIVE).get());
+                    eventRepository.save(event);
+                }
+                response.setResponse(STATUS_CODE_SUCCESS, MESSAGE_SUCCESS, event);
+            } else {
+                response.setResponse(STATUS_CODE_NO_RESULT, MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e) {
+            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
+        }
+        return response;
+    }
+
     public Response<List<Event>> getUpcomingEvent() {
         Response<List<Event>> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
         statusEvent(response, STATUS_EVENT_INACTIVE);

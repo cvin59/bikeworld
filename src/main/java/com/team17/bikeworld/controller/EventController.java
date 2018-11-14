@@ -95,6 +95,12 @@ public class EventController extends AbstractController {
         return gson.toJson(response);
     }
 
+    @GetMapping(API_EVENT + "/activate-event/{id}")
+    public String activateEvent(@PathVariable("id") Integer id) {
+        Response<Event> response = eventService.activateEvent(id);
+        return gson.toJson(response);
+    }
+
     @GetMapping(API_EVENT + "/get")
     public String findPaginated(@RequestParam("page") int page
             , @RequestParam("sort") String sort

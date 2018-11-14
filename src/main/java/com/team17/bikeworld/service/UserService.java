@@ -6,6 +6,7 @@ import com.team17.bikeworld.entity.Role;
 import com.team17.bikeworld.model.ConsumeAccount;
 import com.team17.bikeworld.model.ProductModel;
 import com.team17.bikeworld.model.ProfileModel;
+import com.team17.bikeworld.model.Response;
 import com.team17.bikeworld.repositories.ProfileRepository;
 import com.team17.bikeworld.repositories.RoleRepository;
 import com.team17.bikeworld.repositories.AccountRepository;
@@ -21,7 +22,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Optional;
+
+import static com.team17.bikeworld.common.CoreConstant.*;
 
 @Service
 public class UserService {
@@ -87,4 +91,43 @@ public class UserService {
         }
     }
 
+    public List<Account> getAllMember(){
+        return accountRepository.findByRoleId_Id(MEMBER_ID);
+    }
+
+    public Response<Account> banUser(String username) {
+        Response<Account> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
+        try {
+            Account account = accountRepository.findAccountByUsername(username);
+            if (account != null) {
+                account.setIsActive((short) 0);
+
+                account = accountRepository.save(account);
+                response.setResponse(STATUS_CODE_SUCCESS, MESSAGE_SUCCESS, account);
+            } else {
+                response.setResponse(STATUS_CODE_NO_RESULT, MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e) {
+            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
+        }
+        return response;
+    }
+
+    public Response<Account> unbanUser(String username) {
+        Response<Account> response = new Response<>(STATUS_CODE_FAIL, MESSAGE_FAIL);
+        try {
+            Account account = accountRepository.findAccountByUsername(username);
+            if (account != null) {
+                account.setIsActive((short) 1);
+
+                account = accountRepository.save(account);
+                response.setResponse(STATUS_CODE_SUCCESS, MESSAGE_SUCCESS, account);
+            } else {
+                response.setResponse(STATUS_CODE_NO_RESULT, MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e) {
+            response.setResponse(STATUS_CODE_SERVER_ERROR, MESSAGE_SERVER_ERROR);
+        }
+        return response;
+    }
 }
