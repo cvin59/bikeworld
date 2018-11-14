@@ -6,6 +6,7 @@ import com.team17.bikeworld.entity.Product;
 import com.team17.bikeworld.model.OrderModel;
 import com.team17.bikeworld.model.ProductRatingModel;
 import com.team17.bikeworld.model.Response;
+import com.team17.bikeworld.service.CommonService;
 import com.team17.bikeworld.service.OrderService;
 import com.team17.bikeworld.service.ProductService;
 import com.team17.bikeworld.transformer.OrderTransformer;
@@ -37,6 +38,9 @@ public class OrderController extends AbstractController {
     @Autowired
     OrderTransformer orderTransformer;
 
+    @Autowired
+    CommonService commonService;
+
     @PostMapping(CoreConstant.API_ORDER)
     public String createOrder(@RequestParam String orderModelString) {
         Response response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
@@ -45,8 +49,9 @@ public class OrderController extends AbstractController {
             OrderModel newOrder = gson.fromJson(orderModelString, OrderModel.class);
             if (productService.subtractQuantity(newOrder.getProductId(), newOrder.getQuantity())) {
                 orderService.createOrder(newOrder);
-                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
+
             }
+            response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
@@ -58,7 +63,7 @@ public class OrderController extends AbstractController {
     public String loadOrderBySeller(@PathVariable String seller,
                                     @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                     @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
-                                    @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
+                                    @RequestParam(name = "sort", required = false, defaultValue = "DESC") String sort,
                                     @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy) {
         Sort sortable = null;
         if (sort.equals("ASC")) {
@@ -78,6 +83,7 @@ public class OrderController extends AbstractController {
             for (Order order : orders) {
                 OrderModel model = new OrderModel();
                 orderTransformer.OrderEntityToModel(model, order);
+                model.setExpiredDate(commonService.getExpiredDate(model.getOrderDate(), 3));
                 orderModelList.add(model);
             }
             data.setTotalPage(orders.getTotalPages());
@@ -94,7 +100,7 @@ public class OrderController extends AbstractController {
     public String loadOrderByBuyer(@PathVariable String buyer,
                                    @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                    @RequestParam(name = "size", required = false, defaultValue = "5") Integer size,
-                                   @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort,
+                                   @RequestParam(name = "sort", required = false, defaultValue = "DESC") String sort,
                                    @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy) {
         Sort sortable = null;
         if (sort.equals("ASC")) {
@@ -114,6 +120,7 @@ public class OrderController extends AbstractController {
             for (Order order : orders) {
                 OrderModel model = new OrderModel();
                 orderTransformer.OrderEntityToModel(model, order);
+
                 orderModelList.add(model);
             }
             data.setTotalPage(orders.getTotalPages());
