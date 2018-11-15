@@ -1,10 +1,7 @@
 package com.team17.bikeworld.controller;
 
 import com.team17.bikeworld.common.CoreConstant;
-import com.team17.bikeworld.model.ChangeStatusCrawlModel;
-import com.team17.bikeworld.model.ClientCrawlModel;
-import com.team17.bikeworld.model.CrawlProductModel;
-import com.team17.bikeworld.model.Response;
+import com.team17.bikeworld.model.*;
 import com.team17.bikeworld.entity.CrawlProduct;
 import com.team17.bikeworld.service.CrawlService;
 import org.slf4j.Logger;
@@ -105,15 +102,14 @@ public class CrawlController extends AbstractController {
 
     @GetMapping(API_CRAWL + "/showfrom/{date:.+}")
     public String getShowFrom(@PathVariable long date) {
-        Response<List<ClientCrawlModel>> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        Response<ClientCrawlUpdateModel> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
         try {
 //            LOGGER.info("seen");
-//            LOGGER.info("Date " + date);
-            List<ClientCrawlModel> crawlPros = crawlService.getShowFrom(date);
+            LOGGER.info("Date " + date);
+            ClientCrawlUpdateModel showFrom = crawlService.getShowFrom(date);
 
-
-            if (crawlPros != null) {
-                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, crawlPros);
+            if (showFrom != null) {
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, showFrom);
             } else {
                 response.setResponse(CoreConstant.STATUS_CODE_NO_RESULT, CoreConstant.MESSAGE_NO_RESULT);
             }
@@ -157,6 +153,39 @@ public class CrawlController extends AbstractController {
     public String getCountPending() {
         Integer countPending = crawlService.countPending();
         return countPending.toString();
+    }
+
+
+    @GetMapping(API_CRAWL + "activate/{id}")
+    public String activeById(@PathVariable("id") Integer id) {
+        Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            CrawlProduct result = crawlService.activeById(id);
+            if (result != null) {
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
+            } else {
+                response.setResponse(CoreConstant.STATUS_CODE_NO_RESULT, CoreConstant.MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e) {
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
+    }
+
+    @GetMapping(API_CRAWL + "deactivate/{id}")
+    public String deactiveById(@PathVariable("id") Integer id) {
+        Response<CrawlProduct> response = new Response<>(CoreConstant.STATUS_CODE_FAIL, CoreConstant.MESSAGE_FAIL);
+        try {
+            CrawlProduct result = crawlService.deactiveById(id);
+            if (result != null) {
+                response.setResponse(CoreConstant.STATUS_CODE_SUCCESS, CoreConstant.MESSAGE_SUCCESS, result);
+            } else {
+                response.setResponse(CoreConstant.STATUS_CODE_NO_RESULT, CoreConstant.MESSAGE_NO_RESULT);
+            }
+        } catch (Exception e) {
+            response.setResponse(CoreConstant.STATUS_CODE_SERVER_ERROR, CoreConstant.MESSAGE_SERVER_ERROR);
+        }
+        return gson.toJson(response);
     }
 
     @GetMapping(API_CRAWL + "/{id}")

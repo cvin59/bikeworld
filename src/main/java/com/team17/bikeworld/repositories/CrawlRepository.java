@@ -55,5 +55,7 @@ public interface CrawlRepository extends JpaRepository<CrawlProduct, Integer> {
     Integer countPending();
 
     Page<CrawlProduct> findAllByStatus(CrawlStatus status, Pageable pageable);
+
+    List<CrawlProduct> findAllByLastEditGreaterThanOrderByLastEditDesc(long time);
 //    Page<Product> findByNameIgnoreCaseContaining(String name, Pageable pageable);
 }

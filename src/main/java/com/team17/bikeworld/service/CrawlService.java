@@ -48,6 +48,7 @@ public class CrawlService {
     private final BrandRepository brandRepository;
     private CrawlStatus statPending;
     private CrawlStatus statShow;
+    private CrawlStatus statHide;
 
     public CrawlService(CrawlRepository crawlRepository, CrawlProductImageRepository crawlProductImageRepository, CategoryRepository categoryRepository, CrawlSiteRepository crawlSiteRepository, CrawlStatusRepository crawlStatusRepository, BrandRepository brandRepository, ProductTransformer productTransformer, CrawlProductTransformer crawlProductTransformer) {
         this.crawlRepository = crawlRepository;
@@ -59,6 +60,7 @@ public class CrawlService {
         this.crawlProductTransformer = crawlProductTransformer;
         this.statPending = crawlStatusRepository.findByName("NEW").get();
         this.statShow = crawlStatusRepository.findByName("SHOW").get();
+        this.statHide = crawlStatusRepository.findByName("HIDE").get();
     }
 
     public CrawlProduct getById(Integer id) {
@@ -322,26 +324,62 @@ public class CrawlService {
         return crawlRepository.getShowByPage(from, pageSize);
     }
 
-    public List<ClientCrawlModel> getShowFrom(long time) {
-        List<CrawlProduct> crawlProducts = crawlRepository.getShowFrom(time);
+    public ClientCrawlUpdateModel getShowFrom(long time) {
+
+        ClientCrawlUpdateModel updateModel = new ClientCrawlUpdateModel();
         List<ClientCrawlModel> clientCrawlModelList = new ArrayList<>();
-        for (CrawlProduct crawl : crawlProducts) {
-            ClientCrawlModel clientCrawlModel = new ClientCrawlModel();
-            clientCrawlModel.setBranId(1);
-            clientCrawlModel.setCategoryId(crawl.getSiteId().getId());
-            clientCrawlModel.setId(crawl.getId());
-            clientCrawlModel.setName(crawl.getName());
-            clientCrawlModel.setPrice(crawl.getPrice());
-            clientCrawlModel.setLastEdit(crawl.getLastEdit());
-            List<CrawlProductImage> allByCrawlProductId = crawlProductImageRepository.findAllByCrawlProductId(crawl);
-            String imgStr = "";
-            for (int j = 0; j < allByCrawlProductId.size(); j++) {
-                imgStr += allByCrawlProductId.get(j).getImageLink() + " ";
+        List<CrawlProduct> crawlList = crawlRepository.findAllByLastEditGreaterThanOrderByLastEditDesc(time);
+        List<Integer> delList = new ArrayList<>();
+        updateModel.setLastEdit(time);
+        if (crawlList.size() > 0) {
+            updateModel.setLastEdit(crawlList.get(0).getLastEdit());
+            for (CrawlProduct crawl : crawlList) {
+                if (crawl.getStatus().getId() == 2) {
+                    ClientCrawlModel clientCrawlModel = new ClientCrawlModel();
+                    clientCrawlModel.setBranId(1);
+                    clientCrawlModel.setCategoryId(crawl.getSiteId().getId());
+                    clientCrawlModel.setId(crawl.getId());
+                    clientCrawlModel.setName(crawl.getName());
+                    clientCrawlModel.setPrice(crawl.getPrice());
+                    List<CrawlProductImage> allByCrawlProductId = crawlProductImageRepository.findAllByCrawlProductId(crawl);
+                    String imgStr = "";
+                    for (int j = 0; j < allByCrawlProductId.size(); j++) {
+                        imgStr += allByCrawlProductId.get(j).getImageLink() + " ";
+                    }
+                    clientCrawlModel.setImages(imgStr);
+                    clientCrawlModelList.add(clientCrawlModel);
+                }
+                if (crawl.getStatus().getId() == 3) {
+                    delList.add(crawl.getId());
+                }
             }
-            clientCrawlModel.setImages(imgStr);
-            clientCrawlModelList.add(clientCrawlModel);
         }
-        return clientCrawlModelList;
+        updateModel.setDelList(delList);
+        updateModel.setCrawlModelList(clientCrawlModelList);
+        return updateModel;
+    }
+
+    public CrawlProduct activeById(Integer id) {
+        Optional<CrawlProduct> crawlProductFromDatabase = crawlRepository.findById(id);
+        CrawlProduct product = null;
+        if (crawlProductFromDatabase.isPresent()) {
+            product = crawlProductFromDatabase.get();
+            product.setStatus(statShow);
+            crawlRepository.save(product);
+        }
+        return product;
+    }
+
+
+    public CrawlProduct deactiveById(Integer id) {
+        Optional<CrawlProduct> crawlProductFromDatabase = crawlRepository.findById(id);
+        CrawlProduct product = null;
+        if (crawlProductFromDatabase.isPresent()) {
+            product = crawlProductFromDatabase.get();
+            product.setStatus(statHide);
+            crawlRepository.save(product);
+        }
+        return product;
     }
 //    public void DeleteBySite(String site) {
 //        List<CrawlProductImage> imgBySite = crawlProductImageRepository.findAllBySite(site);
