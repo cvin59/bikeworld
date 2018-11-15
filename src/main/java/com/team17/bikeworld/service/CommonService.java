@@ -9,8 +9,16 @@ import com.team17.bikeworld.repositories.CrawlStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class CommonService {
@@ -28,12 +36,12 @@ public class CommonService {
         return categories;
     }
 
-    public List<Brand> loadBrand(){
-        List<Brand> brands= brandRepository.findAll();
+    public List<Brand> loadBrand() {
+        List<Brand> brands = brandRepository.findAll();
         return brands;
     }
 
-    public List<CrawlStatus> loadCrawlStatus(){
+    public List<CrawlStatus> loadCrawlStatus() {
         List<CrawlStatus> crawlStatuses = crawlStatusRepository.findAll();
         return crawlStatuses;
     }
@@ -41,8 +49,7 @@ public class CommonService {
     private double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
         if ((lat1 == lat2) && (lon1 == lon2)) {
             return 0;
-        }
-        else {
+        } else {
             double theta = lon1 - lon2;
             double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(theta));
             dist = Math.acos(dist);
@@ -50,5 +57,25 @@ public class CommonService {
             dist = dist * 1.609344;
             return (dist);
         }
+    }
+
+    public String getExpiredDate(Date date, int days) {
+        LocalDateTime dueDate = convertToLocalDateTimeViaInstant(date).plusDays(days);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        return dueDate.format(formatter);
+    }
+
+    public LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
+
+    public Date convertToDateViaInstant(LocalDateTime dateToConvert) {
+        return java.util.Date
+                .from(dateToConvert.atZone(ZoneId.systemDefault())
+                        .toInstant());
     }
 }

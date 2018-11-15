@@ -20,6 +20,8 @@ public class OrderModel {
     @Expose
     private Date orderDate;
     @Expose
+    private String expiredDate;
+    @Expose
     private String seller;
     @Expose
     private String buyer;
@@ -89,6 +91,14 @@ public class OrderModel {
 
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public String getExpiredDate() {
+        return expiredDate;
+    }
+
+    public void setExpiredDate(String expiredDate) {
+        this.expiredDate = expiredDate;
     }
 
     public String getSeller() {
